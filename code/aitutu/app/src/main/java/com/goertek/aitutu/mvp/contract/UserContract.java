@@ -1,6 +1,7 @@
 package com.goertek.aitutu.mvp.contract;
 
 import android.app.Activity;
+import android.content.Context;
 
 import com.goertek.aitutu.mvp.model.entity.PhotoBean;
 import com.goertek.arm.mvp.IModel;
@@ -24,6 +25,7 @@ public interface UserContract {
     }
 
     interface Model extends IModel {
-        Observable<List<PhotoBean>> getAllPhoto();
+        Observable<List<PhotoBean>> getAllPhoto(Context context);
+
     }
 }

@@ -18,12 +18,15 @@ package com.goertek.aitutu.app;
 import android.app.Application;
 import android.content.Context;
 import android.support.annotation.NonNull;
+
 import com.goertek.aitutu.BuildConfig;
 import com.goertek.arm.base.delegate.AppLifecycles;
 import com.goertek.arm.integration.cache.IntelligentCache;
 import com.goertek.arm.utils.ArmsUtils;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
+
+import org.litepal.LitePal;
 
 import butterknife.ButterKnife;
 import timber.log.Timber;
@@ -72,6 +75,7 @@ public class AppLifecyclesImpl implements AppLifecycles {
         ArmsUtils.obtainAppComponentFromContext(application).extras()
                 .put(IntelligentCache.getKeyOfKeep(RefWatcher.class.getName())
                         , BuildConfig.USE_CANARY ? LeakCanary.install(application) : RefWatcher.DISABLED);
+        LitePal.initialize(application);
     }
 
     @Override

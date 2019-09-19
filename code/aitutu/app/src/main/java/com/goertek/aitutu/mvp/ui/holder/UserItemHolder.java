@@ -8,6 +8,7 @@ import android.widget.TextView;
 import com.goertek.aitutu.R;
 import com.goertek.aitutu.app.imageloader.ImageConfigImpl;
 import com.goertek.aitutu.mvp.model.entity.PhotoBean;
+import com.goertek.aitutu.util.ImageUtils;
 import com.goertek.arm.base.BaseHolder;
 import com.goertek.arm.di.component.AppComponent;
 import com.goertek.arm.http.imageloader.ImageLoader;
@@ -33,7 +34,8 @@ public class UserItemHolder extends BaseHolder<PhotoBean> {
 
     @Override
     public void setData(@NonNull PhotoBean data, int position) {
-        mAvatar.setImageResource(data.getId());
+        mAvatar.setImageBitmap(ImageUtils.getLoacalBitmap(data.getUrl()));
+
     }
 
     @Override

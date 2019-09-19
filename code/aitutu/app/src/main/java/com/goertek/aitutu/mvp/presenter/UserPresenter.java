@@ -77,7 +77,7 @@ public class UserPresenter extends BasePresenter<UserContract.Model, UserContrac
 
     private void requestFromModel() {
         Timber.e("requestFromModel");
-        mModel.getAllPhoto()
+        mModel.getAllPhoto(application)
                 .subscribeOn(Schedulers.io())
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .observeOn(AndroidSchedulers.mainThread())
