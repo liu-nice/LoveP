@@ -1,0 +1,10 @@
+<litepal>
+    <dbname value="aitutuDB" />
+    <version value="1" />
+    <list>
+
+        <mapping class="com.goertek.aitutu.mvp.model.entity.Student" />
+
+    </list>
+    <storage value="external" />
+</litepal>

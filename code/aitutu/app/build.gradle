@@ -79,6 +79,9 @@ dependencies {
     //所以旧项目只要依赖 arms-autolayout 即可兼容之前的旧页面, 新页面可以使用 AndroidAutoSize 进行适配, 等有时间了再将旧页面全部替换为 AndroidAutoSize
     implementation rootProject.ext.dependencies["autosize"]
 
+    // 数据库使用郭神的LitePal
+    implementation rootProject.ext.dependencies["LitePal"]
+
     //Arms 核心库不再包含 Glide, 想使用其他图片加载框架或者想自行扩展 ImageLoaderStrategy 就不要依赖 arms-imageloader-glide
     //依赖 arms-imageloader-glide 后还需要在 GlobalConfiguration 中手动注册 GlideImageLoaderStrategy
     //implementation 'me.jessyan:arms-imageloader-glide:2.5.2'

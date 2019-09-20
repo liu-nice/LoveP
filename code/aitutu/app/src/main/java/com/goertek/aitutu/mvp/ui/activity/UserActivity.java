@@ -28,7 +28,10 @@ import android.view.View;
 import com.goertek.aitutu.R;
 import com.goertek.aitutu.di.component.DaggerUserComponent;
 import com.goertek.aitutu.mvp.contract.UserContract;
+import com.goertek.aitutu.mvp.model.entity.FolderBean;
+import com.goertek.aitutu.mvp.model.entity.Student;
 import com.goertek.aitutu.mvp.presenter.UserPresenter;
+import com.goertek.aitutu.util.ImageUtils;
 import com.goertek.arm.base.BaseActivity;
 import com.goertek.arm.base.BaseHolder;
 import com.goertek.arm.base.DefaultAdapter;
@@ -37,9 +40,20 @@ import com.goertek.arm.utils.ArmsUtils;
 import com.goertek.arm.utils.Preconditions;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
+import org.litepal.LitePal;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.inject.Inject;
 
 import butterknife.BindView;
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 public class UserActivity extends BaseActivity<UserPresenter> implements UserContract.View, SwipeRefreshLayout.OnRefreshListener, BaseHolder.OnViewClickListener {
@@ -85,6 +99,49 @@ public class UserActivity extends BaseActivity<UserPresenter> implements UserCon
     }
 
     private void initPaginate() {
+        List<Student> list = new ArrayList<>();
+        for (int i = 0;i < 10;i++) {
+            Student s = new Student();
+            s.setAge(i);
+            s.setName("wanggangdan" + i);
+            list.add(s);
+        }
+        LitePal.saveAll(list);
+
+        List<Student> li = LitePal.findAll(Student.class);
+        Timber.e("student" + li.size());
+        Observable.create(new ObservableOnSubscribe<List<FolderBean>>() {
+            @Override
+            public void subscribe(ObservableEmitter<List<FolderBean>> emitter) throws Exception {
+                emitter.onNext(ImageUtils.getAllImagePath(getActivity()));
+                emitter.onComplete();
+            }
+        }).subscribeOn(Schedulers.io())
+        .observeOn(Schedulers.io())
+        .subscribe(new Observer<List<FolderBean>>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onNext(List<FolderBean> folderBeans) {
+                for (int i = 0;i < folderBeans.size();i++) {
+                    Timber.e(folderBeans.get(i).toString());
+                }
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
+
     }
 
     private void initRecyclerView() {
@@ -153,6 +210,5 @@ public class UserActivity extends BaseActivity<UserPresenter> implements UserCon
         DefaultAdapter.releaseAllHolder(mRecyclerView);//super.onDestroy()之后会unbind,所有view被置为null,所以必须在之前调用
         super.onDestroy();
         this.mRxPermissions = null;
-
     }
 }
