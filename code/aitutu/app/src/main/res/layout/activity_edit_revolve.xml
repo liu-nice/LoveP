@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/include_title" />
+
+    <ImageView
+        android:id="@+id/activity_edit_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:gravity="center_horizontal"
+        android:layout_marginBottom="16dp"
+        android:orientation="horizontal">
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="48dp">
+            <TextView
+                android:id="@+id/activity_edit_reset"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:background="#d4237a"
+                android:drawableLeft="@mipmap/revolve_reset"
+                android:drawablePadding="6dp"
+                android:gravity="center_vertical"
+                android:layout_centerVertical="true"
+                android:paddingLeft="6dp"
+                android:paddingRight="6dp"
+                android:text="重置"
+                android:textColor="#fff" />
+        </RelativeLayout>
+        <ImageView
+            android:id="@+id/activity_edit_left"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginLeft="12dp"
+            android:background="@mipmap/revolve_left" />
+
+        <ImageView
+            android:id="@+id/activity_edit_right"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginLeft="12dp"
+            android:background="@mipmap/revolve_right" />
+
+        <ImageView
+            android:id="@+id/activity_edit_left_right"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginLeft="12dp"
+            android:background="@mipmap/revolve_left_right" />
+
+        <ImageView
+            android:id="@+id/activity_edit_top_bottom"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginLeft="12dp"
+            android:background="@mipmap/revolve_top_bottom"/>
+    </LinearLayout>
+</RelativeLayout>
