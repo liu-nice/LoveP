@@ -33,37 +33,37 @@ public class RevolveActivity extends BaseActivity {
      * 编辑图片
      */
     @BindView(R.id.activity_edit_image)
-    private ImageView editImage;
+    public ImageView editImage;
 
     /**
      * 重置图片
      */
     @BindView(R.id.activity_edit_reset)
-    private TextView editReset;
+    public TextView editReset;
 
     /**
      * 左旋转
      */
     @BindView(R.id.activity_edit_left)
-    private ImageView editLeft;
+    public ImageView editLeft;
 
     /**
      * 右旋转
      */
     @BindView(R.id.activity_edit_right)
-    private ImageView editRight;
+    public ImageView editRight;
 
     /**
      * 左右旋转
      */
     @BindView(R.id.activity_edit_left_right)
-    private ImageView editLeftRight;
+    public ImageView editLeftRight;
 
     /**
      * 上下旋转
      */
     @BindView(R.id.activity_edit_top_bottom)
-    private ImageView editTopBottom;
+    public ImageView editTopBottom;
 
     /**
      * 原图
