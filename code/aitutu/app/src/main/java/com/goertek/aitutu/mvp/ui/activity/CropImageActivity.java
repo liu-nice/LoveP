@@ -1,4 +1,4 @@
-package com.goertek.aitutu.app.cropimage;
+package com.goertek.aitutu.mvp.ui.activity;
 
 import android.Manifest;
 import android.app.Activity;
@@ -14,13 +14,16 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
 import com.goertek.aitutu.R;
+import com.goertek.arm.base.BaseActivity;
+import com.goertek.arm.di.component.AppComponent;
 import com.isseiaoki.simplecropview.CropImageView;
 import com.isseiaoki.simplecropview.callback.CropCallback;
 import com.isseiaoki.simplecropview.callback.LoadCallback;
@@ -32,36 +35,30 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class CropImageActivity extends AppCompatActivity implements View.OnClickListener {
+public class CropImageActivity extends BaseActivity implements View.OnClickListener {
     /**
      * LogTAG : CropImageActivity
      */
-
     private static final String TAG = CropImageActivity.class.getSimpleName();
     /**
      * 裁剪图框
      */
-
     private static final String KEY_FRAME_RECT = "FrameRect";
     /**
      * 裁剪图片uri
      */
-
     private static final String KEY_SOURCE_URI = "SourceUri";
     /**
      * LogTAG
      */
-
     private static final int REQUEST_PICK_IMAGE = 10011;
     /**
      * LogTAG
      */
-
     private static final int REQUEST_SAF_PICK_IMAGE = 10012;
     /**
      * LogTAG
      */
-
     private final LoadCallback mLoadCallback = new LoadCallback() {
         @Override
         public void onSuccess() {
@@ -73,11 +70,10 @@ public class CropImageActivity extends AppCompatActivity implements View.OnClick
             Log.d(TAG, "load image error :" + error.getMessage());
         }
     };
+
     /**
      * LogTAG
      */
-
-
     private final CropCallback mCropCallback = new CropCallback() {
         @Override
         public void onSuccess(Bitmap cropped) {
@@ -94,7 +90,6 @@ public class CropImageActivity extends AppCompatActivity implements View.OnClick
     /**
      * LogTAG
      */
-
     private final SaveCallback mSaveCallback = new SaveCallback() {
         @Override
         public void onSuccess(Uri outputUri) {
@@ -109,49 +104,26 @@ public class CropImageActivity extends AppCompatActivity implements View.OnClick
     /**
      * LogTAG
      */
-
     private CropImageView cropImageView;
 
     /**
      * LogTAG
      */
-
-    private RectF mFrameRect ;
+    private RectF mFrameRect;
     /**
      * LogTAG
      */
 
-    private Uri mSourceUri ;
+    private Uri mSourceUri;
     /**
      * LogTAG
      */
 
     private Bitmap.CompressFormat mCompressFormat = Bitmap.CompressFormat.JPEG;
 
-
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_crop_image);
-        if (savedInstanceState != null) {
-            // restore data
-            mFrameRect = savedInstanceState.getParcelable(KEY_FRAME_RECT);
-            mSourceUri = savedInstanceState.getParcelable(KEY_SOURCE_URI);
-        }
-        initFindView();
-        // load image
-        mSourceUri = getUriFromDrawableResId(this, R.drawable.sample5);
-        cropImageView.load(mSourceUri)
-                .initialFrameRect(mFrameRect)
-                .useThumbnail(true)
-                .execute(mLoadCallback);
-
-    }
     /**
      * LogTAG
      */
-
     private void initFindView() {
         cropImageView = findViewById(R.id.crop_imageView);
         findViewById(R.id.buttonFitImage).setOnClickListener(this);
@@ -176,11 +148,9 @@ public class CropImageActivity extends AppCompatActivity implements View.OnClick
 
     }
 
-
     /**
      * LogTAG
      */
-
     public static Uri getUriFromDrawableResId(Context context, int drawableResId) {
         final StringBuilder builder = new StringBuilder().append(ContentResolver.SCHEME_ANDROID_RESOURCE)
                 .append("://")
@@ -267,10 +237,10 @@ public class CropImageActivity extends AppCompatActivity implements View.OnClick
         outState.putParcelable(KEY_FRAME_RECT, cropImageView.getActualCropRect());
         outState.putParcelable(KEY_SOURCE_URI, cropImageView.getSourceUri());
     }
+
     /**
      * LogTAG
      */
-
     public void cropImage() {
         cropImageView.crop(mSourceUri).execute(mCropCallback);
     }
@@ -282,10 +252,10 @@ public class CropImageActivity extends AppCompatActivity implements View.OnClick
     public Uri createSaveUri() {
         return createNewUri(this, mCompressFormat);
     }
+
     /**
      * LogTAG
      */
-
     public static String getDirPath() {
         String dirPath = "";
         File imageDir = null;
@@ -303,10 +273,10 @@ public class CropImageActivity extends AppCompatActivity implements View.OnClick
         }
         return dirPath;
     }
+
     /**
      * LogTAG
      */
-
     public static Uri createNewUri(Context context, Bitmap.CompressFormat format) {
         final long currentTimeMillis = System.currentTimeMillis();
         final Date today = new Date(currentTimeMillis);
@@ -334,10 +304,10 @@ public class CropImageActivity extends AppCompatActivity implements View.OnClick
         Logger.i("SaveUri = " + uri);
         return uri;
     }
+
     /**
      * LogTAG
      */
-
     public static String getMimeType(Bitmap.CompressFormat format) {
         Logger.i("getMimeType CompressFormat = " + format);
         switch (format) {
@@ -354,16 +324,15 @@ public class CropImageActivity extends AppCompatActivity implements View.OnClick
     /**
      * LogTAG
      */
-
     public void startResultActivity(Uri uri) {
         if (isFinishing()) return;
         // Start ResultActivity
         startActivity(ResultActivity.createIntent(this, uri));
     }
+
     /**
      * LogTAG
      */
-
     public void pickImage() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
             startActivityForResult(new Intent(Intent.ACTION_GET_CONTENT).setType("image/*"),
@@ -403,4 +372,29 @@ public class CropImageActivity extends AppCompatActivity implements View.OnClick
         }
     }
 
+    @Override
+    public void setupActivityComponent(@NonNull AppComponent appComponent) {
+
+    }
+
+    @Override
+    public int initView(@Nullable Bundle savedInstanceState) {
+        return R.layout.activity_crop_image;
+    }
+
+    @Override
+    public void initData(@Nullable Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            // restore data
+            mFrameRect = savedInstanceState.getParcelable(KEY_FRAME_RECT);
+            mSourceUri = savedInstanceState.getParcelable(KEY_SOURCE_URI);
+        }
+        initFindView();
+        // load image
+        mSourceUri = getUriFromDrawableResId(this, R.drawable.sample5);
+        cropImageView.load(mSourceUri)
+                .initialFrameRect(mFrameRect)
+                .useThumbnail(true)
+                .execute(mLoadCallback);
+    }
 }

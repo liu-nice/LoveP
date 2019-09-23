@@ -1,4 +1,4 @@
-package com.goertek.aitutu.app.cropimage;
+package com.goertek.aitutu.mvp.ui.activity;
 
 import android.app.Activity;
 import android.content.Context;
@@ -9,63 +9,47 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.widget.ImageView;
 
 import com.goertek.aitutu.R;
+import com.goertek.arm.base.BaseActivity;
+import com.goertek.arm.di.component.AppComponent;
 import com.isseiaoki.simplecropview.util.Utils;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class ResultActivity extends AppCompatActivity {
+public class ResultActivity extends BaseActivity {
     /**
      * LogTAG
      */
-
     private static final int NUMBER = 2048;
     /**
      * LogTAG
      */
-
     private static final String TAG = ResultActivity.class.getSimpleName();
     /**
      * LogTAG
      */
-
     private ImageView mImageView;
     /**
      * LogTAG
      */
-
     private ExecutorService mExecutor;
 
     /**
      * LogTAG
      */
-
     public static Intent createIntent(Activity activity, Uri uri) {
         final Intent intent = new Intent(activity, ResultActivity.class);
         intent.setData(uri);
         return intent;
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_result);
-
-        initToolbar();
-
-        mImageView = findViewById(R.id.result_image);
-        mExecutor = Executors.newSingleThreadExecutor();
-
-        final Uri uri = getIntent().getData();
-        mExecutor.submit(new LoadScaledImageTask(this, uri, mImageView, calcImageSize()));
     }
 
     @Override
@@ -88,7 +72,6 @@ public class ResultActivity extends AppCompatActivity {
     /**
      * LogTAG
      */
-
     private void initToolbar() {
         final Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -105,6 +88,28 @@ public class ResultActivity extends AppCompatActivity {
         final Display display = getWindowManager().getDefaultDisplay();
         display.getMetrics(metrics);
         return Math.min(Math.max(metrics.widthPixels, metrics.heightPixels), NUMBER);
+    }
+
+    @Override
+    public void setupActivityComponent(@NonNull AppComponent appComponent) {
+
+    }
+
+    @Override
+    public int initView(@Nullable Bundle savedInstanceState) {
+        return R.layout.activity_result;
+    }
+
+    @Override
+    public void initData(@Nullable Bundle savedInstanceState) {
+        initToolbar();
+
+        mImageView = findViewById(R.id.result_image);
+        mExecutor = Executors.newSingleThreadExecutor();
+
+        final Uri uri = getIntent().getData();
+        mExecutor.submit(new LoadScaledImageTask(this, uri, mImageView, calcImageSize()));
+
     }
 
     /**
@@ -133,6 +138,7 @@ public class ResultActivity extends AppCompatActivity {
          * LogTAG
          */
         private Handler mHandler = new Handler(Looper.getMainLooper());
+
         /**
          * LogTAG
          */

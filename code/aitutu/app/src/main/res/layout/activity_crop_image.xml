@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    tools:context=".app.cropimage.CropImageActivity">
+    tools:context=".mvp.ui.activity.CropImageActivity">
     <com.isseiaoki.simplecropview.CropImageView
         android:id="@+id/crop_imageView"
         android:layout_width="match_parent"
