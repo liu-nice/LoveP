@@ -11,6 +11,7 @@
     <module name="FileTabCharacter">
         <property name="eachLine" value="true"/>
     </module>
+	<module name="JavadocPackage"/>
     <!--检查项规则配置-->
     <module name="TreeWalker">
         <!--
@@ -209,10 +210,11 @@
             <!--public:只有public修饰的才检查，private：全部都检查-->
             <property name="scope" value="private"/>
             <property name="allowUndeclaredRTE" value="true"/>
-            <property name="allowMissingReturnTag" value="true"/>
-            <property name="allowMissingParamTags" value="true"/>
-            <property name="allowMissingThrowsTags" value="true"/>
-            <property name="allowMissingPropertyJavadoc" value="true"/>
+            <property name="allowMissingReturnTag" value="false"/>
+            <property name="allowMissingParamTags" value="false"/>
+            <property name="allowMissingThrowsTags" value="false"/>
+            <property name="allowMissingPropertyJavadoc" value="false"/>
+			<property name="allowThrowsTagsForSubclasses" value="false"/>
             <property name="ignoreMethodNamesRegex" value="main"/>
             <property name="tokens" value="METHOD_DEF, ANNOTATION_FIELD_DEF"/>
         </module>
@@ -220,10 +222,17 @@
             <property name="offset" value="4"/>
         </module>
         <module name="JavadocParagraph"/>
+		<module name="JavadocStyle">
+				<property name="checkFirstSentence" value="false"/>
+			  <property name="scope" value="private"/>
+			  <property name="excludeScope" value="package"/>
+		</module>
         <module name="JavadocType">
-            <property name="allowMissingParamTags" value="true"/>
-            <property name="allowUnknownTags" value="true"/>
+            <property name="scope" value="private"/>  
+			<property name="authorFormat" value="\S"/>
+			<property name="versionFormat" value="\$Revision.*\$"/>
         </module>
+		
         <module name="JavadocVariable"/>
         <module name="NonEmptyAtclauseDescription"/>
         <module name="SingleLineJavadoc">

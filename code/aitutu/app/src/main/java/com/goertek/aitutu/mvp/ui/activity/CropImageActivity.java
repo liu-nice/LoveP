@@ -35,29 +35,39 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class CropImageActivity extends BaseActivity implements View.OnClickListener {
+import butterknife.BindView;
+import butterknife.OnClick;
+
+public class CropImageActivity extends BaseActivity {
+
     /**
-     * LogTAG : CropImageActivity
+     * CropImageActivity
      */
     private static final String TAG = CropImageActivity.class.getSimpleName();
     /**
-     * 裁剪图框
+     * FrameRect
      */
     private static final String KEY_FRAME_RECT = "FrameRect";
     /**
-     * 裁剪图片uri
+     * SourceUri
      */
     private static final String KEY_SOURCE_URI = "SourceUri";
     /**
-     * LogTAG
+     * 选择图片常量
      */
     private static final int REQUEST_PICK_IMAGE = 10011;
     /**
-     * LogTAG
+     * 保存图片常量
      */
     private static final int REQUEST_SAF_PICK_IMAGE = 10012;
     /**
-     * LogTAG
+     * CropImageView
+     */
+    @BindView(R.id.crop_imageView)
+    public CropImageView cropImageView;
+
+    /**
+     * 加载图片回调
      */
     private final LoadCallback mLoadCallback = new LoadCallback() {
         @Override
@@ -72,7 +82,7 @@ public class CropImageActivity extends BaseActivity implements View.OnClickListe
     };
 
     /**
-     * LogTAG
+     * 裁剪图片回调
      */
     private final CropCallback mCropCallback = new CropCallback() {
         @Override
@@ -88,7 +98,7 @@ public class CropImageActivity extends BaseActivity implements View.OnClickListe
     };
 
     /**
-     * LogTAG
+     * 保存图片回调
      */
     private final SaveCallback mSaveCallback = new SaveCallback() {
         @Override
@@ -102,71 +112,32 @@ public class CropImageActivity extends BaseActivity implements View.OnClickListe
     };
 
     /**
-     * LogTAG
-     */
-    private CropImageView cropImageView;
-
-    /**
-     * LogTAG
+     * 裁剪框
      */
     private RectF mFrameRect;
     /**
-     * LogTAG
+     * 图片uri
      */
 
     private Uri mSourceUri;
     /**
-     * LogTAG
+     * 压缩图片
      */
 
     private Bitmap.CompressFormat mCompressFormat = Bitmap.CompressFormat.JPEG;
 
-    /**
-     * LogTAG
-     */
-    private void initFindView() {
-        cropImageView = findViewById(R.id.crop_imageView);
-        findViewById(R.id.buttonFitImage).setOnClickListener(this);
-        findViewById(R.id.button1_1).setOnClickListener(this);
-        findViewById(R.id.button3_4).setOnClickListener(this);
-        findViewById(R.id.button4_3).setOnClickListener(this);
-        findViewById(R.id.button9_16).setOnClickListener(this);
-        findViewById(R.id.button16_9).setOnClickListener(this);
-        findViewById(R.id.buttonFree).setOnClickListener(this);
-        findViewById(R.id.buttonDone).setOnClickListener(this);
-        findViewById(R.id.buttonFitImage).setOnClickListener(this);
-
-        findViewById(R.id.buttonPickImage).setOnClickListener(this);
-        findViewById(R.id.buttonRotateLeft).setOnClickListener(this);
-        findViewById(R.id.buttonRotateRight).setOnClickListener(this);
-        findViewById(R.id.buttonCustom).setOnClickListener(this);
-        findViewById(R.id.buttonCircle).setOnClickListener(this);
-        findViewById(R.id.buttonShowCircleButCropAsSquare).setOnClickListener(this);
-        findViewById(R.id.buttonCustom).setOnClickListener(this);
-        findViewById(R.id.buttonCircle).setOnClickListener(this);
-        findViewById(R.id.buttonShowCircleButCropAsSquare).setOnClickListener(this);
-
-    }
 
     /**
-     * LogTAG
+     * 绑定点击事件
      */
-    public static Uri getUriFromDrawableResId(Context context, int drawableResId) {
-        final StringBuilder builder = new StringBuilder().append(ContentResolver.SCHEME_ANDROID_RESOURCE)
-                .append("://")
-                .append(context.getResources().getResourcePackageName(drawableResId))
-                .append("/")
-                .append(context.getResources().getResourceTypeName(drawableResId))
-                .append("/")
-                .append(context.getResources().getResourceEntryName(drawableResId));
-        return Uri.parse(builder.toString());
-    }
 
-
-    @Override
-    public void onClick(View view) {
+    @OnClick({R.id.buttonFitImage, R.id.button1_1, R.id.button3_4, R.id.button4_3
+            , R.id.button16_9, R.id.button9_16, R.id.buttonFree, R.id.buttonDone, R.id.buttonPickImage,
+            R.id.buttonRotateLeft, R.id.buttonRotateRight, R.id.buttonCustom, R.id.buttonCircle,
+            R.id.buttonShowCircleButCropAsSquare
+    })
+    public void editCrop(View view) {
         switch (view.getId()) {
-
             case R.id.buttonFitImage:
                 cropImageView.setCropMode(CropImageView.CropMode.FIT_IMAGE);
                 break;
@@ -179,18 +150,19 @@ public class CropImageActivity extends BaseActivity implements View.OnClickListe
             case R.id.button4_3:
                 cropImageView.setCropMode(CropImageView.CropMode.RATIO_4_3);
                 break;
-            case R.id.button9_16:
-                cropImageView.setCropMode(CropImageView.CropMode.RATIO_9_16);
-                break;
             case R.id.button16_9:
                 cropImageView.setCropMode(CropImageView.CropMode.RATIO_16_9);
                 break;
-            case R.id.buttonCustom:
-                cropImageView.setCustomRatio(1, 1);
+            case R.id.button9_16:
+                cropImageView.setCropMode(CropImageView.CropMode.RATIO_9_16);
                 break;
             case R.id.buttonFree:
                 cropImageView.setCropMode(CropImageView.CropMode.FREE);
                 break;
+            case R.id.buttonCustom:
+                cropImageView.setCustomRatio(1, 1);
+                break;
+
             case R.id.buttonCircle:
                 cropImageView.setCropMode(CropImageView.CropMode.CIRCLE);
                 break;
@@ -226,8 +198,47 @@ public class CropImageActivity extends BaseActivity implements View.OnClickListe
 
             default:
                 break;
-
         }
+    }
+
+    @Override
+    public void setupActivityComponent(@NonNull AppComponent appComponent) {
+
+    }
+
+    @Override
+    public int initView(@Nullable Bundle savedInstanceState) {
+        return R.layout.activity_crop_image;
+    }
+
+    @Override
+    public void initData(@Nullable Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            // restore data
+            mFrameRect = savedInstanceState.getParcelable(KEY_FRAME_RECT);
+            mSourceUri = savedInstanceState.getParcelable(KEY_SOURCE_URI);
+        }
+        // load image
+        mSourceUri = getUriFromDrawableResId(this, R.drawable.sample5);
+        cropImageView.load(mSourceUri)
+                .initialFrameRect(mFrameRect)
+                .useThumbnail(true)
+                .execute(mLoadCallback);
+    }
+
+
+    /**
+     * 获取图片uri
+     */
+    public static Uri getUriFromDrawableResId(Context context, int drawableResId) {
+        final StringBuilder builder = new StringBuilder().append(ContentResolver.SCHEME_ANDROID_RESOURCE)
+                .append("://")
+                .append(context.getResources().getResourcePackageName(drawableResId))
+                .append("/")
+                .append(context.getResources().getResourceTypeName(drawableResId))
+                .append("/")
+                .append(context.getResources().getResourceEntryName(drawableResId));
+        return Uri.parse(builder.toString());
     }
 
     @Override
@@ -239,14 +250,14 @@ public class CropImageActivity extends BaseActivity implements View.OnClickListe
     }
 
     /**
-     * LogTAG
+     * 裁剪图片
      */
     public void cropImage() {
         cropImageView.crop(mSourceUri).execute(mCropCallback);
     }
 
     /**
-     * LogTAG
+     * 创建保存图片uri
      */
 
     public Uri createSaveUri() {
@@ -254,7 +265,7 @@ public class CropImageActivity extends BaseActivity implements View.OnClickListe
     }
 
     /**
-     * LogTAG
+     * 获取文件路径
      */
     public static String getDirPath() {
         String dirPath = "";
@@ -275,7 +286,7 @@ public class CropImageActivity extends BaseActivity implements View.OnClickListe
     }
 
     /**
-     * LogTAG
+     * 创建新的uri
      */
     public static Uri createNewUri(Context context, Bitmap.CompressFormat format) {
         final long currentTimeMillis = System.currentTimeMillis();
@@ -285,7 +296,6 @@ public class CropImageActivity extends BaseActivity implements View.OnClickListe
         final String dirPath = getDirPath();
         final String fileName = "scv" + title + "." + getMimeType(format);
         final String path = dirPath + "/" + fileName;
-
         final ContentValues values = new ContentValues();
         values.put(MediaStore.Images.Media.TITLE, title);
         values.put(MediaStore.Images.Media.DISPLAY_NAME, fileName);
@@ -306,7 +316,7 @@ public class CropImageActivity extends BaseActivity implements View.OnClickListe
     }
 
     /**
-     * LogTAG
+     * 获取压缩图片的类型
      */
     public static String getMimeType(Bitmap.CompressFormat format) {
         Logger.i("getMimeType CompressFormat = " + format);
@@ -322,7 +332,7 @@ public class CropImageActivity extends BaseActivity implements View.OnClickListe
     }
 
     /**
-     * LogTAG
+     * 跳转到保存图片页面
      */
     public void startResultActivity(Uri uri) {
         if (isFinishing()) return;
@@ -331,7 +341,7 @@ public class CropImageActivity extends BaseActivity implements View.OnClickListe
     }
 
     /**
-     * LogTAG
+     * 选择进入图库
      */
     public void pickImage() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
@@ -367,34 +377,10 @@ public class CropImageActivity extends BaseActivity implements View.OnClickListe
                             .execute(mLoadCallback);
                     break;
                 default:
+                    break;
 
             }
         }
     }
 
-    @Override
-    public void setupActivityComponent(@NonNull AppComponent appComponent) {
-
-    }
-
-    @Override
-    public int initView(@Nullable Bundle savedInstanceState) {
-        return R.layout.activity_crop_image;
-    }
-
-    @Override
-    public void initData(@Nullable Bundle savedInstanceState) {
-        if (savedInstanceState != null) {
-            // restore data
-            mFrameRect = savedInstanceState.getParcelable(KEY_FRAME_RECT);
-            mSourceUri = savedInstanceState.getParcelable(KEY_SOURCE_URI);
-        }
-        initFindView();
-        // load image
-        mSourceUri = getUriFromDrawableResId(this, R.drawable.sample5);
-        cropImageView.load(mSourceUri)
-                .initialFrameRect(mFrameRect)
-                .useThumbnail(true)
-                .execute(mLoadCallback);
-    }
 }

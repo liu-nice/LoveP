@@ -14,6 +14,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Display;
 import android.widget.ImageView;
 
@@ -27,24 +28,24 @@ import java.util.concurrent.Executors;
 
 public class ResultActivity extends BaseActivity {
     /**
-     * LogTAG
+     * 常量
      */
     private static final int NUMBER = 2048;
     /**
-     * LogTAG
+     * TAG
      */
     private static final String TAG = ResultActivity.class.getSimpleName();
     /**
-     * LogTAG
+     * imageview
      */
     private ImageView mImageView;
     /**
-     * LogTAG
+     * mExecuor
      */
     private ExecutorService mExecutor;
 
     /**
-     * LogTAG
+     * 创建intent
      */
     public static Intent createIntent(Activity activity, Uri uri) {
         final Intent intent = new Intent(activity, ResultActivity.class);
@@ -70,7 +71,7 @@ public class ResultActivity extends BaseActivity {
     }
 
     /**
-     * LogTAG
+     * 初始化toolbar
      */
     private void initToolbar() {
         final Toolbar toolbar = findViewById(R.id.toolbar);
@@ -81,7 +82,7 @@ public class ResultActivity extends BaseActivity {
     }
 
     /**
-     * LogTAG
+     * 计算图片的尺寸
      */
     private int calcImageSize() {
         final DisplayMetrics metrics = new DisplayMetrics();
@@ -102,6 +103,7 @@ public class ResultActivity extends BaseActivity {
 
     @Override
     public void initData(@Nullable Bundle savedInstanceState) {
+        Log.d(TAG, "initData()");
         initToolbar();
 
         mImageView = findViewById(R.id.result_image);
@@ -113,34 +115,34 @@ public class ResultActivity extends BaseActivity {
     }
 
     /**
-     * LogTAG
+     * 架子图片处理任务
      */
     public static class LoadScaledImageTask implements Runnable {
         /**
-         * LogTAG
+         * uri
          */
         private Uri uri;
         /**
-         * LogTAG
+         * width
          */
 
         private int width;
         /**
-         * LogTAG
+         * context
          */
 
         private Context context;
         /**
-         * LogTAG
+         * imageview
          */
         private ImageView imageView;
         /**
-         * LogTAG
+         * mhandler
          */
         private Handler mHandler = new Handler(Looper.getMainLooper());
 
         /**
-         * LogTAG
+         * 构造方法
          */
         public LoadScaledImageTask(Context context, Uri uri, ImageView imageView, int width) {
             this.context = context;
