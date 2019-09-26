@@ -43,7 +43,7 @@ public class UserModel extends BaseModel implements UserContract.Model {
                     FolderBean bean = list.get(i);
                     File[] subFile = new File(bean.getDir()).listFiles();
                     for (int iFileLength = 0; iFileLength < subFile.length; iFileLength++) {
-                        // ÅÐ¶ÏÊÇ·ñÎªÎÄ¼þ¼Ð
+                        //åˆ¤æ–­æ˜¯å¦ä¸ºæ–‡ä»¶å¤¹
                         String path = subFile[iFileLength].getAbsolutePath();
                         if (path.endsWith(".jpg") || path.endsWith(".png") || path.endsWith("jpeg")) {
                             PhotoBean p = new PhotoBean();
