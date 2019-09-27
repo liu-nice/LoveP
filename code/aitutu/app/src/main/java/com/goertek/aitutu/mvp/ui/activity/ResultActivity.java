@@ -30,6 +30,8 @@ public class ResultActivity extends BaseActivity {
     /**
      * 常量
      */
+
+
     private static final int NUMBER = 2048;
     /**
      * TAG
@@ -46,6 +48,10 @@ public class ResultActivity extends BaseActivity {
 
     /**
      * 创建intent
+     *
+     * @param activity activity
+     * @param uri      uri
+     * @return intent
      */
     public static Intent createIntent(Activity activity, Uri uri) {
         final Intent intent = new Intent(activity, ResultActivity.class);
@@ -83,6 +89,8 @@ public class ResultActivity extends BaseActivity {
 
     /**
      * 计算图片的尺寸
+     *
+     * @return int
      */
     private int calcImageSize() {
         final DisplayMetrics metrics = new DisplayMetrics();
@@ -145,6 +153,7 @@ public class ResultActivity extends BaseActivity {
          * 构造方法
          */
         public LoadScaledImageTask(Context context, Uri uri, ImageView imageView, int width) {
+
             this.context = context;
             this.uri = uri;
             this.imageView = imageView;

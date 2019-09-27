@@ -38,10 +38,11 @@ import java.util.Date;
 import butterknife.BindView;
 import butterknife.OnClick;
 
+
 public class CropImageActivity extends BaseActivity {
 
     /**
-     * CropImageActivity
+     * CropImageActivity's TAG
      */
     private static final String TAG = CropImageActivity.class.getSimpleName();
     /**
@@ -64,7 +65,7 @@ public class CropImageActivity extends BaseActivity {
      * CropImageView
      */
     @BindView(R.id.crop_imageView)
-    public CropImageView cropImageView;
+    private CropImageView cropImageView;
 
     /**
      * 加载图片回调
@@ -129,6 +130,8 @@ public class CropImageActivity extends BaseActivity {
 
     /**
      * 绑定点击事件
+     *
+     * @param view view
      */
 
     @OnClick({R.id.buttonFitImage, R.id.button1_1, R.id.button3_4, R.id.button4_3
@@ -136,6 +139,7 @@ public class CropImageActivity extends BaseActivity {
             R.id.buttonRotateLeft, R.id.buttonRotateRight, R.id.buttonCustom, R.id.buttonCircle,
             R.id.buttonShowCircleButCropAsSquare
     })
+
     public void editCrop(View view) {
         switch (view.getId()) {
             case R.id.buttonFitImage:
@@ -229,6 +233,10 @@ public class CropImageActivity extends BaseActivity {
 
     /**
      * 获取图片uri
+     *
+     * @param context       context
+     * @param drawableResId id
+     * @return uri
      */
     public static Uri getUriFromDrawableResId(Context context, int drawableResId) {
         final StringBuilder builder = new StringBuilder().append(ContentResolver.SCHEME_ANDROID_RESOURCE)
@@ -258,6 +266,8 @@ public class CropImageActivity extends BaseActivity {
 
     /**
      * 创建保存图片uri
+     *
+     * @return uri
      */
 
     public Uri createSaveUri() {
@@ -266,6 +276,8 @@ public class CropImageActivity extends BaseActivity {
 
     /**
      * 获取文件路径
+     *
+     * @return string
      */
     public static String getDirPath() {
         String dirPath = "";
@@ -287,6 +299,10 @@ public class CropImageActivity extends BaseActivity {
 
     /**
      * 创建新的uri
+     *
+     * @param context context
+     * @param format  format
+     * @return uri
      */
     public static Uri createNewUri(Context context, Bitmap.CompressFormat format) {
         final long currentTimeMillis = System.currentTimeMillis();
@@ -317,6 +333,9 @@ public class CropImageActivity extends BaseActivity {
 
     /**
      * 获取压缩图片的类型
+     *
+     * @param format format
+     * @return 照片格式
      */
     public static String getMimeType(Bitmap.CompressFormat format) {
         Logger.i("getMimeType CompressFormat = " + format);
@@ -333,6 +352,8 @@ public class CropImageActivity extends BaseActivity {
 
     /**
      * 跳转到保存图片页面
+     *
+     * @param uri uri
      */
     public void startResultActivity(Uri uri) {
         if (isFinishing()) return;
