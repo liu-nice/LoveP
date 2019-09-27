@@ -3,18 +3,4 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
-
-    <color name="blue">#f19f70</color>
-    <color name="dark_blue">#ff9e6a</color>
-    <color name="accent_blue">#ff9e6a</color>
-    <color name="xiangjibg">#ffeac0</color>
-    <color name="background_tab_pressed">#6633B5E5</color>
-    <color name="light_grey">#ffbebebe</color>
-    <color name="windowBackground">#1C1C1C</color>
-    <color name="colorButtonNormal">#FFFFFB</color>
-    <color name="textColorPrimary">#FFFFFB</color>
-    <color name="textColorPrimaryInverse">#1C1C1C</color>
-    <color name="overlay">#AA1C1C1C</color>
-    <color name="divider">#333333</color>
-
 </resources>
