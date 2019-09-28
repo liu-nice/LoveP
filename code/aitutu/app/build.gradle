@@ -42,6 +42,12 @@ android {
         abortOnError false
     }
 }
+repositories {
+    flatDir {
+        dirs 'libs' //this way we can find the .aar file in libs folder
+    }
+
+}
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
@@ -72,7 +78,7 @@ dependencies {
 
     //arms
     implementation project(':arm')
-   // implementation 'me.jessyan:arms:2.5.2'
+    // implementation 'me.jessyan:arms:2.5.2'
 
     //Arms 核心库不再包含 AndroidAutoLayout, 现在可自行选择屏幕适配方案, 不想使用 AndroidAutoLayout 就不要依赖 arms-autolayout
     implementation 'me.jessyan:arms-autolayout:2.5.2'
@@ -102,4 +108,5 @@ dependencies {
     releaseImplementation rootProject.ext.dependencies["canary-release"]
     testImplementation rootProject.ext.dependencies["canary-release"]
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    implementation(name: 'library-gpuimage', ext: 'aar')
 }
