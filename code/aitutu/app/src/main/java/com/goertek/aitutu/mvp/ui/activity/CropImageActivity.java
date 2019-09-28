@@ -1,3 +1,7 @@
+/*
+ * Copyright  2016 - Goertek- All rights reserved.
+ *
+ */
 package com.goertek.aitutu.mvp.ui.activity;
 
 import android.Manifest;
@@ -18,7 +22,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.View;
 
 import com.goertek.aitutu.R;
@@ -28,7 +31,6 @@ import com.isseiaoki.simplecropview.CropImageView;
 import com.isseiaoki.simplecropview.callback.CropCallback;
 import com.isseiaoki.simplecropview.callback.LoadCallback;
 import com.isseiaoki.simplecropview.callback.SaveCallback;
-import com.isseiaoki.simplecropview.util.Logger;
 import com.isseiaoki.simplecropview.util.Utils;
 
 import java.io.File;
@@ -37,30 +39,72 @@ import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import timber.log.Timber;
 
+/**
+ * description:CropImageActivity is cropImage
+ *
+ * @author libin
+ * @version 1.0
+ */
 
 public class CropImageActivity extends BaseActivity {
 
     /**
-     * CropImageActivity's TAG
-     */
-    private static final String TAG = CropImageActivity.class.getSimpleName();
-    /**
      * FrameRect
      */
     private static final String KEY_FRAME_RECT = "FrameRect";
+
     /**
      * SourceUri
      */
     private static final String KEY_SOURCE_URI = "SourceUri";
+
     /**
      * 选择图片常量
      */
     private static final int REQUEST_PICK_IMAGE = 10011;
+
     /**
      * 保存图片常量
      */
     private static final int REQUEST_SAF_PICK_IMAGE = 10012;
+
+    /**
+     * 1000
+     */
+    private static final int ONE_THOUSAND = 1000;
+
+    /**
+     * 路径"/"
+     */
+    private static final String SINGLE_SEPARATOR = "/";
+
+    /**
+     * 路径"/"/
+     */
+    private static final String SEPARATOR = "://";
+
+    /**
+     * "image/"
+     */
+    private static final String IMAGE_PATH = "image/";
+
+    /**
+     * "image/*"
+     */
+    private static final String IMAGE_PATH_ALL = "image/*";
+
+    /**
+     * 图片格式 jpeg
+     */
+    private static final String PICTURE_JPEG = "jpeg";
+
+    /**
+     * 图片格式 png
+     */
+    private static final String PICTURE_PNG = "png";
+
     /**
      * CropImageView
      */
@@ -73,12 +117,12 @@ public class CropImageActivity extends BaseActivity {
     private final LoadCallback mLoadCallback = new LoadCallback() {
         @Override
         public void onSuccess() {
-            Log.d(TAG, "load image success");
+            Timber.d("load image success");
         }
 
         @Override
         public void onError(Throwable error) {
-            Log.d(TAG, "load image error :" + error.getMessage());
+            Timber.d("load image error :" + error.getMessage());
         }
     };
 
@@ -116,48 +160,45 @@ public class CropImageActivity extends BaseActivity {
      * 裁剪框
      */
     private RectF mFrameRect;
+
     /**
      * 图片uri
      */
-
     private Uri mSourceUri;
+
     /**
      * 压缩图片
      */
-
     private Bitmap.CompressFormat mCompressFormat = Bitmap.CompressFormat.JPEG;
-
 
     /**
      * 绑定点击事件
      *
      * @param view view
      */
-
-    @OnClick({R.id.buttonFitImage, R.id.button1_1, R.id.button3_4, R.id.button4_3
-            , R.id.button16_9, R.id.button9_16, R.id.buttonFree, R.id.buttonDone, R.id.buttonPickImage,
+    @OnClick({R.id.buttonFitImage, R.id.crop_ratio1_1, R.id.crop_ratio3_4, R.id.crop_ratio4_3
+            , R.id.crop_ratio16_9, R.id.crop_ratio9_16, R.id.buttonFree, R.id.buttonDone, R.id.buttonPickImage,
             R.id.buttonRotateLeft, R.id.buttonRotateRight, R.id.buttonCustom, R.id.buttonCircle,
             R.id.buttonShowCircleButCropAsSquare
     })
-
     public void editCrop(View view) {
         switch (view.getId()) {
             case R.id.buttonFitImage:
                 cropImageView.setCropMode(CropImageView.CropMode.FIT_IMAGE);
                 break;
-            case R.id.button1_1:
+            case R.id.crop_ratio1_1:
                 cropImageView.setCropMode(CropImageView.CropMode.SQUARE);
                 break;
-            case R.id.button3_4:
+            case R.id.crop_ratio3_4:
                 cropImageView.setCropMode(CropImageView.CropMode.RATIO_3_4);
                 break;
-            case R.id.button4_3:
+            case R.id.crop_ratio4_3:
                 cropImageView.setCropMode(CropImageView.CropMode.RATIO_4_3);
                 break;
-            case R.id.button16_9:
+            case R.id.crop_ratio16_9:
                 cropImageView.setCropMode(CropImageView.CropMode.RATIO_16_9);
                 break;
-            case R.id.button9_16:
+            case R.id.crop_ratio9_16:
                 cropImageView.setCropMode(CropImageView.CropMode.RATIO_9_16);
                 break;
             case R.id.buttonFree:
@@ -199,7 +240,6 @@ public class CropImageActivity extends BaseActivity {
             case R.id.buttonDone:
                 cropImage();
                 break;
-
             default:
                 break;
         }
@@ -223,7 +263,7 @@ public class CropImageActivity extends BaseActivity {
             mSourceUri = savedInstanceState.getParcelable(KEY_SOURCE_URI);
         }
         // load image
-        mSourceUri = getUriFromDrawableResId(this, R.drawable.sample5);
+        mSourceUri = getUriFromDrawableResId(this, R.drawable.sample);
         cropImageView.load(mSourceUri)
                 .initialFrameRect(mFrameRect)
                 .useThumbnail(true)
@@ -240,11 +280,11 @@ public class CropImageActivity extends BaseActivity {
      */
     public static Uri getUriFromDrawableResId(Context context, int drawableResId) {
         final StringBuilder builder = new StringBuilder().append(ContentResolver.SCHEME_ANDROID_RESOURCE)
-                .append("://")
+                .append(SEPARATOR)
                 .append(context.getResources().getResourcePackageName(drawableResId))
-                .append("/")
+                .append(SINGLE_SEPARATOR)
                 .append(context.getResources().getResourceTypeName(drawableResId))
-                .append("/")
+                .append(SINGLE_SEPARATOR)
                 .append(context.getResources().getResourceEntryName(drawableResId));
         return Uri.parse(builder.toString());
     }
@@ -269,7 +309,6 @@ public class CropImageActivity extends BaseActivity {
      *
      * @return uri
      */
-
     public Uri createSaveUri() {
         return createNewUri(this, mCompressFormat);
     }
@@ -305,29 +344,29 @@ public class CropImageActivity extends BaseActivity {
      * @return uri
      */
     public static Uri createNewUri(Context context, Bitmap.CompressFormat format) {
-        final long currentTimeMillis = System.currentTimeMillis();
-        final Date today = new Date(currentTimeMillis);
+        long currentTimeMillis = System.currentTimeMillis();
+        Date today = new Date(currentTimeMillis);
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
         String title = dateFormat.format(today);
-        final String dirPath = getDirPath();
-        final String fileName = "scv" + title + "." + getMimeType(format);
-        final String path = dirPath + "/" + fileName;
-        final ContentValues values = new ContentValues();
+        String dirPath = getDirPath();
+        String fileName = "scv" + title + "." + getMimeType(format);
+        String path = dirPath + SINGLE_SEPARATOR + fileName;
+        ContentValues values = new ContentValues();
         values.put(MediaStore.Images.Media.TITLE, title);
         values.put(MediaStore.Images.Media.DISPLAY_NAME, fileName);
-        values.put(MediaStore.Images.Media.MIME_TYPE, "image/" + getMimeType(format));
+        values.put(MediaStore.Images.Media.MIME_TYPE, IMAGE_PATH + getMimeType(format));
         values.put(MediaStore.Images.Media.DATA, path);
-        final long time = currentTimeMillis / 1000;
+        long time = currentTimeMillis / ONE_THOUSAND;
         values.put(MediaStore.MediaColumns.DATE_ADDED, time);
         values.put(MediaStore.MediaColumns.DATE_MODIFIED, time);
-        final File file = new File(path);
+        File file = new File(path);
         if (file.exists()) {
             values.put(MediaStore.Images.Media.SIZE, file.length());
         }
 
-        final ContentResolver resolver = context.getContentResolver();
-        final Uri uri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-        Logger.i("SaveUri = " + uri);
+        ContentResolver resolver = context.getContentResolver();
+        Uri uri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+        Timber.i("SaveUri = " + uri);
         return uri;
     }
 
@@ -338,16 +377,16 @@ public class CropImageActivity extends BaseActivity {
      * @return 照片格式
      */
     public static String getMimeType(Bitmap.CompressFormat format) {
-        Logger.i("getMimeType CompressFormat = " + format);
+        Timber.i("getMimeType CompressFormat = " + format);
         switch (format) {
             case JPEG:
-                return "jpeg";
+                return PICTURE_JPEG;
             case PNG:
-                return "png";
+                return PICTURE_PNG;
             default:
                 break;
         }
-        return "png";
+        return PICTURE_PNG;
     }
 
     /**
@@ -366,12 +405,12 @@ public class CropImageActivity extends BaseActivity {
      */
     public void pickImage() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-            startActivityForResult(new Intent(Intent.ACTION_GET_CONTENT).setType("image/*"),
+            startActivityForResult(new Intent(Intent.ACTION_GET_CONTENT).setType(IMAGE_PATH_ALL),
                     REQUEST_PICK_IMAGE);
         } else {
             final Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
             intent.addCategory(Intent.CATEGORY_OPENABLE);
-            intent.setType("image/*");
+            intent.setType(IMAGE_PATH_ALL);
             startActivityForResult(intent, REQUEST_SAF_PICK_IMAGE);
         }
     }
@@ -403,5 +442,4 @@ public class CropImageActivity extends BaseActivity {
             }
         }
     }
-
 }
