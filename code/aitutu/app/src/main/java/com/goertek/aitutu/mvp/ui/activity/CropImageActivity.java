@@ -109,7 +109,7 @@ public class CropImageActivity extends BaseActivity {
      * CropImageView
      */
     @BindView(R.id.crop_imageView)
-    private CropImageView cropImageView;
+    public CropImageView cropImageView;
 
     /**
      * 加载图片回调
