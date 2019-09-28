@@ -14,7 +14,6 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Display;
 import android.widget.ImageView;
 
@@ -26,12 +25,12 @@ import com.isseiaoki.simplecropview.util.Utils;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import timber.log.Timber;
+
 public class ResultActivity extends BaseActivity {
     /**
      * 常量
      */
-
-
     private static final int NUMBER = 2048;
     /**
      * TAG
@@ -111,7 +110,7 @@ public class ResultActivity extends BaseActivity {
 
     @Override
     public void initData(@Nullable Bundle savedInstanceState) {
-        Log.d(TAG, "initData()");
+        Timber.d(TAG, "initData()");
         initToolbar();
 
         mImageView = findViewById(R.id.result_image);
@@ -141,11 +140,11 @@ public class ResultActivity extends BaseActivity {
 
         private Context context;
         /**
-         * imageview
+         * imageView
          */
         private ImageView imageView;
         /**
-         * mhandler
+         * mHandler
          */
         private Handler mHandler = new Handler(Looper.getMainLooper());
 
