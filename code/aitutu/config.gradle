@@ -109,6 +109,8 @@ ext {
             "canary-release"           : "com.squareup.leakcanary:leakcanary-android-no-op:${version["canarySdkVersion"]}",
             "umeng-analytics"          : "com.umeng.analytics:analytics:6.0.1",
             "constraint-layout"        : "com.android.support.constraint:constraint-layout:1.1.2",
-            "crop_image"               : "com.isseiaoki:simplecropview:1.1.7"
+            "crop_image"               : "com.isseiaoki:simplecropview:1.1.7",
+            "easypermissions"          : "pub.devrel:easypermissions:1.2.0",
+            "circleimageview"          : "de.hdodenhof:circleimageview:2.2.0"
     ]
 }

@@ -64,6 +64,7 @@ dependencies {
     implementation rootProject.ext.dependencies["androideventbus"]
 //    implementation rootProject.ext.dependencies["eventbus"]
 
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
     annotationProcessor rootProject.ext.dependencies["dagger2-compiler"]
     implementation rootProject.ext.dependencies["progressmanager"]
     implementation rootProject.ext.dependencies["retrofit-url-manager"]
@@ -108,5 +109,8 @@ dependencies {
     releaseImplementation rootProject.ext.dependencies["canary-release"]
     testImplementation rootProject.ext.dependencies["canary-release"]
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    implementation rootProject.ext.dependencies["easypermissions"]
+    implementation rootProject.ext.dependencies["circleimageview"]
+
     implementation(name: 'library-gpuimage', ext: 'aar')
 }
