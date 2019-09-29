@@ -27,6 +27,13 @@ import java.util.concurrent.Executors;
 
 import timber.log.Timber;
 
+/**
+ * description:ResultActivity is save cropPicture activity
+ *
+ * @author libin
+ * @version 1.0
+ */
+
 public class ResultActivity extends BaseActivity {
     /**
      * 常量
@@ -140,9 +147,9 @@ public class ResultActivity extends BaseActivity {
 
         private Context context;
         /**
-         * imageView
+         * mImageView
          */
-        private ImageView imageView;
+        private ImageView mImageView;
         /**
          * mHandler
          */
@@ -155,7 +162,7 @@ public class ResultActivity extends BaseActivity {
 
             this.context = context;
             this.uri = uri;
-            this.imageView = imageView;
+            this.mImageView = imageView;
             this.width = width;
         }
 
@@ -167,8 +174,8 @@ public class ResultActivity extends BaseActivity {
             try {
                 final Bitmap sampledBitmap = Utils.decodeSampledBitmapFromUri(context, uri, requestSize);
                 mHandler.post(() -> {
-                    imageView.setImageMatrix(Utils.getMatrixFromExifOrientation(exifRotation));
-                    imageView.setImageBitmap(sampledBitmap);
+                    mImageView.setImageMatrix(Utils.getMatrixFromExifOrientation(exifRotation));
+                    mImageView.setImageBitmap(sampledBitmap);
                 });
             } catch (OutOfMemoryError e) {
                 e.printStackTrace();

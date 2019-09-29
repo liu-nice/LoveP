@@ -20,7 +20,7 @@
       android:layout_weight="1"
       android:adjustViewBounds="true"
       android:padding="@dimen/spacing"
-      android:scaleType="fitCenter"
-      />
+      android:scaleType="fitCenter"/>
+
 
 </LinearLayout>

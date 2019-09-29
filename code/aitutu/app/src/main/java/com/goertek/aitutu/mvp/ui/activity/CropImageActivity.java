@@ -51,27 +51,27 @@ import timber.log.Timber;
 public class CropImageActivity extends BaseActivity {
 
     /**
-     * FrameRect
+     * FrameRect 的 key值
      */
     private static final String KEY_FRAME_RECT = "FrameRect";
 
     /**
-     * SourceUri
+     * SourceUri的 key值
      */
     private static final String KEY_SOURCE_URI = "SourceUri";
 
     /**
-     * 选择图片常量
+     * 选择图片常量 requestCode
      */
     private static final int REQUEST_PICK_IMAGE = 10011;
 
     /**
-     * 保存图片常量
+     * 保存图片常量 requestCode
      */
     private static final int REQUEST_SAF_PICK_IMAGE = 10012;
 
     /**
-     * 1000
+     * 毫秒换算单位数值 1000
      */
     private static final int ONE_THOUSAND = 1000;
 
@@ -81,7 +81,7 @@ public class CropImageActivity extends BaseActivity {
     private static final String SINGLE_SEPARATOR = "/";
 
     /**
-     * 路径"/"/
+     * 路径"//"
      */
     private static final String SEPARATOR = "://";
 
@@ -91,7 +91,7 @@ public class CropImageActivity extends BaseActivity {
     private static final String IMAGE_PATH = "image/";
 
     /**
-     * "image/*"
+     * 图片路径"image/*"
      */
     private static final String IMAGE_PATH_ALL = "image/*";
 
@@ -106,10 +106,15 @@ public class CropImageActivity extends BaseActivity {
     private static final String PICTURE_PNG = "png";
 
     /**
-     * CropImageView
+     * 图片保存路径
+     */
+    private static final String NEW_CROPVIEW_PATH = "/simplecropview";
+
+    /**
+     * mCropImageView 图片裁剪自定义View
      */
     @BindView(R.id.crop_imageView)
-    public CropImageView cropImageView;
+    public CropImageView mCropImageView;
 
     /**
      * 加载图片回调
@@ -132,7 +137,7 @@ public class CropImageActivity extends BaseActivity {
     private final CropCallback mCropCallback = new CropCallback() {
         @Override
         public void onSuccess(Bitmap cropped) {
-            cropImageView.save(cropped)
+            mCropImageView.save(cropped)
                     .compressFormat(mCompressFormat)
                     .execute(createSaveUri(), mSaveCallback);
         }
@@ -176,51 +181,51 @@ public class CropImageActivity extends BaseActivity {
      *
      * @param view view
      */
-    @OnClick({R.id.buttonFitImage, R.id.crop_ratio1_1, R.id.crop_ratio3_4, R.id.crop_ratio4_3
-            , R.id.crop_ratio16_9, R.id.crop_ratio9_16, R.id.buttonFree, R.id.buttonDone, R.id.buttonPickImage,
-            R.id.buttonRotateLeft, R.id.buttonRotateRight, R.id.buttonCustom, R.id.buttonCircle,
-            R.id.buttonShowCircleButCropAsSquare
+    @OnClick({R.id.fit_image, R.id.crop_ratio1_1, R.id.crop_ratio3_4, R.id.crop_ratio4_3
+            , R.id.crop_ratio16_9, R.id.crop_ratio9_16, R.id.free, R.id.save, R.id.pick_image,
+            R.id.rotate_left, R.id.rotate_right, R.id.custom, R.id.circle,
+            R.id.show_circle_but_cropassquare
     })
     public void editCrop(View view) {
         switch (view.getId()) {
-            case R.id.buttonFitImage:
-                cropImageView.setCropMode(CropImageView.CropMode.FIT_IMAGE);
+            case R.id.fit_image:
+                mCropImageView.setCropMode(CropImageView.CropMode.FIT_IMAGE);
                 break;
             case R.id.crop_ratio1_1:
-                cropImageView.setCropMode(CropImageView.CropMode.SQUARE);
+                mCropImageView.setCropMode(CropImageView.CropMode.SQUARE);
                 break;
             case R.id.crop_ratio3_4:
-                cropImageView.setCropMode(CropImageView.CropMode.RATIO_3_4);
+                mCropImageView.setCropMode(CropImageView.CropMode.RATIO_3_4);
                 break;
             case R.id.crop_ratio4_3:
-                cropImageView.setCropMode(CropImageView.CropMode.RATIO_4_3);
+                mCropImageView.setCropMode(CropImageView.CropMode.RATIO_4_3);
                 break;
             case R.id.crop_ratio16_9:
-                cropImageView.setCropMode(CropImageView.CropMode.RATIO_16_9);
+                mCropImageView.setCropMode(CropImageView.CropMode.RATIO_16_9);
                 break;
             case R.id.crop_ratio9_16:
-                cropImageView.setCropMode(CropImageView.CropMode.RATIO_9_16);
+                mCropImageView.setCropMode(CropImageView.CropMode.RATIO_9_16);
                 break;
-            case R.id.buttonFree:
-                cropImageView.setCropMode(CropImageView.CropMode.FREE);
+            case R.id.free:
+                mCropImageView.setCropMode(CropImageView.CropMode.FREE);
                 break;
-            case R.id.buttonCustom:
-                cropImageView.setCustomRatio(1, 1);
+            case R.id.custom:
+                mCropImageView.setCustomRatio(1, 1);
                 break;
 
-            case R.id.buttonCircle:
-                cropImageView.setCropMode(CropImageView.CropMode.CIRCLE);
+            case R.id.circle:
+                mCropImageView.setCropMode(CropImageView.CropMode.CIRCLE);
                 break;
-            case R.id.buttonShowCircleButCropAsSquare:
-                cropImageView.setCropMode(CropImageView.CropMode.CIRCLE_SQUARE);
+            case R.id.show_circle_but_cropassquare:
+                mCropImageView.setCropMode(CropImageView.CropMode.CIRCLE_SQUARE);
                 break;
-            case R.id.buttonRotateLeft:
-                cropImageView.rotateImage(CropImageView.RotateDegrees.ROTATE_M90D);
+            case R.id.rotate_left:
+                mCropImageView.rotateImage(CropImageView.RotateDegrees.ROTATE_M90D);
                 break;
-            case R.id.buttonRotateRight:
-                cropImageView.rotateImage(CropImageView.RotateDegrees.ROTATE_90D);
+            case R.id.rotate_right:
+                mCropImageView.rotateImage(CropImageView.RotateDegrees.ROTATE_90D);
                 break;
-            case R.id.buttonPickImage:
+            case R.id.pick_image:
                 if (ContextCompat.checkSelfPermission(CropImageActivity.this,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE)
                         != PackageManager.PERMISSION_GRANTED) {
@@ -235,9 +240,8 @@ public class CropImageActivity extends BaseActivity {
                     //权限已经被授予，在这里直接写要执行的相应方法即可
                     pickImage();
                 }
-
                 break;
-            case R.id.buttonDone:
+            case R.id.save:
                 cropImage();
                 break;
             default:
@@ -264,7 +268,7 @@ public class CropImageActivity extends BaseActivity {
         }
         // load image
         mSourceUri = getUriFromDrawableResId(this, R.drawable.sample);
-        cropImageView.load(mSourceUri)
+        mCropImageView.load(mSourceUri)
                 .initialFrameRect(mFrameRect)
                 .useThumbnail(true)
                 .execute(mLoadCallback);
@@ -274,9 +278,9 @@ public class CropImageActivity extends BaseActivity {
     /**
      * 获取图片uri
      *
-     * @param context       context
-     * @param drawableResId id
-     * @return uri
+     * @param context       context上下文对象
+     * @param drawableResId 图像的ID
+     * @return uri    图像的uri
      */
     public static Uri getUriFromDrawableResId(Context context, int drawableResId) {
         final StringBuilder builder = new StringBuilder().append(ContentResolver.SCHEME_ANDROID_RESOURCE)
@@ -293,21 +297,21 @@ public class CropImageActivity extends BaseActivity {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         // save data
-        outState.putParcelable(KEY_FRAME_RECT, cropImageView.getActualCropRect());
-        outState.putParcelable(KEY_SOURCE_URI, cropImageView.getSourceUri());
+        outState.putParcelable(KEY_FRAME_RECT, mCropImageView.getActualCropRect());
+        outState.putParcelable(KEY_SOURCE_URI, mCropImageView.getSourceUri());
     }
 
     /**
      * 裁剪图片
      */
     public void cropImage() {
-        cropImageView.crop(mSourceUri).execute(mCropCallback);
+        mCropImageView.crop(mSourceUri).execute(mCropCallback);
     }
 
     /**
      * 创建保存图片uri
      *
-     * @return uri
+     * @return 保存图片的uri
      */
     public Uri createSaveUri() {
         return createNewUri(this, mCompressFormat);
@@ -316,14 +320,14 @@ public class CropImageActivity extends BaseActivity {
     /**
      * 获取文件路径
      *
-     * @return string
+     * @return string 路径
      */
     public static String getDirPath() {
         String dirPath = "";
         File imageDir = null;
         final File extStorageDir = Environment.getExternalStorageDirectory();
         if (extStorageDir.canWrite()) {
-            imageDir = new File(extStorageDir.getPath() + "/simplecropview");
+            imageDir = new File(extStorageDir.getPath() + NEW_CROPVIEW_PATH);
         }
         if (imageDir != null) {
             if (!imageDir.exists()) {
@@ -339,9 +343,9 @@ public class CropImageActivity extends BaseActivity {
     /**
      * 创建新的uri
      *
-     * @param context context
-     * @param format  format
-     * @return uri
+     * @param context context 上下文
+     * @param format  format 压缩图片
+     * @return uri  创建新的uri
      */
     public static Uri createNewUri(Context context, Bitmap.CompressFormat format) {
         long currentTimeMillis = System.currentTimeMillis();
@@ -373,7 +377,7 @@ public class CropImageActivity extends BaseActivity {
     /**
      * 获取压缩图片的类型
      *
-     * @param format format
+     * @param format 格式化图片格式
      * @return 照片格式
      */
     public static String getMimeType(Bitmap.CompressFormat format) {
@@ -424,14 +428,14 @@ public class CropImageActivity extends BaseActivity {
             switch (requestCode) {
                 case REQUEST_PICK_IMAGE:
                     mSourceUri = result.getData();
-                    cropImageView.load(mSourceUri)
+                    mCropImageView.load(mSourceUri)
                             .initialFrameRect(mFrameRect)
                             .useThumbnail(true)
                             .execute(mLoadCallback);
                     break;
                 case REQUEST_SAF_PICK_IMAGE:
                     mSourceUri = Utils.ensureUriPermission(this, result);
-                    cropImageView.load(mSourceUri)
+                    mCropImageView.load(mSourceUri)
                             .initialFrameRect(mFrameRect)
                             .useThumbnail(true)
                             .execute(mLoadCallback);
