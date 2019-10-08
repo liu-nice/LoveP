@@ -110,8 +110,13 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
+                    Toast.makeText(MainActivity.this, "save picture", Toast.LENGTH_SHORT).show();
                     path = Environment.getExternalStorageDirectory() + File.separator + Environment.DIRECTORY_DCIM
                             + File.separator + "IMG" + File.separator;
+                    File dir = new File(path);
+                    if (!dir.exists()) {
+                        dir.mkdirs();// 创建文件夹
+                    }
                     picName = FileUtil.getCurrentPicName();
                     String filePath = path + picName;
                     BitmapUtils.saveBitmap(filePath, buffer, width, height);
