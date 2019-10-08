@@ -30,4 +30,14 @@
         <item name="android:gravity">center_horizontal|center_vertical</item>
     </style>
 
+    <style name="BaseToolbarTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:textColorPrimary">@android:color/white</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="anim_photo_select">
+        <item name="android:windowEnterAnimation">@anim/folder_push_up_in</item>
+        <item name="android:windowExitAnimation">@anim/folder_push_up_out</item>
+    </style>
+
 </resources>

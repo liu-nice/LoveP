@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">爱图图</string>
+    <string name="photo_album_all">所有图片</string>
+    <string name="camera_msg_no_camera">没有系统相机</string>
 </resources>
