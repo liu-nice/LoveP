@@ -1,10 +1,16 @@
+/*
+ * Copyright  2016 - Goertek- All rights reserved.
+ */
 package com.goertek.aitutu.camera.face;
 
 import java.util.Arrays;
 
 /**
- * @author Lance
- * @date 2018/10/9
+ * describition :
+ *
+ * @author ;falzy.ning
+ * @version :1.0.0
+ * @since : 2019/9/29 11:45
  */
 public class Face {
     //每两个 保存 一个点 x+y
@@ -19,7 +25,7 @@ public class Face {
     public int imgWidth;
     public int imgHeight;
 
-    Face(int width, int height,int imgWidth,int imgHeight, float[] landmarks) {
+    Face(int width, int height, int imgWidth, int imgHeight, float[] landmarks) {
         this.width = width;
         this.height = height;
         this.imgWidth = imgWidth;

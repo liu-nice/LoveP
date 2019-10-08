@@ -2,129 +2,129 @@ package com.goertek.aitutu.camera;
 
 import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.Build;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.hardware.Camera;
+import android.net.Uri;
+import android.opengl.EGL14;
+import android.opengl.EGLContext;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Looper;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatTextView;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.RadioGroup;
+import android.widget.Toast;
 
 import com.goertek.aitutu.R;
-import com.goertek.aitutu.camera.record.MediaRecorder;
-import com.goertek.aitutu.camera.video.VideoActivity;
+import com.goertek.aitutu.camera.record.EGLBase;
+import com.goertek.aitutu.camera.util.CameraParam;
+import com.goertek.aitutu.camera.util.FileUtil;
 import com.goertek.aitutu.camera.widget.CameraGLSurfaceView;
-import com.goertek.aitutu.camera.widget.RecordButton;
+import com.goertek.aitutu.camera.widget.CameraRenderer;
+import com.goertek.aitutu.util.BitmapUtils;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.nio.ByteBuffer;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import pub.devrel.easypermissions.EasyPermissions;
 import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks {
-    CameraGLSurfaceView cameraGLSurfaceView;
+
+    @BindView(R.id.camera_glsurfaceview)
+    public CameraGLSurfaceView mCameraGLSurfaceView;
+
+    @BindView(R.id.btn_takepic)
+    public AppCompatTextView mTakePicture;
 
     private static final int PERMISSION_CAMERA = 0;
+    private Handler mHandler;
+    private EGLBase mEglBase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         checkPermission();
         setContentView(R.layout.activity_main);
-        cameraGLSurfaceView = findViewById(R.id.douyinView);
-        RecordButton recordButton = findViewById(R.id.btn_record);
-        recordButton.setOnRecordListener(new RecordButton.OnRecordListener() {
-            /**
-             * 开始录制
-             */
-            @Override
-            public void onRecordStart() {
-                cameraGLSurfaceView.startRecord();
-            }
-
-            /**
-             * 停止录制
-             */
-            @Override
-            public void onRecordStop() {
-                cameraGLSurfaceView.stopRecord();
-            }
-        });
-        RadioGroup radioGroup = findViewById(R.id.rg_speed);
-        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            /**
-             * 选择录制模式
-             * @param group
-             * @param checkedId
-             */
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                switch (checkedId) {
-                    case R.id.rb_extra_slow: //极慢
-                        cameraGLSurfaceView.setSpeed(CameraGLSurfaceView.Speed.MODE_EXTRA_SLOW);
-                        break;
-                    case R.id.rb_slow:
-                        cameraGLSurfaceView.setSpeed(CameraGLSurfaceView.Speed.MODE_SLOW);
-                        break;
-                    case R.id.rb_normal:
-                        cameraGLSurfaceView.setSpeed(CameraGLSurfaceView.Speed.MODE_NORMAL);
-                        break;
-                    case R.id.rb_fast:
-                        cameraGLSurfaceView.setSpeed(CameraGLSurfaceView.Speed.MODE_FAST);
-                        break;
-                    case R.id.rb_extra_fast: //极快
-                        cameraGLSurfaceView.setSpeed(CameraGLSurfaceView.Speed.MODE_EXTRA_FAST);
-                        break;
-                }
-            }
-        });
-
+        ButterKnife.bind(this);
+        mHandler =new Handler(Looper.getMainLooper());
         ((CheckBox) findViewById(R.id.beauty)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                cameraGLSurfaceView.enableBeauty(isChecked);
+                mCameraGLSurfaceView.enableBeauty(isChecked);
             }
         });
 
         ((CheckBox) findViewById(R.id.bigEye)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                cameraGLSurfaceView.enableBigEye(isChecked);
+                mCameraGLSurfaceView.enableBigEye(isChecked);
             }
         });
         ((CheckBox) findViewById(R.id.stick)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                cameraGLSurfaceView.enableStick(isChecked);
+                mCameraGLSurfaceView.enableStick(isChecked);
             }
         });
-
-        /**
-         * 录制完成
-         */
-        cameraGLSurfaceView.setOnRecordFinishListener(new MediaRecorder.OnRecordFinishListener() {
-            @Override
-            public void onRecordFinish(final String path) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Intent intent = new Intent(MainActivity.this, VideoActivity.class);
-                        intent.putExtra("path", path);
-                        startActivity(intent);
-                    }
-                });
-            }
-        });
+        mCameraGLSurfaceView.getCameraRenderer().setCaptureCallback(mCaptureCallback);
     }
+
+    @OnClick(R.id.btn_takepic)
+    void onBindClick(View view) {
+        switch (view.getId()) {
+            case R.id.btn_takepic:
+                CameraParam.getInstance().isTakePicture = true;
+                Toast.makeText(MainActivity.this, "takepicture", Toast.LENGTH_SHORT).show();
+                mCameraGLSurfaceView.requestRender();
+//                Camera mCamera = mCameraGLSurfaceView.getCamera();
+//                mCamera.takePicture(null, null, (data, camera) -> takePicture(data));
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
+     * 截屏回调
+     */
+    private CameraRenderer.CaptureCallback mCaptureCallback = new CameraRenderer.CaptureCallback() {
+        @Override
+        public void onCapture(final ByteBuffer buffer, final int width, final int height) {
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    path = Environment.getExternalStorageDirectory() + File.separator + Environment.DIRECTORY_DCIM
+                            + File.separator + "IMG" + File.separator;
+                    picName = FileUtil.getCurrentPicName();
+                    String filePath = path + picName;
+                    BitmapUtils.saveBitmap(filePath, buffer, width, height);
+                }
+            });
+        }
+    };
+
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_UP) {
-            cameraGLSurfaceView.switchCamera();
+            mCameraGLSurfaceView.switchCamera();
         }
         return super.onTouchEvent(event);
     }
@@ -178,6 +178,72 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             } else if (perms.get(i).equals(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                 Timber.i("onPermissionsDenied: " + "写SD权限拒绝");
             }
+        }
+    }
+
+    private Bitmap mBitMap;
+    private String path, picName;
+
+    public void takePicture(byte[] data) {
+        Toast.makeText(MainActivity.this, data.length + "", Toast.LENGTH_SHORT).show();
+        mBitMap = BitmapFactory.decodeByteArray(data, 0, data.length);
+        Bitmap bMapRotate;
+        Matrix matrix = new Matrix();
+        matrix.reset();
+//        matrix.postRotate(90);
+        bMapRotate = Bitmap.createBitmap(mBitMap, 0, 0, mBitMap.getWidth(),
+                mBitMap.getHeight(), matrix, true);
+        mBitMap = bMapRotate;
+        savePic();
+    }
+
+    private void savePic() {
+        Thread thread = new Thread(() -> {
+            try {
+                path = Environment.getExternalStorageDirectory() + File.separator + Environment.DIRECTORY_DCIM
+                        + File.separator + "IMG" + File.separator;
+                File dir = new File(path);
+                if (!dir.exists()) {
+                    dir.mkdirs();// 创建文件夹
+                }
+                picName = FileUtil.getCurrentPicName();
+                String fileName = path + picName;
+                File file = new File(fileName);
+                BufferedOutputStream bos =
+                        new BufferedOutputStream(new FileOutputStream(file));
+                mBitMap.compress(Bitmap.CompressFormat.JPEG, 100, bos);//将图片压缩到流中
+                bos.flush();//输出
+                bos.close();//关闭
+                //通知相册更新
+                MediaStore.Images.Media.insertImage(getContentResolver(),
+                        mBitMap, fileName, null);
+                Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+                Uri uri = Uri.fromFile(file);
+                intent.setData(uri);
+                sendBroadcast(intent);
+                Toast.makeText(MainActivity.this, "save pic", Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                Timber.e(e.getMessage().toString());
+            }
+//                handler.sendEmptyMessage(SUCCESS);
+        });
+        // 启动存储照片的线程
+        thread.start();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mCameraGLSurfaceView != null) {
+            mCameraGLSurfaceView.onPause();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mCameraGLSurfaceView != null) {
+            mCameraGLSurfaceView.onResume();
         }
     }
 }

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.support.annotation.NonNull;
@@ -12,9 +13,12 @@ import android.view.View;
 
 import com.goertek.aitutu.callback.SaveBitmapCallBack;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.List;
 
 /**
@@ -209,4 +213,86 @@ public class BitmapUtils {
     }
 
 
+    /**
+     * 保存图片
+     * @param filePath
+     * @param buffer
+     * @param width
+     * @param height
+     */
+    public static void saveBitmap(String filePath, ByteBuffer buffer, int width, int height) {
+        BufferedOutputStream bos = null;
+        try {
+            bos = new BufferedOutputStream(new FileOutputStream(filePath));
+            Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+            bitmap.copyPixelsFromBuffer(buffer);
+            bitmap = BitmapUtils.rotateBitmap(bitmap, 180, true);
+            bitmap = BitmapUtils.flipBitmap(bitmap, true);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos);
+            bitmap.recycle();
+            bitmap = null;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } finally {
+            if (bos != null) try {
+                bos.close();
+            } catch (IOException e) {
+                // do nothing
+            }
+        }
+    }
+    /**
+     * 将Bitmap图片旋转一定角度
+     * @param bitmap
+     * @param rotate
+     * @param isRecycled
+     * @return
+     */
+    public static Bitmap rotateBitmap(Bitmap bitmap, int rotate, boolean isRecycled) {
+        if (bitmap == null) {
+            return null;
+        }
+        Matrix matrix = new Matrix();
+        matrix.reset();
+        matrix.postRotate(rotate);
+        Bitmap rotatedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
+                bitmap.getHeight(), matrix, true);
+        if (!bitmap.isRecycled() && isRecycled) {
+            bitmap.recycle();
+            bitmap = null;
+        }
+        return rotatedBitmap;
+    }
+    /**
+     * 镜像翻转图片
+     * @param bitmap
+     * @param isRecycled
+     * @return
+     */
+    public static Bitmap flipBitmap(Bitmap bitmap, boolean isRecycled) {
+        return flipBitmap(bitmap, true, false, isRecycled);
+    }
+    /**
+     * 翻转图片
+     * @param bitmap
+     * @param flipX
+     * @param flipY
+     * @param isRecycled
+     * @return
+     */
+    public static Bitmap flipBitmap(Bitmap bitmap, boolean flipX, boolean flipY, boolean isRecycled) {
+        if (bitmap == null) {
+            return null;
+        }
+        Matrix matrix = new Matrix();
+        matrix.setScale(flipX ? -1 : 1, flipY ? -1 : 1);
+        matrix.postTranslate(bitmap.getWidth(), 0);
+        Bitmap result = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
+                bitmap.getHeight(), matrix, false);
+        if (isRecycled && bitmap != null && !bitmap.isRecycled()) {
+            bitmap.recycle();
+            bitmap = null;
+        }
+        return result;
+    }
 }

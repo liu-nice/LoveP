@@ -1,9 +1,19 @@
+/*
+ * Copyright  2016 - Goertek- All rights reserved.
+ */
 package com.goertek.aitutu.camera.util;
 
 import android.graphics.ImageFormat;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 
+/**
+ * describition :
+ *
+ * @author ;falzy.ning
+ * @version :1.0.0
+ * @since : 2019/9/29 11:45
+ */
 public class CameraHelper implements Camera.PreviewCallback {
 
     private static final String TAG = "CameraHelper";
@@ -79,14 +89,13 @@ public class CameraHelper implements Camera.PreviewCallback {
 
     @Override
     public void onPreviewFrame(byte[] data, Camera camera) {
-        //SurfaceView 直接预览的  会影响到你的预览吗？
-        //Thread.sleep(10_000);
-        // data数据依然是倒的
         if (null != mPreviewCallback) {
             mPreviewCallback.onPreviewFrame(data, camera);
         }
         camera.addCallbackBuffer(buffer);
     }
 
-
+    public Camera getCamera() {
+        return mCamera ;
+    }
 }

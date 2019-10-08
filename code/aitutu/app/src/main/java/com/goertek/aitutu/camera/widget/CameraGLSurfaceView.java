@@ -1,11 +1,10 @@
 package com.goertek.aitutu.camera.widget;
 
 import android.content.Context;
+import android.hardware.Camera;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 import android.view.SurfaceHolder;
-
-import com.goertek.aitutu.camera.record.MediaRecorder;
 
 public class CameraGLSurfaceView extends GLSurfaceView {
 
@@ -16,16 +15,24 @@ public class CameraGLSurfaceView extends GLSurfaceView {
         cameraRenderer.switchCamera();
     }
 
+    public Camera getCamera() {
+        return cameraRenderer.getCamera();
+    }
+
 
     public enum Speed {
         MODE_EXTRA_SLOW, MODE_SLOW, MODE_NORMAL, MODE_FAST, MODE_EXTRA_FAST
     }
 
 
+    public CameraRenderer getCameraRenderer() {
+        return cameraRenderer;
+    }
+
     private CameraRenderer cameraRenderer;
 
     public CameraGLSurfaceView(Context context) {
-        this(context,null);
+        this(context, null);
     }
 
     public CameraGLSurfaceView(Context context, AttributeSet attrs) {
@@ -48,49 +55,20 @@ public class CameraGLSurfaceView extends GLSurfaceView {
         cameraRenderer.onSurfaceDestroyed();
     }
 
-    public void setSpeed(Speed speed){
+    public void setSpeed(Speed speed) {
         mSpeed = speed;
     }
-
-    public void startRecord() {
-        float speed = 1.f;
-        switch (mSpeed) {
-            case MODE_EXTRA_SLOW:
-                speed = 0.3f;
-                break;
-            case MODE_SLOW:
-                speed = 0.5f;
-                break;
-            case MODE_NORMAL:
-                speed = 1.f;
-                break;
-            case MODE_FAST:
-                speed = 1.5f;
-                break;
-            case MODE_EXTRA_FAST:
-                speed = 3.f;
-                break;
-        }
-        cameraRenderer.startRecord(speed);
-    }
-
-    public void stopRecord() {
-        cameraRenderer.stopRecord();
-    }
-
 
     public void enableBeauty(boolean isChecked) {
         cameraRenderer.enableBeauty(isChecked);
     }
 
-    public void enableBigEye( boolean isChecked){
+    public void enableBigEye(boolean isChecked) {
         cameraRenderer.enableBigEye(isChecked);
     }
-    public void enableStick( boolean isChecked){
+
+    public void enableStick(boolean isChecked) {
         cameraRenderer.enableStick(isChecked);
     }
 
-    public void setOnRecordFinishListener(MediaRecorder.OnRecordFinishListener listener){
-        cameraRenderer.setOnRecordFinishListener(listener);
-    }
 }

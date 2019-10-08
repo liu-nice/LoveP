@@ -9,10 +9,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
-/**
- * @author Lance
- * @date 2018/10/31
- */
+
 public abstract class AbstractFilter {
 
     protected FloatBuffer mGLVertexBuffer;

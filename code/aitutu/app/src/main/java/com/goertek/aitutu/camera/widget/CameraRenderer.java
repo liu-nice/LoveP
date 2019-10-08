@@ -6,6 +6,7 @@ import android.hardware.Camera;
 import android.opengl.EGL14;
 import android.opengl.EGLContext;
 import android.opengl.GLES20;
+import android.opengl.GLES30;
 import android.opengl.GLSurfaceView;
 
 import com.goertek.aitutu.camera.face.Face;
@@ -17,9 +18,13 @@ import com.goertek.aitutu.camera.filter.ScreenFilter;
 import com.goertek.aitutu.camera.filter.StickFilter;
 import com.goertek.aitutu.camera.record.MediaRecorder;
 import com.goertek.aitutu.camera.util.CameraHelper;
+import com.goertek.aitutu.camera.util.CameraParam;
+import com.goertek.aitutu.camera.util.EglSurfaceBase;
 import com.goertek.aitutu.camera.util.OpenGLUtils;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -148,6 +153,36 @@ public class CameraRenderer implements GLSurfaceView.Renderer, SurfaceTexture.On
         mScreenFilter.onDrawFrame(id);
         //进行录制
         mMediaRecorder.encodeFrame(id, mSurfaceTexture.getTimestamp());
+        EglSurfaceBase eglSurfaceBase = new EglSurfaceBase();
+        if (CameraParam.getInstance().isTakePicture) {
+            int width = mView.getWidth();
+            int height = mView.getHeight();
+            ByteBuffer buf = ByteBuffer.allocateDirect(width * height * 4);
+            buf.order(ByteOrder.LITTLE_ENDIAN);
+            GLES30.glReadPixels(0, 0, width, height,
+                    GLES30.GL_RGBA, GLES30.GL_UNSIGNED_BYTE, buf);
+            eglSurfaceBase.checkGlError("glReadPixels");
+            buf.rewind();
+            CameraParam.getInstance().isTakePicture = false;
+            if (mCaptureCallback != null) {
+                mCaptureCallback.onCapture(buf, width, height);
+            }
+        }
+    }
+
+    CaptureCallback mCaptureCallback;
+    /**
+     * 截屏回调
+     * @param captureCallback
+     */
+    public void setCaptureCallback(CaptureCallback captureCallback) {
+        this.mCaptureCallback = captureCallback;
+    }
+    /**
+     * 截帧回调
+     */
+    public interface CaptureCallback {
+        void onCapture(ByteBuffer buffer, int width, int height);
     }
 
     /**
@@ -251,4 +286,7 @@ public class CameraRenderer implements GLSurfaceView.Renderer, SurfaceTexture.On
     }
 
 
+    public Camera getCamera() {
+        return mCameraHelper.getCamera();
+    }
 }
