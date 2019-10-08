@@ -46,17 +46,25 @@ public class ImageUtils {
      * 图片的八个位置
      **/
     public static final int TOP = 0;      //上
+
     public static final int BOTTOM = 1;      //下
+
     public static final int LEFT = 2;      //左
+
     public static final int RIGHT = 3;      //右
+
     public static final int LEFT_TOP = 4;    //左上
+
     public static final int LEFT_BOTTOM = 5;  //左下
+
     public static final int RIGHT_TOP = 6;    //右上
+
     public static final int RIGHT_BOTTOM = 7;  //右下
+
     /**
      * 最大图片数量的文件夹图片数
      */
-    public static int mMaxCount = 0;
+    public static  int mMaxCount = 0;
     /**
      * 最大图片数量的文件夹
      */
@@ -536,10 +544,10 @@ public class ImageUtils {
         try {
             FileInputStream fis = new FileInputStream(url);
             return BitmapFactory.decodeStream(fis);  ///把流转化为Bitmap图片
-
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            return null;
-        }}
+        }
+        return null;
+    }
 
 }

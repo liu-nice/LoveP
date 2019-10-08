@@ -25,10 +25,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".mvp.ui.activity.ResultActivity" />
-        <activity android:name=".mvp.ui.activity.CropImageActivity"></activity>
-        <activity android:name=".mvp.ui.activity.UserActivity">
+        <activity android:name=".mvp.ui.activity.MainPhotoPickActivity">
+
             <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".mvp.ui.activity.ResultActivity" />
+        <activity android:name=".mvp.ui.activity.CropImageActivity" />
+        <activity android:name=".mvp.ui.activity.UserActivity">
+           <!-- <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -38,6 +46,7 @@
         </activity>
         <activity android:name=".camera.video.VideoActivity">
 
+            </intent-filter>-->
         </activity>
         <!--
  只要依赖 AutoSize 就必须填写设计图尺寸, 否则报错, 不想使用 AutoSize 就不要依赖 AutoSize
