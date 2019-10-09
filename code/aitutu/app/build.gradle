@@ -18,6 +18,20 @@ android {
         versionName rootProject.ext.android["versionName"]
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
+        externalNativeBuild {
+            cmake {
+                cppFlags "-std=c++11"
+                arguments "-DANDROID_STL=gnustl_static"
+//                arguments "-DANDROID_STL=c++_static"
+                abiFilters 'arm64-v8a'/*,'x86_64','armeabi-v7a'*/
+            }
+        }
+    }
+
+    externalNativeBuild {
+        cmake {
+            path "CMakeLists.txt"
+        }
     }
     buildTypes {
         debug {
@@ -64,12 +78,12 @@ dependencies {
     implementation rootProject.ext.dependencies["androideventbus"]
 //    implementation rootProject.ext.dependencies["eventbus"]
 
-    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
     annotationProcessor rootProject.ext.dependencies["dagger2-compiler"]
     implementation rootProject.ext.dependencies["progressmanager"]
     implementation rootProject.ext.dependencies["retrofit-url-manager"]
     implementation rootProject.ext.dependencies["lifecyclemodel"]
     implementation rootProject.ext.dependencies["constraint-layout"]
+    implementation rootProject.ext.dependencies["easypermissions"]
 
     //view
     annotationProcessor(rootProject.ext.dependencies["butterknife-compiler"]) {

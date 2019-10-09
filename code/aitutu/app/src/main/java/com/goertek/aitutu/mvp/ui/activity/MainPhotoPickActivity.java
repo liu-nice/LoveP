@@ -33,6 +33,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.goertek.aitutu.R;
+import com.goertek.aitutu.camera.MainActivity;
 import com.goertek.aitutu.di.component.DaggerPhotoPickComponent;
 import com.goertek.aitutu.mvp.contract.PhotoPickContract;
 import com.goertek.aitutu.mvp.model.entity.FolderInfo;
@@ -356,8 +357,9 @@ public class MainPhotoPickActivity extends BaseActivity<PhotoPickPresenter>
         String[] perms = {Manifest.permission.CAMERA};
         if (EasyPermissions.hasPermissions(this, perms)) {
             // 跳转到系统照相机
-            Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            startActivityForResult(cameraIntent, TAKE_PICTURE_FROM_CAMERA);
+//            Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//            startActivityForResult(cameraIntent, TAKE_PICTURE_FROM_CAMERA);
+            startActivity(new Intent(MainPhotoPickActivity.this, MainActivity.class));
         } else {
             EasyPermissions.requestPermissions(this, "照相机需要以下权限:\n\n1.照相", REQUEST_CODE_CAMERA, perms);
         }
