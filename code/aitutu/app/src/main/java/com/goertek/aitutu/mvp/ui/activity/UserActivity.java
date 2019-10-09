@@ -18,19 +18,26 @@ package com.goertek.aitutu.mvp.ui.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 
 import com.goertek.aitutu.R;
+import com.goertek.aitutu.callback.PuzzleCallback;
+import com.goertek.aitutu.callback.SelectCallback;
 import com.goertek.aitutu.di.component.DaggerUserComponent;
+import com.goertek.aitutu.engine.GlideEngine;
 import com.goertek.aitutu.mvp.contract.UserContract;
 import com.goertek.aitutu.mvp.model.entity.FolderBean;
+import com.goertek.aitutu.mvp.model.entity.Photo;
 import com.goertek.aitutu.mvp.model.entity.Student;
 import com.goertek.aitutu.mvp.presenter.UserPresenter;
+import com.goertek.aitutu.util.EasyPhotos;
 import com.goertek.aitutu.util.ImageUtils;
 import com.goertek.arm.base.BaseActivity;
 import com.goertek.arm.base.BaseHolder;
@@ -56,6 +63,8 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
+import static com.yalantis.ucrop.UCropFragment.TAG;
+
 public class UserActivity extends BaseActivity<UserPresenter> implements UserContract.View, SwipeRefreshLayout.OnRefreshListener, BaseHolder.OnViewClickListener {
 
     @BindView(R.id.recyclerView)
@@ -72,6 +81,10 @@ public class UserActivity extends BaseActivity<UserPresenter> implements UserCon
 
     @Inject
     RecyclerView.Adapter mAdapter;
+
+    @BindView(R.id.fab_camera)
+    FloatingActionButton floatingActionButton;
+
 
     @Override
     public void setupActivityComponent(@NonNull AppComponent appComponent) {
@@ -96,6 +109,11 @@ public class UserActivity extends BaseActivity<UserPresenter> implements UserCon
         initRecyclerView();
         mRecyclerView.setAdapter(mAdapter);
         initPaginate();
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+            }
+        });
     }
 
     private void initPaginate() {

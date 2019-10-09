@@ -7,6 +7,13 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:windowAnimationStyle">@style/Animation_Activity</item>
+        <!-- Customize ActionSheet style -->
+        <item name="asWidth">180dp</item>
+        <item name="asTitleColor">@android:color/darker_gray</item>
+        <item name="asDefaultColor">@color/colorPrimary</item>
+        <item name="asDestructiveColor">@color/colorAccent</item>
+        <item name="asTitleTextSize">12sp</item>
+        <item name="asActionTextSize">14sp</item>
     </style>
 
     <style name="Animation_Activity">
@@ -38,6 +45,8 @@
     <style name="anim_photo_select">
         <item name="android:windowEnterAnimation">@anim/folder_push_up_in</item>
         <item name="android:windowExitAnimation">@anim/folder_push_up_out</item>
+    </style>
+    <style name="DefaultTheme.Action" parent="Widget.AppCompat.Button.Borderless.Colored">
     </style>
 
 </resources>

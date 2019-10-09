@@ -1,16 +1,18 @@
 package com.goertek.aitutu.util;
 
 import android.app.Activity;
-import android.app.Fragment;
+import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.view.View;
-
 import com.goertek.aitutu.callback.SelectCallback;
-import com.goertek.aitutu.constant.Type;
+import com.goertek.aitutu.constant.Capture;
+import com.goertek.aitutu.engine.CompressEngine;
 import com.goertek.aitutu.engine.ImageEngine;
 import com.goertek.aitutu.mvp.model.ad.AdListener;
 import com.goertek.aitutu.mvp.model.entity.Photo;
-import com.goertek.aitutu.mvp.ui.activity.EasyPhotosActivity;
+import com.goertek.aitutu.util.result.EasyResult;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -28,19 +30,25 @@ public class AlbumBuilder {
      * ALBUM-相册专辑
      * ALBUM_CAMERA-带有相机按钮的相册专辑
      */
-    private enum StartupType {CAMERA, ALBUM, ALBUM_CAMERA}
+    private enum StartupType {
+        CAMERA, ALBUM, ALBUM_CAMERA
+    }
 
     private static final String TAG = "com.huantansheng.easyphotos";
     private static AlbumBuilder instance;
     private WeakReference<Activity> mActivity;
     private WeakReference<Fragment> mFragmentV;
-    private WeakReference<Fragment> mFragment;
     private StartupType startupType;
     private WeakReference<AdListener> adListener;
 
     //私有构造函数，不允许外部调用，真正实例化通过静态方法实现
-    private AlbumBuilder(Activity activity, StartupType startupType) {
+    private AlbumBuilder(FragmentActivity activity, StartupType startupType) {
         mActivity = new WeakReference<Activity>(activity);
+        this.startupType = startupType;
+    }
+
+    private AlbumBuilder(Fragment fragment, StartupType startupType) {
+        mFragmentV = new WeakReference<Fragment>(fragment);
         this.startupType = startupType;
     }
 
@@ -50,12 +58,18 @@ public class AlbumBuilder {
      * @param activity Activity的实例
      * @return AlbumBuilder EasyPhotos的实例
      */
-
-    private static AlbumBuilder with(Activity activity, StartupType startupType) {
+    private static AlbumBuilder with(FragmentActivity activity, StartupType startupType) {
         clear();
         instance = new AlbumBuilder(activity, startupType);
         return instance;
     }
+
+    private static AlbumBuilder with(Fragment fragmentV, StartupType startupType) {
+        clear();
+        instance = new AlbumBuilder(fragmentV, startupType);
+        return instance;
+    }
+
 
     /**
      * 创建相机
@@ -63,9 +77,12 @@ public class AlbumBuilder {
      * @param activity 上下文
      * @return AlbumBuilder
      */
-
-    public static AlbumBuilder createCamera(Activity activity) {
+    public static AlbumBuilder createCamera(FragmentActivity activity) {
         return AlbumBuilder.with(activity, StartupType.CAMERA);
+    }
+
+    public static AlbumBuilder createCamera(Fragment fragmentV) {
+        return AlbumBuilder.with(fragmentV, StartupType.CAMERA);
     }
 
     /**
@@ -76,8 +93,7 @@ public class AlbumBuilder {
      * @param imageEngine  图片加载引擎的具体实现
      * @return
      */
-    public static AlbumBuilder createAlbum(Activity activity, boolean isShowCamera,
-                                           @NonNull ImageEngine imageEngine) {
+    public static AlbumBuilder createAlbum(FragmentActivity activity, boolean isShowCamera, @NonNull ImageEngine imageEngine) {
         if (Setting.imageEngine != imageEngine) {
             Setting.imageEngine = imageEngine;
         }
@@ -87,15 +103,16 @@ public class AlbumBuilder {
             return AlbumBuilder.with(activity, StartupType.ALBUM);
         }
     }
-    /**
-     * 设置fileProvider字段
-     *
-     * @param fileProviderAuthority fileProvider字段
-     * @return AlbumBuilder
-     */
-    public AlbumBuilder setFileProviderAuthority(String fileProviderAuthority) {
-        Setting.fileProviderAuthority = fileProviderAuthority;
-        return AlbumBuilder.this;
+
+    public static AlbumBuilder createAlbum(Fragment fragmentV, boolean isShowCamera, @NonNull ImageEngine imageEngine) {
+        if (Setting.imageEngine != imageEngine) {
+            Setting.imageEngine = imageEngine;
+        }
+        if (isShowCamera) {
+            return AlbumBuilder.with(fragmentV, StartupType.ALBUM_CAMERA);
+        } else {
+            return AlbumBuilder.with(fragmentV, StartupType.ALBUM);
+        }
     }
 
     /**
@@ -112,22 +129,22 @@ public class AlbumBuilder {
     /**
      * 设置选择图片数(设置此参数后setCount失效)
      *
-     * @param selectorMaxCount 最大选择数
+     * @param pictureCount 图片最大选择数
      * @return AlbumBuilder
      */
-    public AlbumBuilder setPictureCount(int selectorMaxCount) {
-        Setting.pictureCount = selectorMaxCount;
+    public AlbumBuilder setPictureCount(int pictureCount) {
+        Setting.pictureCount = pictureCount;
         return AlbumBuilder.this;
     }
 
     /**
      * 设置选择视频数(设置此参数后setCount失效)
      *
-     * @param selectorMaxCount 最大选择数
+     * @param videoCount 视频最大选择数
      * @return AlbumBuilder
      */
-    public AlbumBuilder setVideoCount(int selectorMaxCount) {
-        Setting.videoCount = selectorMaxCount;
+    public AlbumBuilder setVideoCount(int videoCount) {
+        Setting.videoCount = videoCount;
         return AlbumBuilder.this;
     }
 
@@ -143,13 +160,49 @@ public class AlbumBuilder {
     }
 
     /**
-     * 设置显示照片的最小文件大小
+     * 设置显示的最小文件大小
      *
      * @param minFileSize 最小文件大小，单位Bytes
      * @return AlbumBuilder
      */
     public AlbumBuilder setMinFileSize(long minFileSize) {
         Setting.minSize = minFileSize;
+        return AlbumBuilder.this;
+    }
+
+    /**
+     * 设置显示的最大文件大小
+     *
+     * @param maxFileSize 最小文件大小，单位Bytes
+     * @return AlbumBuilder
+     */
+    public AlbumBuilder setMaxFileSize(long maxFileSize) {
+        Setting.maxSize = maxFileSize;
+        return AlbumBuilder.this;
+    }
+
+    /**
+     * 设置图片和视频选择是否相互排斥
+     *
+     * @param exclusion 默认false
+     * @return AlbumBuilder
+     */
+    public AlbumBuilder setSelectMutualExclusion(boolean exclusion) {
+        Setting.selectMutualExclusion = exclusion;
+        return AlbumBuilder.this;
+    }
+
+    /**
+     * 设置图片和视频选择是否相互排斥
+     * 右上角按钮区分显示 如：设置可选7张图片和2个视频 当选中图片的时候显示 n/7 选中视频时显示 n/2
+     *
+     * @param exclusion   默认false
+     * @param distinguish 默认true
+     * @return AlbumBuilder
+     */
+    public AlbumBuilder setSelectMutualExclusion(boolean exclusion, boolean distinguish) {
+        Setting.selectMutualExclusion = exclusion;
+        Setting.distinguishCount = distinguish;
         return AlbumBuilder.this;
     }
 
@@ -198,6 +251,9 @@ public class AlbumBuilder {
      * @return AlbumBuilder
      */
     public AlbumBuilder setSelectedPhotoPaths(ArrayList<String> selectedPhotoPaths) {
+        if (selectedPhotoPaths.isEmpty()) {
+            return AlbumBuilder.this;
+        }
         Setting.selectedPhotos.clear();
         ArrayList<Photo> selectedPhotos = new ArrayList<>();
         for (String path : selectedPhotoPaths) {
@@ -225,6 +281,39 @@ public class AlbumBuilder {
         return AlbumBuilder.this;
     }
 
+    /**
+     * 设置是否压缩
+     *
+     * @param isCompress 是否压缩
+     * @return AlbumBuilder
+     */
+    public AlbumBuilder isCompress(boolean isCompress) {
+        Setting.isCompress = isCompress;
+        return AlbumBuilder.this;
+    }
+
+    /**
+     * 设置压缩引擎
+     *
+     * @param compressEngine 压缩引擎
+     * @return AlbumBuilder
+     */
+    public AlbumBuilder setCompressEngine(CompressEngine compressEngine) {
+        Setting.compressEngine = compressEngine;
+        return AlbumBuilder.this;
+    }
+
+
+    /**
+     * 设置单选选中返回（无选中ui效果，仅单选有效）
+     *
+     * @param enable 选中返回 默认false
+     * @return
+     */
+    public AlbumBuilder enableSingleCheckedBack(boolean enable) {
+        Setting.singleCheckedBack = enable;
+        return AlbumBuilder.this;
+    }
 
     /**
      * 是否显示拼图按钮
@@ -238,20 +327,10 @@ public class AlbumBuilder {
     }
 
     /**
-     * 只显示Video
+     * 过滤类型
      *
-     * @return @return AlbumBuilder
-     */
-
-    public AlbumBuilder onlyVideo() {
-        return filter(Type.VIDEO);
-    }
-
-    /**
-     * 过滤
-     *
-     * @param types {@link Type}
-     * @return @return AlbumBuilder
+     * @param types {@link} 默认只有图片Type.image()
+     * @return AlbumBuilder
      */
     public AlbumBuilder filter(String... types) {
         Setting.filterTypes = Arrays.asList(types);
@@ -262,7 +341,7 @@ public class AlbumBuilder {
      * 是否显示gif图
      *
      * @param shouldShow 是否显示
-     * @return @return AlbumBuilder
+     * @return AlbumBuilder
      */
     public AlbumBuilder setGif(boolean shouldShow) {
         Setting.showGif = shouldShow;
@@ -270,21 +349,158 @@ public class AlbumBuilder {
     }
 
     /**
-     * 是否显示video
+     * 是否使用系统相机
      *
-     * @param shouldShow 是否显示
-     * @return @return AlbumBuilder
+     * @param bool 是否使用 默认：不使用（false）
+     * @return AlbumBuilder
      */
-    public AlbumBuilder setVideo(boolean shouldShow) {
-        Setting.showVideo = shouldShow;
+    public AlbumBuilder enableSystemCamera(boolean bool) {
+        Setting.useSystemCamera = bool;
         return AlbumBuilder.this;
     }
+
+    /**
+     * 设置相机功能
+     *
+     * @param capture 相机功能 默认Capture.ALL
+     * @return AlbumBuilder
+     */
+    public AlbumBuilder setCapture(String capture) {
+        Setting.captureType = capture;
+        return AlbumBuilder.this;
+    }
+
+    /**
+     * 设置相机录像时间
+     *
+     * @param duration 单位ms 默认15000ms
+     * @return AlbumBuilder
+     */
+    public AlbumBuilder setRecordDuration(int duration) {
+        Setting.recordDuration = duration;
+        return AlbumBuilder.this;
+    }
+
+    /**
+     * 设置相机顶层覆盖View
+     *
+     * @param coverView 默认null
+     * @return AlbumBuilder
+     */
+    public AlbumBuilder setCameraCoverView(View coverView) {
+        Setting.cameraCoverView = new WeakReference<View>(coverView);
+        return AlbumBuilder.this;
+    }
+
+    /**
+     * 是否显示相机提示文字
+     *
+     * @param enable 默认true
+     * @return AlbumBuilder
+     */
+    public AlbumBuilder enableCameraTips(boolean enable) {
+        Setting.enableCameraTip = enable;
+        return AlbumBuilder.this;
+    }
+
+    /**
+     * 是否裁切(仅单选结果有效)
+     *
+     * @param isCrop 默认否
+     * @return AlbumBuilder
+     */
+    public AlbumBuilder isCrop(boolean isCrop) {
+        Setting.isCrop = isCrop;
+        return AlbumBuilder.this;
+    }
+
+    /**
+     * 设置裁剪质量
+     *
+     * @param quality 裁剪质量 默认90
+     * @return AlbumBuilder
+     */
+    public AlbumBuilder setCompressionQuality(@IntRange(from = 0) int quality) {
+        Setting.compressQuality = quality;
+        return AlbumBuilder.this;
+    }
+
+    /**
+     * 是否圆形裁剪
+     *
+     * @param isCircle 默认否
+     * @return AlbumBuilder
+     */
+    public AlbumBuilder setCircleDimmedLayer(boolean isCircle) {
+        Setting.isCircle = isCircle;
+        return AlbumBuilder.this;
+    }
+
+    /**
+     * 是否显示裁剪框
+     *
+     * @param isShowCropCropFrame 默认是
+     * @return AlbumBuilder
+     */
+    public AlbumBuilder setShowCropFrame(boolean isShowCropCropFrame) {
+        Setting.isShowCropCropFrame = isShowCropCropFrame;
+        return AlbumBuilder.this;
+    }
+
+    /**
+     * 是否显示裁剪网格
+     *
+     * @param isShowCropGrid 默认是
+     * @return AlbumBuilder
+     */
+    public AlbumBuilder setShowCropGrid(boolean isShowCropGrid) {
+        Setting.isShowCropGrid = isShowCropGrid;
+        return AlbumBuilder.this;
+    }
+
+    /**
+     * 是否自由裁剪
+     *
+     * @param isFreeStyleCrop 默认否
+     * @return AlbumBuilder
+     */
+    public AlbumBuilder setFreeStyleCropEnabled(boolean isFreeStyleCrop) {
+        Setting.isFreeStyleCrop = isFreeStyleCrop;
+        return AlbumBuilder.this;
+    }
+
+    /**
+     * 是否显示UCrop底部控制
+     *
+     * @param isHideUCropControls 默认是
+     * @return AlbumBuilder
+     */
+    public AlbumBuilder setHideBottomControls(boolean isHideUCropControls) {
+        Setting.isHideUCropControls = isHideUCropControls;
+        return AlbumBuilder.this;
+    }
+
+    /**
+     * 设置裁剪比例
+     *
+     * @param aspectRatioX 默认1
+     * @param aspectRatioY 默认1
+     * @return AlbumBuilder
+     */
+    public AlbumBuilder setAspectRatio(float aspectRatioX, float aspectRatioY) {
+        float[] ar = new float[2];
+        ar[0] = aspectRatioX;
+        ar[1] = aspectRatioY;
+        Setting.aspectRatio = ar;
+        return AlbumBuilder.this;
+    }
+
 
     /**
      * 显示最少多少秒的视频
      *
      * @param second 秒
-     * @return @return AlbumBuilder
+     * @return AlbumBuilder
      */
     public AlbumBuilder setVideoMinSecond(int second) {
         Setting.videoMinSecond = second * 1000;
@@ -295,7 +511,7 @@ public class AlbumBuilder {
      * 显示最多多少秒的视频
      *
      * @param second 秒
-     * @return @return AlbumBuilder
+     * @return AlbumBuilder
      */
     public AlbumBuilder setVideoMaxSecond(int second) {
         Setting.videoMaxSecond = second * 1000;
@@ -321,55 +537,54 @@ public class AlbumBuilder {
                 break;
             case ALBUM:
                 Setting.isShowCamera = false;
+                Setting.captureType = Capture.IMAGE;
                 break;
             case ALBUM_CAMERA:
                 Setting.isShowCamera = true;
+                if (Setting.isOnlyVideo()) {
+                    Setting.isShowCamera = !Setting.useSystemCamera;
+                    Setting.captureType = Capture.VIDEO;
+                    setPuzzleMenu(false);
+                    Setting.isCrop = false;
+                }
+                if (Setting.isOnlyImage()) {
+                    Setting.captureType = Capture.IMAGE;
+                }
                 break;
-        }
-        if (!Setting.filterTypes.isEmpty()) {
-            if (Setting.isFilter(Type.GIF)) {
-                Setting.showGif = true;
-            }
-            if (Setting.isFilter(Type.VIDEO)) {
-                Setting.showVideo = true;
-            }
-        }
-        if (Setting.isOnlyVideo()) {
-            //只选择视频 暂不支持拍照/拼图等
-            Setting.isShowCamera = false;
-            Setting.showPuzzleMenu = false;
-            Setting.showGif = false;
-            Setting.showVideo = true;
+            default:
+                break;
         }
         if (Setting.pictureCount != -1 || Setting.videoCount != -1) {
             Setting.count = Setting.pictureCount + Setting.videoCount;
+        }
+        if (Setting.isOnlyGif()) {
+            Setting.isShowCamera = false;
+            setPuzzleMenu(false);
+            Setting.isCrop = false;
+        }
+        if (Setting.count > 1) {
+            Setting.isCrop = false;
+            Setting.singleCheckedBack = false;
         }
     }
 
     /**
      * 设置启动属性
      *
-     * @param requestCode startActivityForResult的请求码
+     * @param callback SelectCallback 选择回调
      */
-
-    public void start(int requestCode) {
+    public void start(SelectCallback callback) {
         setSettingParams();
-        launchEasyPhotosActivity(requestCode);
-    }
-
-    /**
-     * 正式启动
-     *
-     * @param requestCode startActivityForResult的请求码
-     */
-    private void launchEasyPhotosActivity(int requestCode) {
-        if (null != mActivity && null != mActivity.get()) {
-            EasyPhotosActivity.start(mActivity.get(), requestCode);
+        if (null != mActivity && null != mActivity.get() && mActivity.get() instanceof FragmentActivity) {
+            EasyResult.get((FragmentActivity) mActivity.get()).startEasyPhoto(callback);
             return;
         }
-
+        if (null != mFragmentV && null != mFragmentV.get()) {
+            EasyResult.get(mFragmentV.get()).startEasyPhoto(callback);
+            return;
+        }
+        throw new RuntimeException("mActivity or mFragmentV maybe null, you can not use this method... ");
     }
-
 
     /**
      * 清除所有数据
@@ -391,8 +606,7 @@ public class AlbumBuilder {
      * @param albumItemsAdIsLoaded 专辑项目列表广告是否加载完毕
      * @return AlbumBuilder
      */
-    public AlbumBuilder setAdView(View photosAdView, boolean photosAdIsLoaded,
-                                  View albumItemsAdView, boolean albumItemsAdIsLoaded) {
+    public AlbumBuilder setAdView(View photosAdView, boolean photosAdIsLoaded, View albumItemsAdView, boolean albumItemsAdIsLoaded) {
         Setting.photosAdView = new WeakReference<View>(photosAdView);
         Setting.albumItemsAdView = new WeakReference<View>(albumItemsAdView);
         Setting.photoAdIsOk = photosAdIsLoaded;
@@ -443,7 +657,8 @@ public class AlbumBuilder {
             return;
         }
         Setting.photoAdIsOk = true;
-        instance.adListener.get().onPhotosAdLoaded();
+        if (instance.adListener.get() != null)
+            instance.adListener.get().onPhotosAdLoaded();
     }
 
     /**
@@ -477,7 +692,8 @@ public class AlbumBuilder {
             return;
         }
         Setting.albumItemsAdIsOk = true;
-        instance.adListener.get().onAlbumItemsAdLoaded();
+        if (instance.adListener.get() != null)
+            instance.adListener.get().onAlbumItemsAdLoaded();
     }
 
 }

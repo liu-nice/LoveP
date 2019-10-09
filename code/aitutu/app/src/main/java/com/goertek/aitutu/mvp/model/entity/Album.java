@@ -17,14 +17,19 @@ public class Album {
         hasAlbumItems = new LinkedHashMap<>();
     }
 
-    private void addAlbumItem(AlbumItem albumItem) {
-        this.hasAlbumItems.put(albumItem.name, albumItem);
-        this.albumItems.add(albumItem);
-    }
-
     public void addAlbumItem(String name, String folderPath, String coverImagePath) {
         if (null == hasAlbumItems.get(name)) {
-            addAlbumItem(new AlbumItem(name, folderPath, coverImagePath));
+            AlbumItem albumItem = new AlbumItem(name, folderPath, coverImagePath);
+            this.hasAlbumItems.put(albumItem.name, albumItem);
+            this.albumItems.add(albumItem);
+        }
+    }
+
+    public void addAlbumItem(String name, String folderPath, String coverImagePath, int index) {
+        if (null == hasAlbumItems.get(name)) {
+            AlbumItem albumItem = new AlbumItem(name, folderPath, coverImagePath);
+            this.hasAlbumItems.put(albumItem.name, albumItem);
+            this.albumItems.add(index, albumItem);
         }
     }
 

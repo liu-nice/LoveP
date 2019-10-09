@@ -37,8 +37,6 @@ public class PhotosAdapter extends RecyclerView.Adapter {
     private boolean unable, isSingle;
     private int singlePosition;
 
-    private boolean clearAd = false;
-
 
     public PhotosAdapter(Context cxt, ArrayList<Object> dataList, OnClickListener listener) {
         this.dataList = dataList;
@@ -72,7 +70,8 @@ public class PhotosAdapter extends RecyclerView.Adapter {
         if (holder instanceof PhotoViewHolder) {
             final Photo item = (Photo) dataList.get(p);
             if (item == null) return;
-            updateSelector(((PhotoViewHolder) holder).tvSelector, item.selected, item, p);
+            boolean isSelected = Result.isSelected(item);
+            updateSelector(((PhotoViewHolder) holder).tvSelector, isSelected, item, p);
             String path = item.path;
             String type = item.type;
             long duration = item.duration;
@@ -81,7 +80,7 @@ public class PhotosAdapter extends RecyclerView.Adapter {
                 Setting.imageEngine.loadGifAsBitmap(((PhotoViewHolder) holder).ivPhoto.getContext(), path, ((PhotoViewHolder) holder).ivPhoto);
                 ((PhotoViewHolder) holder).tvType.setText(R.string.gif_easy_photos);
                 ((PhotoViewHolder) holder).tvType.setVisibility(View.VISIBLE);
-            } else if (Setting.showVideo && type.contains(Type.VIDEO)) {
+            } else if (Setting.showVideo() && type.contains(Type.VIDEO)) {
                 Setting.imageEngine.loadPhoto(((PhotoViewHolder) holder).ivPhoto.getContext(), path, ((PhotoViewHolder) holder).ivPhoto);
                 ((PhotoViewHolder) holder).tvType.setText(DurationUtils.format(duration));
                 ((PhotoViewHolder) holder).tvType.setVisibility(View.VISIBLE);
@@ -90,19 +89,28 @@ public class PhotosAdapter extends RecyclerView.Adapter {
                 ((PhotoViewHolder) holder).tvType.setVisibility(View.GONE);
             }
 
-            ((PhotoViewHolder) holder).vSelector.setVisibility(View.VISIBLE);
-            ((PhotoViewHolder) holder).tvSelector.setVisibility(View.VISIBLE);
+            if (Setting.singleCheckedBack) {
+                ((PhotoViewHolder) holder).vSelector.setVisibility(View.GONE);
+                ((PhotoViewHolder) holder).tvSelector.setVisibility(View.GONE);
+            } else {
+                ((PhotoViewHolder) holder).vSelector.setVisibility(View.VISIBLE);
+                ((PhotoViewHolder) holder).tvSelector.setVisibility(View.VISIBLE);
+            }
             ((PhotoViewHolder) holder).ivPhoto.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    int realPosition = p;
-                    if (Setting.hasPhotosAd()) {
-                        realPosition--;
+                    if (Setting.singleCheckedBack) {
+                        ((PhotoViewHolder) holder).vSelector.performClick();
+                    } else {
+                        int realPosition = p;
+                        if (Setting.hasPhotosAd()) {
+                            realPosition--;
+                        }
+                        if (Setting.isShowCamera && !Setting.isBottomRightCamera()) {
+                            realPosition--;
+                        }
+                        listener.onPhotoClick(p, realPosition);
                     }
-                    if (Setting.isShowCamera && !Setting.isBottomRightCamera()) {
-                        realPosition--;
-                    }
-                    listener.onPhotoClick(p, realPosition);
                 }
             });
 
@@ -114,8 +122,9 @@ public class PhotosAdapter extends RecyclerView.Adapter {
                         singleSelector(item, p);
                         return;
                     }
+                    boolean isSelected = Result.isSelected(item);
                     if (unable) {
-                        if (item.selected) {
+                        if (isSelected) {
                             Result.removePhoto(item);
                             if (unable) {
                                 unable = false;
@@ -124,15 +133,13 @@ public class PhotosAdapter extends RecyclerView.Adapter {
                             notifyDataSetChanged();
                             return;
                         }
-                        listener.onSelectorOutOfMax(null);
+                        listener.onSelectError(null);
                         return;
                     }
-                    item.selected = !item.selected;
-                    if (item.selected) {
+                    if (!isSelected) {
                         int res = Result.addPhoto(item);
                         if (res != 0) {
-                            listener.onSelectorOutOfMax(res);
-                            item.selected = false;
+                            listener.onSelectError(res);
                             return;
                         }
                         ((PhotoViewHolder) holder).tvSelector.setBackgroundResource(R.drawable.bg_select_true_easy_photos);
@@ -155,11 +162,6 @@ public class PhotosAdapter extends RecyclerView.Adapter {
         }
 
         if (holder instanceof AdViewHolder) {
-            if (clearAd) {
-                ((AdViewHolder) holder).adFrame.removeAllViews();
-                ((AdViewHolder) holder).adFrame.setVisibility(View.GONE);
-                return;
-            }
             if (!Setting.photoAdIsOk) {
                 ((AdViewHolder) holder).adFrame.setVisibility(View.GONE);
                 return;
@@ -192,14 +194,9 @@ public class PhotosAdapter extends RecyclerView.Adapter {
         }
     }
 
-    public void clearAd() {
-        clearAd = true;
-        notifyDataSetChanged();
-    }
-
     private void singleSelector(Photo photo, int position) {
         if (!Result.isEmpty()) {
-            if (Result.getPhotoPath(0).equals(photo.path)) {
+            if (Result.getPhotoPath(0).equals(photo.path) && !Setting.singleCheckedBack) {
                 Result.removePhoto(photo);
                 notifyItemChanged(position);
             } else {
@@ -267,7 +264,7 @@ public class PhotosAdapter extends RecyclerView.Adapter {
 
         void onPhotoClick(int position, int realPosition);
 
-        void onSelectorOutOfMax(@Nullable Integer result);
+        void onSelectError(@Nullable Integer result);
 
         void onSelectorChanged();
     }

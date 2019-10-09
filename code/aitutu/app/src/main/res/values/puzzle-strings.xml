@@ -19,6 +19,10 @@
 
     <string name="selector_reach_max_video_hint_easy_photos">最多只能选择%d个视频</string>
 
+    <string name="selector_mutual_exclusion_easy_photos">不能同时选择图片或视频</string>
+
+    <string name="msg_no_file_easy_photos">文件不存在或损坏！</string>
+
     <string name="msg_no_camera_easy_photos">无法启动相机！</string>
 
     <string name="camera_temp_file_error_easy_photos">图片错误</string>
@@ -68,6 +72,18 @@
     <string name="gif_easy_photos">动图</string>
 
     <string name="video_easy_photos">视频</string>
+
+    <string name="tap_take_photo">轻触拍照</string>
+
+    <string name="long_press_camera">长按摄像</string>
+
+    <string name="tap_take_photo_long_press_camera_split">，</string>
+
+    <string name="recording_too_short">录制时间过短</string>
+
+    <string name="missing_audio_permission">没有录音权限</string>
+
+    <string name="compressing_picture">压缩中…</string>
 
 
 </resources>

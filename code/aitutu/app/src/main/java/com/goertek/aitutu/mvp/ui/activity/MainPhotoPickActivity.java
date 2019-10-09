@@ -11,11 +11,14 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.RecyclerView;
@@ -33,20 +36,28 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.goertek.aitutu.R;
+import com.goertek.aitutu.callback.PuzzleCallback;
+import com.goertek.aitutu.callback.SelectCallback;
 import com.goertek.aitutu.camera.MainActivity;
 import com.goertek.aitutu.di.component.DaggerPhotoPickComponent;
+import com.goertek.aitutu.engine.GlideEngine;
 import com.goertek.aitutu.mvp.contract.PhotoPickContract;
 import com.goertek.aitutu.mvp.model.entity.FolderInfo;
 import com.goertek.aitutu.mvp.model.entity.ImageInfo;
+import com.goertek.aitutu.mvp.model.entity.Photo;
 import com.goertek.aitutu.mvp.presenter.PhotoPickPresenter;
 import com.goertek.aitutu.mvp.ui.adapter.FolderAdapter;
 import com.goertek.aitutu.mvp.ui.adapter.PhotoPickAdapter;
+import com.goertek.aitutu.mvp.ui.custom.actionsheet.ActionSheet;
+import com.goertek.aitutu.mvp.ui.custom.actionsheet.OnActionListener;
+import com.goertek.aitutu.util.EasyPhotos;
 import com.goertek.aitutu.util.PhotoPickUtil;
 import com.goertek.aitutu.util.ToastUtils;
 import com.goertek.arm.base.BaseActivity;
 import com.goertek.arm.di.component.AppComponent;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -112,6 +123,9 @@ public class MainPhotoPickActivity extends BaseActivity<PhotoPickPresenter>
 
     @BindView(R.id.open_camara)
     CircleImageView openCamara;
+
+    @BindView(R.id.floating_btn)
+    FloatingActionButton floatingActionButton;
 
     @Inject
     RxPermissions mRxPermissions;
@@ -254,7 +268,11 @@ public class MainPhotoPickActivity extends BaseActivity<PhotoPickPresenter>
         toolbar.setTitleTextColor(Color.WHITE);
         toolbar.setNavigationIcon(R.drawable.icon_back);
         toolbar.setNavigationOnClickListener(view -> onBackPressed());
+        floatingActionButton.setOnClickListener(view -> {
+            showActionSheet(view);
+        });
     }
+
 
     private void customToolBarStyle() {
         MenuItem item = mToolbar.getMenu().findItem(R.id.photo_pick_menu);
@@ -369,4 +387,45 @@ public class MainPhotoPickActivity extends BaseActivity<PhotoPickPresenter>
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
     }
+
+
+    private void showActionSheet(View anchor) {
+        ActionSheet actionSheet = new ActionSheet(this);
+        actionSheet.setTitle("请选择图片");
+        actionSheet.setSourceView(anchor);
+        actionSheet.addAction("拼图", ActionSheet.Style.DEFAULT, new OnActionListener() {
+            @Override public void onSelected(ActionSheet actionSheet, String title) {
+                actionSheet.dismiss();
+                EasyPhotos.createAlbum(MainPhotoPickActivity.this, false, GlideEngine.getInstance())
+                        .setCount(9)
+                        .setPuzzleMenu(false)
+                        .start(new SelectCallback() {
+                            @Override
+                            public void onResult(ArrayList<Photo> photos, ArrayList<String> paths, boolean isOriginal) {
+                                EasyPhotos.startPuzzleWithPhotos(MainPhotoPickActivity.this, photos, Environment.getExternalStorageDirectory().getAbsolutePath(), "AlbumBuilder", false, GlideEngine.getInstance(), new PuzzleCallback() {
+                                    @Override
+                                    public void onResult(Photo photo, String path) {
+
+                                    }
+                                });
+                            }
+                        });
+
+            }
+        });
+        actionSheet.addAction("打开相机", ActionSheet.Style.DEFAULT, new OnActionListener() {
+            @Override public void onSelected(ActionSheet actionSheet, String title) {
+                actionSheet.dismiss();
+            }
+        });
+
+        actionSheet.addAction("打开相册", ActionSheet.Style.DESTRUCTIVE, new OnActionListener() {
+            @Override public void onSelected(ActionSheet actionSheet, String title) {
+                actionSheet.dismiss();
+            }
+        });
+
+        actionSheet.show();
+    }
+
 }
