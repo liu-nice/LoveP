@@ -1,3 +1,6 @@
+/*
+ * Copyright  2016 - Goertek- All rights reserved.
+ */
 package com.goertek.aitutu.camera.filter;
 
 import android.content.Context;
@@ -10,9 +13,12 @@ import com.goertek.aitutu.R;
 import com.goertek.aitutu.camera.face.Face;
 import com.goertek.aitutu.camera.util.OpenGLUtils;
 
-
 /**
- * 贴纸滤镜
+ * describition :贴纸滤镜
+ *
+ * @author ;falzy.ning
+ * @version :1.0.0
+ * @since : 2019/10/9 14:51
  */
 public class StickFilter extends AbstractFrameFilter {
 
@@ -34,14 +40,14 @@ public class StickFilter extends AbstractFrameFilter {
         mTextureId = new int[1];
         OpenGLUtils.glGenTextures(mTextureId);
         //表示后续的操作 就是作用于这个纹理上
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D,mTextureId[0]);
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureId[0]);
         // 将 Bitmap与纹理id 绑定起来
-        GLUtils.texImage2D(GLES20.GL_TEXTURE_2D,0,mBitmap,0);
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D,0);
+        GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, mBitmap, 0);
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
     }
 
 
-    public void setFace(Face face){
+    public void setFace(Face face) {
         mFace = face;
     }
 
@@ -108,8 +114,8 @@ public class StickFilter extends AbstractFrameFilter {
         x = x / mFace.imgWidth * mOutputWidth;
         y = y / mFace.imgHeight * mOutputHeight;
         // mFace.width： 人脸的宽
-        GLES20.glViewport((int)x, (int)y- mBitmap.getHeight()/2,
-                (int) ((float)mFace.width /mFace.imgWidth * mOutputWidth),
+        GLES20.glViewport((int)x, (int)y - mBitmap.getHeight() / 2,
+                (int) ((float) mFace.width / mFace.imgWidth * mOutputWidth),
                 mBitmap.getHeight());
 
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, mFrameBuffers[0]);

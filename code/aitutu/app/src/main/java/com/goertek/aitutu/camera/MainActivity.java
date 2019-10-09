@@ -1,105 +1,65 @@
+/*
+ * Copyright  2016 - Goertek- All rights reserved.
+ */
 package com.goertek.aitutu.camera;
 
 import android.Manifest;
-import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
-import android.hardware.Camera;
-import android.net.Uri;
-import android.opengl.EGL14;
-import android.opengl.EGLContext;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.os.HandlerThread;
 import android.os.Looper;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.AppCompatTextView;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.Toast;
 
 import com.goertek.aitutu.R;
-import com.goertek.aitutu.camera.record.EGLBase;
+import com.goertek.aitutu.camera.util.BitmapUtils;
 import com.goertek.aitutu.camera.util.CameraParam;
 import com.goertek.aitutu.camera.util.FileUtil;
 import com.goertek.aitutu.camera.widget.CameraGLSurfaceView;
 import com.goertek.aitutu.camera.widget.CameraRenderer;
-import com.goertek.aitutu.util.BitmapUtils;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.nio.ByteBuffer;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
 import pub.devrel.easypermissions.EasyPermissions;
 import timber.log.Timber;
 
+/**
+ * describition :相机主类
+ *
+ * @author ;falzy.ning
+ * @version :1.0.0
+ * @since : 2019/10/9 14:51
+ */
 public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks {
+    //相机权限回调码
+    private static final int PERMISSION_CAMERA = 0;
 
-    @BindView(R.id.camera_glsurfaceview)
+    //glview实例
+    @BindView(value = R.id.camera_glsurfaceview)
     public CameraGLSurfaceView mCameraGLSurfaceView;
 
-    @BindView(R.id.btn_takepic)
-    public AppCompatTextView mTakePicture;
-
-    private static final int PERMISSION_CAMERA = 0;
+    //消息发送类
     private Handler mHandler;
-    private EGLBase mEglBase;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        checkPermission();
-        setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
-        mHandler =new Handler(Looper.getMainLooper());
-        ((CheckBox) findViewById(R.id.beauty)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                mCameraGLSurfaceView.enableBeauty(isChecked);
-            }
-        });
+    //拍照保存的bitmap
+    private Bitmap mBitMap;
 
-        ((CheckBox) findViewById(R.id.bigEye)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                mCameraGLSurfaceView.enableBigEye(isChecked);
-            }
-        });
-        ((CheckBox) findViewById(R.id.stick)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                mCameraGLSurfaceView.enableStick(isChecked);
-            }
-        });
-        mCameraGLSurfaceView.getCameraRenderer().setCaptureCallback(mCaptureCallback);
-    }
+    //保存照片的包路径
+    private String path;
 
-    @OnClick(R.id.btn_takepic)
-    void onBindClick(View view) {
-        switch (view.getId()) {
-            case R.id.btn_takepic:
-                CameraParam.getInstance().isTakePicture = true;
-                Toast.makeText(MainActivity.this, "takepicture", Toast.LENGTH_SHORT).show();
-                mCameraGLSurfaceView.requestRender();
-//                Camera mCamera = mCameraGLSurfaceView.getCamera();
-//                mCamera.takePicture(null, null, (data, camera) -> takePicture(data));
-                break;
-            default:
-                break;
-        }
-    }
+    //照片名字
+    private String picName;
 
     /**
      * 截屏回调
@@ -107,23 +67,62 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     private CameraRenderer.CaptureCallback mCaptureCallback = new CameraRenderer.CaptureCallback() {
         @Override
         public void onCapture(final ByteBuffer buffer, final int width, final int height) {
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(MainActivity.this, "save picture", Toast.LENGTH_SHORT).show();
-                    path = Environment.getExternalStorageDirectory() + File.separator + Environment.DIRECTORY_DCIM
-                            + File.separator + "IMG" + File.separator;
-                    File dir = new File(path);
-                    if (!dir.exists()) {
-                        dir.mkdirs();// 创建文件夹
-                    }
-                    picName = FileUtil.getCurrentPicName();
-                    String filePath = path + picName;
-                    BitmapUtils.saveBitmap(filePath, buffer, width, height);
+            mHandler.post(() -> {
+                Toast.makeText(MainActivity.this, "save picture", Toast.LENGTH_SHORT).show();
+                path = Environment.getExternalStorageDirectory() + File.separator + Environment.DIRECTORY_DCIM
+                        + File.separator + "IMG" + File.separator;
+                File dir = new File(path);
+                if (!dir.exists()) {
+                    boolean mk = dir.mkdirs();
+                    Timber.i("创建文件%s", String.valueOf(mk));
                 }
+                picName = FileUtil.getCurrentPicName();
+                String filePath = path + picName;
+                BitmapUtils.saveBitmap(MainActivity.this, filePath, buffer, width, height);
             });
         }
     };
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        checkPermission();
+        setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
+        mHandler = new Handler(Looper.getMainLooper());
+        mCameraGLSurfaceView.getCameraRenderer().setCaptureCallback(mCaptureCallback);
+    }
+
+    @OnCheckedChanged(value = {R.id.beauty, R.id.bigEye, R.id.stick})
+    void onBindCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        switch (buttonView.getId()) {
+            case R.id.beauty:
+                mCameraGLSurfaceView.enableBeauty(isChecked);
+                break;
+            case R.id.bigEye:
+                mCameraGLSurfaceView.enableBigEye(isChecked);
+                break;
+            case R.id.stick:
+                mCameraGLSurfaceView.enableStick(isChecked);
+                break;
+            default:
+                break;
+        }
+    }
+
+    @OnClick(value = R.id.btn_takepic)
+    void onBindClick(View view) {
+        switch (view.getId()) {
+            case R.id.btn_takepic:
+                CameraParam.getInstance().isTakePicture = true;
+                Toast.makeText(MainActivity.this, "takepicture", Toast.LENGTH_SHORT).show();
+                Timber.i("takepicture");
+                mCameraGLSurfaceView.requestRender();
+                break;
+            default:
+                break;
+        }
+    }
 
 
     @Override
@@ -139,7 +138,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
      */
     private void checkPermission() {
         String[] perms = {Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE};
+            Manifest.permission.WRITE_EXTERNAL_STORAGE};
         if (!EasyPermissions.hasPermissions(this, perms)) {
             EasyPermissions.requestPermissions(this, "申请相机权限和读写SD卡权限", PERMISSION_CAMERA, perms);
         }
@@ -184,56 +183,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 Timber.i("onPermissionsDenied: " + "写SD权限拒绝");
             }
         }
-    }
-
-    private Bitmap mBitMap;
-    private String path, picName;
-
-    public void takePicture(byte[] data) {
-        Toast.makeText(MainActivity.this, data.length + "", Toast.LENGTH_SHORT).show();
-        mBitMap = BitmapFactory.decodeByteArray(data, 0, data.length);
-        Bitmap bMapRotate;
-        Matrix matrix = new Matrix();
-        matrix.reset();
-//        matrix.postRotate(90);
-        bMapRotate = Bitmap.createBitmap(mBitMap, 0, 0, mBitMap.getWidth(),
-                mBitMap.getHeight(), matrix, true);
-        mBitMap = bMapRotate;
-        savePic();
-    }
-
-    private void savePic() {
-        Thread thread = new Thread(() -> {
-            try {
-                path = Environment.getExternalStorageDirectory() + File.separator + Environment.DIRECTORY_DCIM
-                        + File.separator + "IMG" + File.separator;
-                File dir = new File(path);
-                if (!dir.exists()) {
-                    dir.mkdirs();// 创建文件夹
-                }
-                picName = FileUtil.getCurrentPicName();
-                String fileName = path + picName;
-                File file = new File(fileName);
-                BufferedOutputStream bos =
-                        new BufferedOutputStream(new FileOutputStream(file));
-                mBitMap.compress(Bitmap.CompressFormat.JPEG, 100, bos);//将图片压缩到流中
-                bos.flush();//输出
-                bos.close();//关闭
-                //通知相册更新
-                MediaStore.Images.Media.insertImage(getContentResolver(),
-                        mBitMap, fileName, null);
-                Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-                Uri uri = Uri.fromFile(file);
-                intent.setData(uri);
-                sendBroadcast(intent);
-                Toast.makeText(MainActivity.this, "save pic", Toast.LENGTH_SHORT).show();
-            } catch (Exception e) {
-                Timber.e(e.getMessage().toString());
-            }
-//                handler.sendEmptyMessage(SUCCESS);
-        });
-        // 启动存储照片的线程
-        thread.start();
     }
 
     @Override

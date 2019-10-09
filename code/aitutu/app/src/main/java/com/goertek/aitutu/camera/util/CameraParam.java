@@ -1,7 +1,6 @@
 /*
  * Copyright  2016 - Goertek- All rights reserved.
  */
-
 package com.goertek.aitutu.camera.util;
 
 /**
@@ -14,7 +13,7 @@ package com.goertek.aitutu.camera.util;
 public final class CameraParam {
     // 是否拍照
     public boolean isTakePicture;
-
+    //当前实例
     private static final CameraParam mInstance = new CameraParam();
     /**
      * 获取相机配置参数

@@ -1,3 +1,6 @@
+/*
+ * Copyright  2016 - Goertek- All rights reserved.
+ */
 package com.goertek.aitutu.camera.util;
 
 import android.content.Context;
@@ -10,13 +13,21 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+/**
+ * describition : OpenGL工具类
+ *
+ * @author ;falzy.ning
+ * @version :1.0.0
+ * @since : 2019/9/29 15:10
+ */
 public class OpenGLUtils {
-
 
     /**
      * 创建纹理并配置
+     *
+     * @param textures 纹理id
      */
-    public static void glGenTextures(int[] textures){
+    public static void glGenTextures(int[] textures) {
         //创建
         GLES20.glGenTextures(textures.length, textures, 0);
         //配置
@@ -24,7 +35,7 @@ public class OpenGLUtils {
             // opengl的操作 面向过程的操作
             //bind 就是绑定 ，表示后续的操作就是在这一个 纹理上进行
             // 后面的代码配置纹理，就是配置bind的这个纹理
-            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D,textures[i]);
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textures[i]);
             /**
              * 过滤参数
              *  当纹理被使用到一个比他大 或者比他小的形状上的时候 该如何处理
@@ -46,11 +57,17 @@ public class OpenGLUtils {
             GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_REPEAT);
 
             //解绑
-            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D,0);
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
         }
     }
 
-
+    /**
+     * 读取raw文件
+     *
+     * @param context 上下文
+     * @param rawId   raw文件id
+     * @return 文件内容字符串
+     */
     public static String readRawTextFile(Context context, int rawId) {
         InputStream is = context.getResources().openRawResource(rawId);
         BufferedReader br = new BufferedReader(new InputStreamReader(is));
@@ -72,23 +89,29 @@ public class OpenGLUtils {
         return sb.toString();
     }
 
-
-    public static int loadProgram(String vSource, String fSource){
+    /**
+     * 加载定点着色器资源
+     *
+     * @param vSource 定点
+     * @param fSource 片段
+     * @return 着色器
+     */
+    public static int loadProgram(String vSource, String fSource) {
         /**
          * 顶点着色器
          */
         int vShader = GLES20.glCreateShader(GLES20.GL_VERTEX_SHADER);
         //加载着色器代码
-        GLES20.glShaderSource(vShader,vSource);
+        GLES20.glShaderSource(vShader, vSource);
         //编译（配置）
         GLES20.glCompileShader(vShader);
 
         //查看配置 是否成功
         int[] status = new int[1];
-        GLES20.glGetShaderiv(vShader, GLES20.GL_COMPILE_STATUS,status,0);
-        if(status[0] != GLES20.GL_TRUE){
+        GLES20.glGetShaderiv(vShader, GLES20.GL_COMPILE_STATUS, status, 0);
+        if (status[0] != GLES20.GL_TRUE) {
             //失败
-            throw new IllegalStateException("load vertex shader:"+ GLES20.glGetShaderInfoLog(vShader));
+            throw new IllegalStateException("load vertex shader:" + GLES20.glGetShaderInfoLog(vShader));
         }
 
         /**
@@ -97,15 +120,15 @@ public class OpenGLUtils {
          */
         int fShader = GLES20.glCreateShader(GLES20.GL_FRAGMENT_SHADER);
         //加载着色器代码
-        GLES20.glShaderSource(fShader,fSource);
+        GLES20.glShaderSource(fShader, fSource);
         //编译（配置）
         GLES20.glCompileShader(fShader);
 
         //查看配置 是否成功
-        GLES20.glGetShaderiv(fShader, GLES20.GL_COMPILE_STATUS,status,0);
-        if(status[0] != GLES20.GL_TRUE){
+        GLES20.glGetShaderiv(fShader, GLES20.GL_COMPILE_STATUS, status, 0);
+        if (status[0] != GLES20.GL_TRUE) {
             //失败
-            throw new IllegalStateException("load fragment shader:"+ GLES20.glGetShaderInfoLog(vShader));
+            throw new IllegalStateException("load fragment shader:" + GLES20.glGetShaderInfoLog(vShader));
         }
 
 
@@ -114,14 +137,14 @@ public class OpenGLUtils {
          */
         int program = GLES20.glCreateProgram();
         //绑定顶点和片元
-        GLES20.glAttachShader(program,vShader);
-        GLES20.glAttachShader(program,fShader);
+        GLES20.glAttachShader(program, vShader);
+        GLES20.glAttachShader(program, fShader);
         //链接着色器程序
         GLES20.glLinkProgram(program);
         //获得状态
-        GLES20.glGetProgramiv(program, GLES20.GL_LINK_STATUS,status,0);
-        if(status[0] != GLES20.GL_TRUE){
-            throw new IllegalStateException("link program:"+ GLES20.glGetProgramInfoLog(program));
+        GLES20.glGetProgramiv(program, GLES20.GL_LINK_STATUS, status, 0);
+        if (status[0] != GLES20.GL_TRUE) {
+            throw new IllegalStateException("link program:" + GLES20.glGetProgramInfoLog(program));
         }
         GLES20.glDeleteShader(vShader);
         GLES20.glDeleteShader(fShader);

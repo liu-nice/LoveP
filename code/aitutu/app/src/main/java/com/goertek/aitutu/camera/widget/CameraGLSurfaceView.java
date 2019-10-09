@@ -1,40 +1,52 @@
+/*
+ * Copyright  2016 - Goertek- All rights reserved.
+ */
 package com.goertek.aitutu.camera.widget;
 
 import android.content.Context;
-import android.hardware.Camera;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 
+/**
+ * describition :openGL视图
+ *
+ * @author ;falzy.ning
+ * @version :1.0.0
+ * @since : 2019/10/9 14:51
+ */
 public class CameraGLSurfaceView extends GLSurfaceView {
+    //相机渲染
+    private CameraRenderer cameraRenderer;
 
-    //默认正常速度
-    private Speed mSpeed = Speed.MODE_NORMAL;
-
+    /**
+     * 切换摄像头
+     */
     public void switchCamera() {
         cameraRenderer.switchCamera();
     }
 
-    public Camera getCamera() {
-        return cameraRenderer.getCamera();
-    }
-
-
-    public enum Speed {
-        MODE_EXTRA_SLOW, MODE_SLOW, MODE_NORMAL, MODE_FAST, MODE_EXTRA_FAST
-    }
-
-
+    /**
+     * 返回渲染器
+     * @return render
+     */
     public CameraRenderer getCameraRenderer() {
         return cameraRenderer;
     }
 
-    private CameraRenderer cameraRenderer;
-
+    /**
+     * 构造器
+     * @param context 上下文
+     */
     public CameraGLSurfaceView(Context context) {
         this(context, null);
     }
 
+    /**
+     * 构造器
+     * @param context 上下文
+     * @param attrs 属性
+     */
     public CameraGLSurfaceView(Context context, AttributeSet attrs) {
         super(context, attrs);
         /**
@@ -55,18 +67,26 @@ public class CameraGLSurfaceView extends GLSurfaceView {
         cameraRenderer.onSurfaceDestroyed();
     }
 
-    public void setSpeed(Speed speed) {
-        mSpeed = speed;
-    }
-
+    /**
+     * 美颜
+     * @param isChecked 选中状态
+     */
     public void enableBeauty(boolean isChecked) {
         cameraRenderer.enableBeauty(isChecked);
     }
 
+    /**
+     * 大眼
+     * @param isChecked 选中状态
+     */
     public void enableBigEye(boolean isChecked) {
         cameraRenderer.enableBigEye(isChecked);
     }
 
+    /**
+     * 贴图
+     * @param isChecked 选中状态
+     */
     public void enableStick(boolean isChecked) {
         cameraRenderer.enableStick(isChecked);
     }

@@ -1,3 +1,6 @@
+/*
+ * Copyright  2016 - Goertek- All rights reserved.
+ */
 package com.goertek.aitutu.camera.filter;
 
 import android.content.Context;
@@ -9,7 +12,13 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
-
+/**
+ * describition :滤镜基类
+ *
+ * @author ;falzy.ning
+ * @version :1.0.0
+ * @since : 2019/10/9 14:51
+ */
 public abstract class AbstractFilter {
 
     protected FloatBuffer mGLVertexBuffer;

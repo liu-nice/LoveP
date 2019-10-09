@@ -1,3 +1,6 @@
+/*
+ * Copyright  2016 - Goertek- All rights reserved.
+ */
 package com.goertek.aitutu.camera.widget;
 
 import android.content.Context;
@@ -16,36 +19,65 @@ import com.goertek.aitutu.camera.filter.BigEyeFilter;
 import com.goertek.aitutu.camera.filter.CameraFilter;
 import com.goertek.aitutu.camera.filter.ScreenFilter;
 import com.goertek.aitutu.camera.filter.StickFilter;
-import com.goertek.aitutu.camera.record.MediaRecorder;
 import com.goertek.aitutu.camera.util.CameraHelper;
 import com.goertek.aitutu.camera.util.CameraParam;
-import com.goertek.aitutu.camera.util.EglSurfaceBase;
 import com.goertek.aitutu.camera.util.OpenGLUtils;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-public class CameraRenderer implements GLSurfaceView.Renderer, SurfaceTexture.OnFrameAvailableListener, Camera.PreviewCallback {
+/**
+ * describition : 渲染器render
+ *
+ * @author ;falzy.ning
+ * @version :1.0.0
+ * @since : 2019/10/9 14:51
+ */
+public class CameraRenderer implements GLSurfaceView.Renderer,
+        SurfaceTexture.OnFrameAvailableListener, Camera.PreviewCallback {
+    //屏幕滤镜
     private ScreenFilter mScreenFilter;
-    private CameraGLSurfaceView mView;
-    private CameraHelper mCameraHelper;
-    private SurfaceTexture mSurfaceTexture;
-    private float[] mtx = new float[16];
-    private int[] mTextures;
-    private CameraFilter mCameraFilter;
-    private MediaRecorder mMediaRecorder;
-    private FaceTrack mFaceTrack;
-    private BigEyeFilter mBigEyeFilter;
-    private StickFilter mStickFilter;
-    private int mHeigh;
-    private int mWidth;
-    private BeautyFilter mBeautyFilter;
-    private MediaRecorder.OnRecordFinishListener mListener;
 
+    //glview实例
+    private CameraGLSurfaceView mView;
+
+    //相机帮助类实例
+    private CameraHelper mCameraHelper;
+
+    //表面纹理
+    private SurfaceTexture mSurfaceTexture;
+
+    //变换矩阵
+    private float[] mtx = new float[16];
+
+    //纹理数组
+    private int[] mTextures;
+
+    //相机滤镜
+    private CameraFilter mCameraFilter;
+    //人脸识别
+    private FaceTrack mFaceTrack;
+    //大眼滤镜
+    private BigEyeFilter mBigEyeFilter;
+    //贴纸滤镜
+    private StickFilter mStickFilter;
+    //美颜滤镜
+    private BeautyFilter mBeautyFilter;
+    //帧视图高
+    private int mHeigh;
+    //帧视图宽
+    private int mWidth;
+    //截屏回调
+    private CaptureCallback mCaptureCallback;
+
+    /**
+     * 渲染器构造器
+     *
+     * @param cameraGLSurfaceView glview
+     */
     public CameraRenderer(CameraGLSurfaceView cameraGLSurfaceView) {
         mView = cameraGLSurfaceView;
         Context context = mView.getContext();
@@ -83,8 +115,6 @@ public class CameraRenderer implements GLSurfaceView.Renderer, SurfaceTexture.On
 
         //渲染线程的EGL上下文
         EGLContext eglContext = EGL14.eglGetCurrentContext();
-        mMediaRecorder = new MediaRecorder(mView.getContext(), "/sdcard/a.mp4", CameraHelper.HEIGHT, CameraHelper.WIDTH, eglContext);
-        mMediaRecorder.setOnRecordFinishListener(mListener);
     }
 
     /**
@@ -112,7 +142,7 @@ public class CameraRenderer implements GLSurfaceView.Renderer, SurfaceTexture.On
     /**
      * 开始画画吧
      *
-     * @param gl
+     * @param gl GL10
      */
     @Override
     public void onDrawFrame(GL10 gl) {
@@ -146,14 +176,11 @@ public class CameraRenderer implements GLSurfaceView.Renderer, SurfaceTexture.On
             mStickFilter.setFace(face);
             id = mStickFilter.onDrawFrame(id);
         }
-        if (null != mBeautyFilter){
+        if (null != mBeautyFilter) {
             id = mBeautyFilter.onDrawFrame(id);
         }
         //加完之后再显示到屏幕中去
         mScreenFilter.onDrawFrame(id);
-        //进行录制
-        mMediaRecorder.encodeFrame(id, mSurfaceTexture.getTimestamp());
-        EglSurfaceBase eglSurfaceBase = new EglSurfaceBase();
         if (CameraParam.getInstance().isTakePicture) {
             int width = mView.getWidth();
             int height = mView.getHeight();
@@ -161,7 +188,6 @@ public class CameraRenderer implements GLSurfaceView.Renderer, SurfaceTexture.On
             buf.order(ByteOrder.LITTLE_ENDIAN);
             GLES30.glReadPixels(0, 0, width, height,
                     GLES30.GL_RGBA, GLES30.GL_UNSIGNED_BYTE, buf);
-            eglSurfaceBase.checkGlError("glReadPixels");
             buf.rewind();
             CameraParam.getInstance().isTakePicture = false;
             if (mCaptureCallback != null) {
@@ -170,14 +196,15 @@ public class CameraRenderer implements GLSurfaceView.Renderer, SurfaceTexture.On
         }
     }
 
-    CaptureCallback mCaptureCallback;
     /**
      * 截屏回调
-     * @param captureCallback
+     *
+     * @param captureCallback 截屏回调
      */
     public void setCaptureCallback(CaptureCallback captureCallback) {
         this.mCaptureCallback = captureCallback;
     }
+
     /**
      * 截帧回调
      */
@@ -188,38 +215,32 @@ public class CameraRenderer implements GLSurfaceView.Renderer, SurfaceTexture.On
     /**
      * surfaceTexture 有一个有效的新数据的时候回调
      *
-     * @param surfaceTexture
+     * @param surfaceTexture 表面纹理
      */
     @Override
     public void onFrameAvailable(SurfaceTexture surfaceTexture) {
         mView.requestRender();
     }
 
+    /**
+     * 停止预览，人脸识别
+     */
     public void onSurfaceDestroyed() {
         mCameraHelper.stopPreview();
         mFaceTrack.stopTrack();
     }
 
-    public void startRecord(float speed) {
-        try {
-            mMediaRecorder.start(speed);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void stopRecord() {
-        mMediaRecorder.stop();
-    }
-
     @Override
     public void onPreviewFrame(byte[] data, Camera camera) {
         // data 送去进行人脸定位 与 关键点定位
-        if (null != mBigEyeFilter || null != mStickFilter){
+        if (null != mBigEyeFilter || null != mStickFilter) {
             mFaceTrack.detector(data);
         }
     }
 
+    /**
+     * @see CameraGLSurfaceView#enableBeauty(boolean)
+     */
     public void enableBeauty(final boolean isChecked) {
         //向GL线程发布一个任务
         //任务会放入一个任务队列， 并在gl线程中去执行
@@ -229,7 +250,7 @@ public class CameraRenderer implements GLSurfaceView.Renderer, SurfaceTexture.On
                 //Opengl线程
                 if (isChecked) {
                     mBeautyFilter = new BeautyFilter(mView.getContext());
-                    mBeautyFilter.onReady(mWidth,mHeigh);
+                    mBeautyFilter.onReady(mWidth, mHeigh);
                 } else {
                     mBeautyFilter.release();
                     mBeautyFilter = null;
@@ -238,6 +259,9 @@ public class CameraRenderer implements GLSurfaceView.Renderer, SurfaceTexture.On
         });
     }
 
+    /**
+     * @see CameraGLSurfaceView#enableBigEye(boolean) (boolean)
+     */
     public void enableBigEye(final boolean isChecked) {
         //向GL线程发布一个任务
         //任务会放入一个任务队列， 并在gl线程中去执行
@@ -247,7 +271,7 @@ public class CameraRenderer implements GLSurfaceView.Renderer, SurfaceTexture.On
                 //Opengl线程
                 if (isChecked) {
                     mBigEyeFilter = new BigEyeFilter(mView.getContext());
-                    mBigEyeFilter.onReady(mWidth,mHeigh);
+                    mBigEyeFilter.onReady(mWidth, mHeigh);
                 } else {
                     mBigEyeFilter.release();
                     mBigEyeFilter = null;
@@ -256,6 +280,9 @@ public class CameraRenderer implements GLSurfaceView.Renderer, SurfaceTexture.On
         });
     }
 
+    /**
+     * @see CameraGLSurfaceView#enableStick(boolean) (boolean)
+     */
     public void enableStick(final boolean isChecked) {
         //向GL线程发布一个任务
         //任务会放入一个任务队列， 并在gl线程中去执行
@@ -265,7 +292,7 @@ public class CameraRenderer implements GLSurfaceView.Renderer, SurfaceTexture.On
                 //Opengl线程
                 if (isChecked) {
                     mStickFilter = new StickFilter(mView.getContext());
-                    mStickFilter.onReady(mWidth,mHeigh);
+                    mStickFilter.onReady(mWidth, mHeigh);
                 } else {
                     mStickFilter.release();
                     mStickFilter = null;
@@ -274,19 +301,11 @@ public class CameraRenderer implements GLSurfaceView.Renderer, SurfaceTexture.On
         });
     }
 
+    /**
+     * @see CameraGLSurfaceView#switchCamera()
+     */
     public void switchCamera() {
         mCameraHelper.switchCamera();
     }
 
-    public void setOnRecordFinishListener(MediaRecorder.OnRecordFinishListener listener){
-        if (null != mMediaRecorder){
-            mMediaRecorder.setOnRecordFinishListener(listener);
-        }
-        mListener = listener;
-    }
-
-
-    public Camera getCamera() {
-        return mCameraHelper.getCamera();
-    }
 }

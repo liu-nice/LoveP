@@ -415,6 +415,7 @@ public class MainPhotoPickActivity extends BaseActivity<PhotoPickPresenter>
         });
         actionSheet.addAction("打开相机", ActionSheet.Style.DEFAULT, new OnActionListener() {
             @Override public void onSelected(ActionSheet actionSheet, String title) {
+                showCameraAction();
                 actionSheet.dismiss();
             }
         });

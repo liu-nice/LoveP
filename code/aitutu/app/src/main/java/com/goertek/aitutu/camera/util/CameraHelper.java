@@ -8,14 +8,13 @@ import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 
 /**
- * describition :
+ * describition : 相机帮助类
  *
  * @author ;falzy.ning
  * @version :1.0.0
  * @since : 2019/9/29 11:45
  */
 public class CameraHelper implements Camera.PreviewCallback {
-
     private static final String TAG = "CameraHelper";
     public static final int WIDTH = 640;
     public static final int HEIGHT = 480;
@@ -93,9 +92,5 @@ public class CameraHelper implements Camera.PreviewCallback {
             mPreviewCallback.onPreviewFrame(data, camera);
         }
         camera.addCallbackBuffer(buffer);
-    }
-
-    public Camera getCamera() {
-        return mCamera ;
     }
 }

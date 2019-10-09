@@ -1,4 +1,6 @@
-
+/*
+ * Copyright  2016 - Goertek- All rights reserved.
+ */
 package com.goertek.aitutu.camera.face;
 
 import android.os.Handler;
@@ -8,11 +10,13 @@ import android.os.Message;
 import com.goertek.aitutu.camera.util.CameraHelper;
 
 /**
- * Created by Lance on 2017/11/10.
- * 人脸 与 关键点的 定位追踪 api 类
+ * describition :人脸 与 关键点的 定位追踪 api 类
+ *
+ * @author ;falzy.ning
+ * @version :1.0.0
+ * @since : 2019/10/9 14:51
  */
 public class FaceTrack {
-
 
     static {
         System.loadLibrary("native-lib");
@@ -38,10 +42,10 @@ public class FaceTrack {
             @Override
             public void handleMessage(Message msg) {
                 //子线程 耗时再久 也不会对其他地方 (如：opengl绘制线程) 产生影响
-                    //定位 线程中检测
+                //定位 线程中检测
                 synchronized (FaceTrack.this) {
                     mFace = native_detector(self, (byte[]) msg.obj,
-                                mCameraHelper.getCameraId(), CameraHelper.WIDTH, CameraHelper.HEIGHT);
+                            mCameraHelper.getCameraId(), CameraHelper.WIDTH, CameraHelper.HEIGHT);
                 }
             }
         };

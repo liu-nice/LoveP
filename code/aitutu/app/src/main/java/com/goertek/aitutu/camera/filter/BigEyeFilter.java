@@ -1,3 +1,6 @@
+/*
+ * Copyright  2016 - Goertek- All rights reserved.
+ */
 package com.goertek.aitutu.camera.filter;
 
 import android.content.Context;
@@ -11,7 +14,11 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
 /**
- * 大眼
+ * describition :大眼滤镜
+ *
+ * @author ;falzy.ning
+ * @version :1.0.0
+ * @since : 2019/10/9 14:51
  */
 public class BigEyeFilter extends AbstractFrameFilter {
 

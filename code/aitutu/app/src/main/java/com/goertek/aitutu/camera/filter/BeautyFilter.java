@@ -1,3 +1,6 @@
+/*
+ * Copyright  2016 - Goertek- All rights reserved.
+ */
 package com.goertek.aitutu.camera.filter;
 
 import android.content.Context;
@@ -5,6 +8,13 @@ import android.opengl.GLES20;
 
 import com.goertek.aitutu.R;
 
+/**
+ * describition :美颜滤镜
+ *
+ * @author ;falzy.ning
+ * @version :1.0.0
+ * @since : 2019/10/9 14:51
+ */
 public class BeautyFilter extends AbstractFrameFilter {
 
     private int width;

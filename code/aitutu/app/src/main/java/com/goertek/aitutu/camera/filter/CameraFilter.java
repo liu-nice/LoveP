@@ -1,3 +1,6 @@
+/*
+ * Copyright  2016 - Goertek- All rights reserved.
+ */
 package com.goertek.aitutu.camera.filter;
 
 import android.content.Context;
@@ -7,8 +10,12 @@ import android.opengl.GLES20;
 import com.goertek.aitutu.R;
 
 /**
- * 不需要显示到屏幕上
+ * describition :不需要显示到屏幕上
  * 写入fbo (帧缓存)
+ *
+ * @author ;falzy.ning
+ * @version :1.0.0
+ * @since : 2019/10/9 14:51
  */
 public class CameraFilter extends AbstractFrameFilter {
 
