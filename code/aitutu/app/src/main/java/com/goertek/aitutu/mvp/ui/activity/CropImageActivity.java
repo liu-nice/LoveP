@@ -42,7 +42,7 @@ import butterknife.OnClick;
 import timber.log.Timber;
 
 /**
- * description:CropImageActivity is cropImage
+ * description:CropImageActivity is saveImage
  *
  * @author libin
  * @version 1.0
@@ -108,7 +108,15 @@ public class CropImageActivity extends BaseActivity {
     /**
      * 图片保存路径
      */
-    private static final String NEW_CROPVIEW_PATH = "/simplecropview";
+    private static final String NEW_CROP_VIEW_PATH = "/cropView";
+    /**
+     * 图片前缀名
+     */
+    private static final String SCV = "scv";
+    /**
+     * 图片拼接名
+     */
+    private static final String POINT = ".";
 
     /**
      * mCropImageView 图片裁剪自定义View
@@ -172,7 +180,7 @@ public class CropImageActivity extends BaseActivity {
     private Uri mSourceUri;
 
     /**
-     * 压缩图片
+     * 压缩图片格式
      */
     private Bitmap.CompressFormat mCompressFormat = Bitmap.CompressFormat.JPEG;
 
@@ -183,9 +191,7 @@ public class CropImageActivity extends BaseActivity {
      */
     @OnClick({R.id.fit_image, R.id.crop_ratio1_1, R.id.crop_ratio3_4, R.id.crop_ratio4_3
             , R.id.crop_ratio16_9, R.id.crop_ratio9_16, R.id.free, R.id.save, R.id.pick_image,
-            R.id.rotate_left, R.id.rotate_right, R.id.custom, R.id.circle,
-            R.id.show_circle_but_cropassquare
-    })
+            R.id.rotate_left, R.id.rotate_right, R.id.circle, R.id.show_circle_but_cropassquare})
     public void editCrop(View view) {
         switch (view.getId()) {
             case R.id.fit_image:
@@ -208,9 +214,6 @@ public class CropImageActivity extends BaseActivity {
                 break;
             case R.id.free:
                 mCropImageView.setCropMode(CropImageView.CropMode.FREE);
-                break;
-            case R.id.custom:
-                mCropImageView.setCustomRatio(1, 1);
                 break;
 
             case R.id.circle:
@@ -242,7 +245,7 @@ public class CropImageActivity extends BaseActivity {
                 }
                 break;
             case R.id.save:
-                cropImage();
+                saveImage();
                 break;
             default:
                 break;
@@ -302,9 +305,9 @@ public class CropImageActivity extends BaseActivity {
     }
 
     /**
-     * 裁剪图片
+     * 保存图片
      */
-    public void cropImage() {
+    public void saveImage() {
         mCropImageView.crop(mSourceUri).execute(mCropCallback);
     }
 
@@ -327,7 +330,7 @@ public class CropImageActivity extends BaseActivity {
         File imageDir = null;
         final File extStorageDir = Environment.getExternalStorageDirectory();
         if (extStorageDir.canWrite()) {
-            imageDir = new File(extStorageDir.getPath() + NEW_CROPVIEW_PATH);
+            imageDir = new File(extStorageDir.getPath() + NEW_CROP_VIEW_PATH);
         }
         if (imageDir != null) {
             if (!imageDir.exists()) {
@@ -353,7 +356,7 @@ public class CropImageActivity extends BaseActivity {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
         String title = dateFormat.format(today);
         String dirPath = getDirPath();
-        String fileName = "scv" + title + "." + getMimeType(format);
+        String fileName = SCV + title + POINT + getMimeType(format);
         String path = dirPath + SINGLE_SEPARATOR + fileName;
         ContentValues values = new ContentValues();
         values.put(MediaStore.Images.Media.TITLE, title);
@@ -428,10 +431,12 @@ public class CropImageActivity extends BaseActivity {
             switch (requestCode) {
                 case REQUEST_PICK_IMAGE:
                     mSourceUri = result.getData();
-                    mCropImageView.load(mSourceUri)
-                            .initialFrameRect(mFrameRect)
-                            .useThumbnail(true)
-                            .execute(mLoadCallback);
+                    if (mSourceUri != null) {
+                        mCropImageView.load(mSourceUri)
+                                .initialFrameRect(mFrameRect)
+                                .useThumbnail(true)
+                                .execute(mLoadCallback);
+                    }
                     break;
                 case REQUEST_SAF_PICK_IMAGE:
                     mSourceUri = Utils.ensureUriPermission(this, result);

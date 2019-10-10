@@ -123,7 +123,7 @@ public class ResultActivity extends BaseActivity {
         mImageView = findViewById(R.id.result_image);
         mExecutor = Executors.newSingleThreadExecutor();
 
-        final Uri uri = getIntent().getData();
+        Uri uri = getIntent().getData();
         mExecutor.submit(new LoadScaledImageTask(this, uri, mImageView, calcImageSize()));
 
     }
@@ -168,9 +168,9 @@ public class ResultActivity extends BaseActivity {
 
         @Override
         public void run() {
-            final int exifRotation = Utils.getExifOrientation(context, uri);
-            final int maxSize = Utils.getMaxSize();
-            final int requestSize = Math.min(width, maxSize);
+            int exifRotation = Utils.getExifOrientation(context, uri);
+            int maxSize = Utils.getMaxSize();
+            int requestSize = Math.min(width, maxSize);
             try {
                 final Bitmap sampledBitmap = Utils.decodeSampledBitmapFromUri(context, uri, requestSize);
                 mHandler.post(() -> {
