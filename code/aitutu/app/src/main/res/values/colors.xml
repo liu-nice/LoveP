@@ -22,4 +22,6 @@
     <color name="red">#F44336</color>
 
     <color name="light_gray">#05000000</color>
+
+    <color name="white">#ffffff</color>
 </resources>

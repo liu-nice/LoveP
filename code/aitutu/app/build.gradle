@@ -130,4 +130,5 @@ dependencies {
     implementation rootProject.ext.dependencies["circleimageview"]
 
     implementation(name: 'library-gpuimage', ext: 'aar')
+    api 'com.nostra13.universalimageloader:universal-image-loader:1.9.4'
 }

@@ -29,92 +29,127 @@ import java.util.Locale;
  */
 public class FileUtils {
 
-    public static File createTmpFile(Context context){
+    private static String BASE_PATH;
+    private static String STICKER_BASE_PATH;
+    private static FileUtils mInstance;
+
+    public static FileUtils getInstance() {
+        if (mInstance == null) {
+            synchronized (FileUtils.class) {
+                if (mInstance == null) {
+                    mInstance = new FileUtils();
+                }
+            }
+        }
+        return mInstance;
+    }
+
+    private FileUtils() {
+        String sdcardState = Environment.getExternalStorageState();
+        //如果没SD卡则放缓存[getCacheDir().getAbsolutePath();]
+        if (Environment.MEDIA_MOUNTED.equals(sdcardState)) {
+            BASE_PATH = Environment.getExternalStorageDirectory().getAbsolutePath()
+                    + "/stickercamera/";
+        }
+        STICKER_BASE_PATH = BASE_PATH + "/stickers/";
+    }
+
+    public File getExternalFile(String path) {
+        return new File(BASE_PATH + path);
+    }
+
+    public String getPhotoSavedPath() {
+        return BASE_PATH + "stickercamera";
+    }
+
+    public String getPhotoTempPath() {
+        return BASE_PATH + "stickercamera";
+    }
+
+    public String getSystemPhotoPath() {
+        return Environment.getExternalStorageDirectory().getAbsolutePath() + "/DCIM/Camera";
+    }
+
+    public boolean mkdir(File file) {
+        while (!file.getParentFile().exists()) {
+            mkdir(file.getParentFile());
+        }
+        return file.mkdir();
+    }
+
+    /*******************************************/
+    public static File createTmpFile(Context context) {
 
         String state = Environment.getExternalStorageState();
-        if(state.equals(Environment.MEDIA_MOUNTED)){
+        if (state.equals(Environment.MEDIA_MOUNTED)) {
             // 已挂载
             File pic = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.CHINA).format(new Date());
-            String fileName = "multi_image_"+timeStamp+"";
-            File tmpFile = new File(pic, fileName+".jpg");
+            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss",Locale.CHINA).format(new Date());
+            String fileName = "multi_image_" + timeStamp + "";
+            File tmpFile = new File(pic,fileName + ".jpg");
             return tmpFile;
-        }else{
+        } else {
             File cacheDir = context.getCacheDir();
-            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.CHINA).format(new Date());
-            String fileName = "multi_image_"+timeStamp+"";
-            File tmpFile = new File(cacheDir, fileName+".jpg");
+            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss",Locale.CHINA).format(new Date());
+            String fileName = "multi_image_" + timeStamp + "";
+            File tmpFile = new File(cacheDir,fileName + ".jpg");
             return tmpFile;
         }
     }
-    
-    
-    
+
     public interface Callback<T> {
-      	public void onSuccess(T obj);
-    	public void onError(String error);
+        public void onSuccess(T obj);
+
+        public void onError(String error);
     }
-    
-    public static void doGetBitmap(final String url, final Callback<Bitmap> callBack) {
-    	
-    	new Thread() {  
-            public void run() { 
-            	try{
-            		URL imageURl=new URL(url);
-            	    URLConnection con=imageURl.openConnection();
-            	    con.connect();
-            	    InputStream in=con.getInputStream();
-            	    Bitmap bitmap=BitmapFactory.decodeStream(in);
-            	    //in.close();
-            	    if (bitmap == null) {  
-                        callBack.onError("获取图片失败");  
-                    } 
-   				 	else {  
-                        callBack.onSuccess(bitmap); 
+
+    public static void doGetBitmap(final String url,final Callback<Bitmap> callBack) {
+        new Thread() {
+            @Override
+            public void run() {
+                try {
+                    URL imageURl = new URL(url);
+                    URLConnection con = imageURl.openConnection();
+                    con.connect();
+                    InputStream in = con.getInputStream();
+                    Bitmap bitmap = BitmapFactory.decodeStream(in);
+                    //in.close();
+                    if (bitmap == null) {
+                        callBack.onError("获取图片失败");
+                    } else {
+                        callBack.onSuccess(bitmap);
                     }
-            	}
-            	catch (Exception e) {
-					e.printStackTrace();
-				}
-            	
-            	
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
-    	}.start();
-    	
-    	
+        }.start();
     }
-		
-    	
+
     //获取网络中的图片内容
-   	private static String getImageData(String url) throws ClientProtocolException, IOException {
-   		HttpClient client = new DefaultHttpClient();
-   		HttpGet httpget = new HttpGet(url);
-   		HttpResponse httpResponse = client.execute(httpget);
-   		int status = httpResponse.getStatusLine().getStatusCode();
-   		if (status == HttpStatus.SC_OK) {
-   			Log.d("getImageData", "status:" + status);
-   			String strResult = EntityUtils.toString(httpResponse.getEntity());
-   			return strResult;
-   		}
-   		return null;
-   	}
+    private static String getImageData(String url) throws ClientProtocolException, IOException {
+        HttpClient client = new DefaultHttpClient();
+        HttpGet httpget = new HttpGet(url);
+        HttpResponse httpResponse = client.execute(httpget);
+        int status = httpResponse.getStatusLine().getStatusCode();
+        if (status == HttpStatus.SC_OK) {
+            Log.d("getImageData","status:" + status);
+            String strResult = EntityUtils.toString(httpResponse.getEntity());
+            return strResult;
+        }
+        return null;
+    }
 
+    public static long getFileSize(File file) throws Exception {
+        long size = 0;
+        if (file.exists()) {
+            FileInputStream fis = null;
+            fis = new FileInputStream(file);
+            size = fis.available();
+        } else {
 
-	public static long getFileSize(File file) throws Exception {
-		long size = 0;
-		if (file.exists()) {
-			FileInputStream fis = null;
-			fis = new FileInputStream(file);
-			size = fis.available();
-		} else {
-
-		}
-		return size;
-	}
-
-
-
-
-
+        }
+        return size;
+    }
 
 }

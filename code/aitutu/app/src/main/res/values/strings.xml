@@ -2,4 +2,42 @@
     <string name="app_name">爱图图</string>
     <string name="photo_album_all">所有图片</string>
     <string name="camera_msg_no_camera">没有系统相机</string>
+    <string name="no_images">no found the image</string>
+    <string name="images">%d images</string>
+    <string name="save">save</string>
+    <string name="apply">apply</string>
+
+    <string name="stickers">stickers</string>
+    <string name="filter">filter</string>
+    <string name="crop">crop</string>
+    <string name="rotate">rotate</string>
+    <string name="text">text</string>
+    <string name="edit">edit</string>
+
+    <string name="saving_image">图片保存中</string>
+
+    <string-array name="filters">
+        <item>origin</item>
+        <item>soft</item>
+        <item>black</item>
+        <item>classic</item>
+        <item>gorgeous</item>
+        <item>retro</item>
+        <item>grace</item>
+        <item>film</item>
+        <item>memory</item>
+        <item>yogurt</item>
+        <item>fleeting</item>
+        <item>shine</item>
+        <item>mosaic</item>
+    </string-array>
+
+    <string name="more">more</string>
+    <string name="exit_without_save">The edited image is not saved. Do you want to exit? </string>
+    <string name="confirm">confirm</string>
+    <string name="cancel">cancel</string>
+
+    <string name="beauty">beauty</string>
+    <string name="smooth">smooth</string>
+    <string name="white_skin">white skin</string>
 </resources>

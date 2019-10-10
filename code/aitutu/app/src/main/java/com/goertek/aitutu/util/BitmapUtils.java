@@ -2,6 +2,7 @@ package com.goertek.aitutu.util;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
@@ -71,8 +72,11 @@ public class BitmapUtils {
         int watermarkWidth = watermark.getWidth();
         int watermarkHeight = watermark.getHeight();
         float scale = imageWidth / (float) srcWaterMarkImageWidth;
-        if (scale > 1) scale = 1;
-        else if (scale < 0.4) scale = 0.4f;
+        if (scale > 1) {
+            scale = 1;
+        } else if (scale < 0.4) {
+            scale = 0.4f;
+        }
         int scaleWatermarkWidth = (int) (watermarkWidth * scale);
         int scaleWatermarkHeight = (int) (watermarkHeight * scale);
         Bitmap scaleWatermark = Bitmap.createScaledBitmap(watermark, scaleWatermarkWidth, scaleWatermarkHeight, true);
@@ -107,8 +111,11 @@ public class BitmapUtils {
         float watermarkWidth = watermark.getWidth();
         float watermarkHeight = watermark.getHeight();
         float scale = imageWidth / (float) srcWaterMarkImageWidth;
-        if (scale > 1) scale = 1;
-        else if (scale < 0.4) scale = 0.4f;
+        if (scale > 1) {
+            scale = 1;
+        } else if (scale < 0.4) {
+            scale = 0.4f;
+        }
         float scaleWatermarkWidth = watermarkWidth * scale;
         float scaleWatermarkHeight = watermarkHeight * scale;
         Bitmap scaleWatermark = Bitmap.createScaledBitmap(watermark, (int) scaleWatermarkWidth, (int) scaleWatermarkHeight, true);
@@ -210,6 +217,40 @@ public class BitmapUtils {
         view.draw(canvas);
 
         return bitmap;
+    }
+
+    public static Bitmap getSampledBitmap(String filePath,int reqWidth,int reqHeight) {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+        BitmapFactory.decodeFile(filePath,options);
+        int inSampleSize = calculateInSampleSize(options,reqWidth,reqHeight);
+        options.inSampleSize = inSampleSize;
+        options.inJustDecodeBounds = false;
+        return BitmapFactory.decodeFile(filePath,options);
+    }
+
+
+    public static int calculateInSampleSize(BitmapFactory.Options options,int reqWidth,int reqHeight) {
+        // Raw height and width of image
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+
+            final int halfHeight = height / 2;
+            final int halfWidth = width / 2;
+
+            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+            // height and width larger than the requested height and width.
+            while ((halfHeight / inSampleSize) >= reqHeight
+                    && (halfWidth / inSampleSize) >= reqWidth) {
+                inSampleSize *= 2;
+            }
+        }
+
+        return inSampleSize;
     }
 
 

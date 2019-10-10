@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (c) 2019 -Goertek -All rights reserved.
+  -->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!--   <include
+           android:id="@+id/activity_edit_image_titlebar"
+           layout="@layout/include_title" />-->
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/activity_edit_image_titlebar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimary"
+        app:navigationIcon="@drawable/icon_back"
+        android:theme="@style/BaseToolbarTheme">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="编辑图片"
+            android:textColor="@color/white"
+            android:textSize="16dp"
+            android:layout_gravity="center" />
+    </android.support.v7.widget.Toolbar>
+    <!-- 底部的滤镜、贴纸、旋转等特效设置-->
+    <com.goertek.aitutu.mvp.ui.custom.CustomViewPager
+        android:id="@+id/activity_edit_image_viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:layout_alignParentBottom="true"
+        android:background="#333"
+        android:overScrollMode="never" />
+
+    <FrameLayout
+        android:id="@+id/activity_edit_image_fl"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/activity_edit_image_titlebar"
+        android:layout_above="@id/activity_edit_image_viewpager">
+        <!-- 主图-->
+        <com.goertek.aitutu.mvp.ui.custom.imagezoom.ImageViewTouch
+            android:id="@+id/activity_edit_image_fl_main"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center" />
+        <!-- 贴纸-->
+        <com.goertek.aitutu.mvp.ui.custom.StickerView
+            android:id="@+id/activity_edit_image_fl_sticker"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:visibility="gone" />
+    </FrameLayout>
+</RelativeLayout>

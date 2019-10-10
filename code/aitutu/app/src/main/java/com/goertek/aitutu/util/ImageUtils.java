@@ -31,7 +31,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -83,8 +85,9 @@ public class ImageUtils {
         while (cursor.moveToNext()) {            //获取数据库中图片路径：/storage/emulated/0/DCIM/Camera/IMG20160501152640.jpg
             String path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));            //获取父目录：/storage/emulated/0/DCIM/Camera
             File parentFile = new File(path).getParentFile();            //没有父目录，跳出本次循环
-            if (parentFile == null)
+            if (parentFile == null) {
                 continue;            //声明实体对象
+            }
             FolderBean folderBean;            //父目录的绝对路径：/storage/emulated/0/DCIM/Camera
             String dirPath = parentFile.getAbsolutePath();
             if (mDirPaths.contains(dirPath)) {
@@ -520,17 +523,20 @@ public class ImageUtils {
     }
 
     public static Bitmap imageWithFixedRotation(Bitmap bm, int degrees) {
-        if (bm == null || bm.isRecycled())
+        if (bm == null || bm.isRecycled()) {
             return null;
+        }
 
-        if (degrees == 0)
+        if (degrees == 0) {
             return bm;
+        }
 
         final Matrix matrix = new Matrix();
         matrix.postRotate(degrees);
         Bitmap result = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(), bm.getHeight(), matrix, true);
-        if (result != bm)
+        if (result != bm) {
             bm.recycle();
+        }
         return result;
 
     }
@@ -549,5 +555,30 @@ public class ImageUtils {
         }
         return null;
     }
+
+    //保存图片文件
+    public static String saveToFile(String fileFolderStr,boolean isDir,Bitmap bitmap) throws FileNotFoundException, IOException {
+        File jpgFile;
+        if (isDir) {
+            File fileFolder = new File(fileFolderStr);
+            Date date = new Date();
+            SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss"); // 格式化时间
+            String filename = format.format(date) + ".jpg";
+            if (!fileFolder.exists()) { // 如果目录不存在，则创建一个名为"finger"的目录
+                FileUtils.getInstance().mkdir(fileFolder);
+            }
+            jpgFile = new File(fileFolder,filename);
+        } else {
+            jpgFile = new File(fileFolderStr);
+            if (!jpgFile.getParentFile().exists()) { // 如果目录不存在，则创建一个名为"finger"的目录
+                FileUtils.getInstance().mkdir(jpgFile.getParentFile());
+            }
+        }
+        FileOutputStream outputStream = new FileOutputStream(jpgFile); // 文件输出流
+        bitmap.compress(Bitmap.CompressFormat.JPEG,80,outputStream);
+        IOUtil.closeStream(outputStream);
+        return jpgFile.getPath();
+    }
+
 
 }

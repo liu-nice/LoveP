@@ -1,3 +1,6 @@
+/*
+ * Copyright (c) 2019 -Goertek -All rights reserved.
+ */
 package com.goertek.aitutu.mvp.ui.activity;
 
 import android.graphics.Bitmap;
@@ -17,6 +20,12 @@ import com.goertek.arm.di.component.AppComponent;
 import butterknife.BindView;
 import butterknife.OnClick;
 
+/**
+ * description:RevolveActivity is revolveImage
+ *
+ * @author weipeng
+ * @version 1.0
+ */
 public class RevolveActivity extends BaseActivity {
 
     /**
@@ -33,37 +42,37 @@ public class RevolveActivity extends BaseActivity {
      * 编辑图片
      */
     @BindView(R.id.activity_edit_image)
-    public ImageView editImage;
+    public ImageView mEditImage;
 
     /**
      * 重置图片
      */
     @BindView(R.id.activity_edit_reset)
-    public TextView editReset;
+    public TextView mEditReset;
 
     /**
      * 左旋转
      */
     @BindView(R.id.activity_edit_left)
-    public ImageView editLeft;
+    public ImageView mEditLeft;
 
     /**
      * 右旋转
      */
     @BindView(R.id.activity_edit_right)
-    public ImageView editRight;
+    public ImageView mEditRight;
 
     /**
      * 左右旋转
      */
     @BindView(R.id.activity_edit_left_right)
-    public ImageView editLeftRight;
+    public ImageView mEditLeftRight;
 
     /**
      * 上下旋转
      */
     @BindView(R.id.activity_edit_top_bottom)
-    public ImageView editTopBottom;
+    public ImageView mEditTopBottom;
 
     /**
      * 原图
@@ -77,6 +86,7 @@ public class RevolveActivity extends BaseActivity {
 
     @Override
     public void setupActivityComponent(@NonNull AppComponent appComponent) {
+
     }
 
     @Override
@@ -88,7 +98,7 @@ public class RevolveActivity extends BaseActivity {
     public void initData(@Nullable Bundle savedInstanceState) {
         srcBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.lake);
         newBitmap = srcBitmap;
-        editImage.setImageBitmap(newBitmap);
+        mEditImage.setImageBitmap(newBitmap);
     }
 
     /**
@@ -101,23 +111,23 @@ public class RevolveActivity extends BaseActivity {
         switch (view.getId()){
             case R.id.activity_edit_reset:
                 newBitmap = srcBitmap;
-                editImage.setImageBitmap(newBitmap);
+                mEditImage.setImageBitmap(newBitmap);
                 break;
             case R.id.activity_edit_left:
                 newBitmap = PhotoUtils.rotateImage(newBitmap, DEGREES_FU_90);
-                editImage.setImageBitmap(newBitmap);
+                mEditImage.setImageBitmap(newBitmap);
                 break;
             case R.id.activity_edit_right:
                 newBitmap = PhotoUtils.rotateImage(newBitmap, DEGREES_90);
-                editImage.setImageBitmap(newBitmap);
+                mEditImage.setImageBitmap(newBitmap);
                 break;
             case R.id.activity_edit_left_right:
                 newBitmap = PhotoUtils.reverseImage(newBitmap, -1, 1);
-                editImage.setImageBitmap(newBitmap);
+                mEditImage.setImageBitmap(newBitmap);
                 break;
             case R.id.activity_edit_top_bottom:
                 newBitmap = PhotoUtils.reverseImage(newBitmap, 1, -1);
-                editImage.setImageBitmap(newBitmap);
+                mEditImage.setImageBitmap(newBitmap);
                 break;
             default:
                 break;
