@@ -11,6 +11,7 @@
     <string name="filter">filter</string>
     <string name="crop">crop</string>
     <string name="rotate">rotate</string>
+    <string name="doodle">Doodle</string>
     <string name="text">text</string>
     <string name="edit">edit</string>
 
@@ -40,4 +41,10 @@
     <string name="beauty">beauty</string>
     <string name="smooth">smooth</string>
     <string name="white_skin">white skin</string>
+    <string name="PaintColor">画笔颜色</string>
+    <string name="PaintSize">画笔粗细</string>
+    <string name="PaintShape">画笔形状</string>
+    <string name="Reset">重画</string>
+    <string name="Eraser">橡皮擦</string>
+    <string name="Save">保存</string>
 </resources>

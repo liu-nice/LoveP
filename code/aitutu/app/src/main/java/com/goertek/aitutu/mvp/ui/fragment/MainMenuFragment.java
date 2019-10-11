@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.goertek.aitutu.R;
+import com.goertek.aitutu.mvp.ui.activity.DoodleViewActivity;
 import com.goertek.aitutu.mvp.ui.activity.RevolveActivity;
 import com.goertek.aitutu.mvp.ui.custom.ModuleConfig;
 
@@ -134,6 +135,9 @@ public class MainMenuFragment extends BaseFragment implements View.OnClickListen
      * 自由绘制模式
      */
     private void onPaintClick() {
+        Intent intent = new Intent(getActivity(), DoodleViewActivity.class);
+        intent.putExtra(DoodleViewActivity.FILE_PATH ,activity.filePath);
+        startActivity(intent);
     }
 
     /**
