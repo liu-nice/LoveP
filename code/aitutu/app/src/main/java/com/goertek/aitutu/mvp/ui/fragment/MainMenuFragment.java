@@ -4,6 +4,7 @@
 
 package com.goertek.aitutu.mvp.ui.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.goertek.aitutu.R;
+import com.goertek.aitutu.mvp.ui.activity.RevolveActivity;
 import com.goertek.aitutu.mvp.ui.custom.ModuleConfig;
 
 public class MainMenuFragment extends BaseFragment implements View.OnClickListener {
@@ -97,12 +99,17 @@ public class MainMenuFragment extends BaseFragment implements View.OnClickListen
 
     /**
      * 贴图模式
-     *
-     * @author panyi
      */
     private void onStickClick() {
         activity.mBottomViewPager.setCurrentItem(StickerFragment.INDEX);
         activity.mStickerFragment.onShow();
+    }
+
+    /**
+     * 图片旋转模式
+     */
+    private void onRotateClick() {
+        startActivityForResult(new Intent(activity,RevolveActivity.class).putExtra(RevolveActivity.FILE_PATH,activity.filePath),activity.EXTRA_REVOLVE);
     }
 
     /**
@@ -115,12 +122,6 @@ public class MainMenuFragment extends BaseFragment implements View.OnClickListen
      * 裁剪模式
      */
     private void onCropClick() {
-    }
-
-    /**
-     * 图片旋转模式
-     */
-    private void onRotateClick() {
     }
 
     /**

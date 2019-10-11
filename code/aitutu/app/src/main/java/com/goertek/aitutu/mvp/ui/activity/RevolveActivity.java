@@ -3,19 +3,29 @@
  */
 package com.goertek.aitutu.mvp.ui.activity;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
+import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.goertek.aitutu.R;
+import com.goertek.aitutu.util.BitmapUtils;
 import com.goertek.aitutu.util.PhotoUtils;
 import com.goertek.arm.base.BaseActivity;
 import com.goertek.arm.di.component.AppComponent;
+
+import java.io.ByteArrayOutputStream;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -38,6 +48,13 @@ public class RevolveActivity extends BaseActivity {
      */
     private static final int DEGREES_FU_90 = -90;
 
+    public static final String FILE_PATH = "file_path";
+
+    /**
+     * Toolbar
+     */
+    @BindView(R.id.activity_edit_revolve_toolbar)
+    Toolbar mToolbar;
     /**
      * 编辑图片
      */
@@ -94,39 +111,79 @@ public class RevolveActivity extends BaseActivity {
         return R.layout.activity_edit_revolve;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void initData(@Nullable Bundle savedInstanceState) {
-        srcBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.lake);
+        initToolbar();
+        String filePath = getIntent().getStringExtra(FILE_PATH);
+        DisplayMetrics metrics = getResources().getDisplayMetrics();
+        int imageWidth = metrics.widthPixels / 2;
+        int imageHeight = metrics.heightPixels / 2;
+        srcBitmap = BitmapUtils.getSampledBitmap(filePath,imageWidth,imageHeight);
         newBitmap = srcBitmap;
         mEditImage.setImageBitmap(newBitmap);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    private void initToolbar() {
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        mToolbar.setNavigationOnClickListener(view -> finish());
+        mToolbar.setOnMenuItemClickListener(onMenuItemClick);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_image_edit,menu);
+        return true;
+    }
+
+    private Toolbar.OnMenuItemClickListener onMenuItemClick = new Toolbar.OnMenuItemClickListener() {
+        @Override
+        public boolean onMenuItemClick(MenuItem menuItem) {
+            switch (menuItem.getItemId()) {
+                case R.id.menu_image_edit_save:
+                    Log.e("weip","保存图片啦啦啦");
+                    Intent intent = getIntent();
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    newBitmap.compress(Bitmap.CompressFormat.JPEG,100,baos);
+                    byte[] bitmapByte = baos.toByteArray();
+                    intent.putExtra("imgbitmap",bitmapByte);
+                    setResult(RESULT_OK,intent);
+                    finish();
+                    break;
+            }
+            return true;
+        }
+    };
+
     /**
      * 图片编辑的事件处理
+     *
      * @param view
      */
-    @OnClick({R.id.activity_edit_reset, R.id.activity_edit_left, R.id.activity_edit_right,
-            R.id.activity_edit_left_right, R.id.activity_edit_top_bottom})
+    @OnClick({R.id.activity_edit_reset,R.id.activity_edit_left,R.id.activity_edit_right,
+            R.id.activity_edit_left_right,R.id.activity_edit_top_bottom})
     public void editEvent(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.activity_edit_reset:
                 newBitmap = srcBitmap;
                 mEditImage.setImageBitmap(newBitmap);
                 break;
             case R.id.activity_edit_left:
-                newBitmap = PhotoUtils.rotateImage(newBitmap, DEGREES_FU_90);
+                newBitmap = PhotoUtils.rotateImage(newBitmap,DEGREES_FU_90);
                 mEditImage.setImageBitmap(newBitmap);
                 break;
             case R.id.activity_edit_right:
-                newBitmap = PhotoUtils.rotateImage(newBitmap, DEGREES_90);
+                newBitmap = PhotoUtils.rotateImage(newBitmap,DEGREES_90);
                 mEditImage.setImageBitmap(newBitmap);
                 break;
             case R.id.activity_edit_left_right:
-                newBitmap = PhotoUtils.reverseImage(newBitmap, -1, 1);
+                newBitmap = PhotoUtils.reverseImage(newBitmap,-1,1);
                 mEditImage.setImageBitmap(newBitmap);
                 break;
             case R.id.activity_edit_top_bottom:
-                newBitmap = PhotoUtils.reverseImage(newBitmap, 1, -1);
+                newBitmap = PhotoUtils.reverseImage(newBitmap,1,-1);
                 mEditImage.setImageBitmap(newBitmap);
                 break;
             default:

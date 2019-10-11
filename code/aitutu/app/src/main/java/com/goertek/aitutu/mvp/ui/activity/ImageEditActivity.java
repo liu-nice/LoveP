@@ -4,7 +4,9 @@
 
 package com.goertek.aitutu.mvp.ui.activity;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -43,6 +45,7 @@ public class ImageEditActivity extends BaseActivity {
 
     public static final String FILE_PATH = "file_path";
     public static final String EXTRA_OUTPUT = "extra_output";
+    public static final int EXTRA_REVOLVE = 0x0011;
 
     @BindView(R.id.activity_edit_image_titlebar)
     Toolbar mToolbar;
@@ -60,8 +63,9 @@ public class ImageEditActivity extends BaseActivity {
     public ImageViewTouch mImageViewTouch;
     //底部显示的Bitmap
     private Bitmap mMainBitmap;
-    //fragment
+    //主菜单fragment
     private MainMenuFragment mMainMenuFragment;
+    //贴纸fragment
     public StickerFragment mStickerFragment;
 
     public static final int MODE_NONE = 0;
@@ -204,5 +208,13 @@ public class ImageEditActivity extends BaseActivity {
 
     public Bitmap getMainBit() {
         return mMainBitmap;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode,int resultCode,@Nullable Intent data) {
+        super.onActivityResult(requestCode,resultCode,data);
+        byte[] bytes = data.getByteArrayExtra("imgbitmap");
+        mMainBitmap = BitmapFactory.decodeByteArray(bytes,0,bytes.length);
+        mImageViewTouch.setImageBitmap(mMainBitmap);
     }
 }
