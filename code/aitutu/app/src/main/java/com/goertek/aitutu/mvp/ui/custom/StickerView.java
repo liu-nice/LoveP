@@ -83,15 +83,15 @@ public class StickerView extends View {
         invalidate();// 重绘视图
     }
 
-    public void addText(TextPro textPro) {
-        TextStickerItem item = new TextStickerItem(getContext());
-        item.init(textPro,this);
-        if (currentItem != null) {
-            currentItem.isDrawHelpTool = false;
-        }
-        bank.put(++imageCount,item);
-        invalidate();// 重绘视图
-    }
+//    public void addText(TextPro textPro) {
+//        TextStickerItem item = new TextStickerItem(getContext());
+//        item.init(textPro,this);
+//        if (currentItem != null) {
+//            currentItem.isDrawHelpTool = false;
+//        }
+//        bank.put(++imageCount,item);
+//        invalidate();// 重绘视图
+//    }
 
     /**
      * 绘制客户页面
@@ -194,8 +194,14 @@ public class StickerView extends View {
                     float dx = x - oldx;
                     float dy = y - oldy;
                     if (currentItem != null) {
-                        currentItem.updatePos(dx,dy);
-                        invalidate();
+                        //贴纸不能绘制到屏幕外
+                        Log.e("weip","dx的值:" + dx + ",dy的值:" + dy + ",xxx的值:" + x);
+                        if (currentItem.dstRect.left > 20) {
+                            currentItem.updatePos(dx,dy);
+                            invalidate();
+                        } else {
+
+                        }
                     }// end if
                     oldx = x;
                     oldy = y;
