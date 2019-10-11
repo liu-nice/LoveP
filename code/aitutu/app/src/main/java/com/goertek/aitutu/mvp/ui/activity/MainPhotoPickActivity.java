@@ -13,7 +13,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
@@ -236,7 +235,12 @@ public class MainPhotoPickActivity extends BaseActivity<PhotoPickPresenter>
 
     private void initAdapter() {
         mRecyclerView.setAdapter(mPhotoPickAdapter);
-        mPhotoPickAdapter.setOnitemClickLintener((images, position) -> ToastUtils.toast(MainPhotoPickActivity.this, "你点击了第" + position + "个条目 ！！！" + " &path ==" + images.get(position).path));
+        mPhotoPickAdapter.setOnitemClickLintener(new PhotoPickAdapter.onItemClick() {
+            @Override
+            public void onItemClick(List<ImageInfo> images,int position) {
+                startActivity(new Intent(MainPhotoPickActivity.this,ImageEditActivity.class).putExtra(ImageEditActivity.FILE_PATH,images.get(position).path));
+            }
+        });
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)

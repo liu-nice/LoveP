@@ -158,7 +158,6 @@ public class EasyPhotosActivity extends AppCompatActivity implements AlbumItemsA
         permissionView = findViewById(R.id.rl_permissions_view);
         tvPermission = findViewById(R.id.tv_permission);
         rootViewAlbumItems = findViewById(R.id.root_view_album_items);
-        findViewById(R.id.iv_second_menu).setVisibility(Setting.showPuzzleMenu || Setting.showCleanMenu || Setting.showOriginalMenu ? View.VISIBLE : View.GONE);
         if (Setting.isOnlyVideo()) {
             ((TextView) findViewById(R.id.tv_title)).setText(R.string.video_selection_easy_photos);
         }
@@ -644,23 +643,12 @@ public class EasyPhotosActivity extends AppCompatActivity implements AlbumItemsA
     public void onClick(View v) {
         int id = v.getId();
         if (R.id.tv_album_items == id || R.id.iv_album_items == id) {
-            showAlbumItems(View.GONE == rootViewAlbumItems.getVisibility());
         } else if (R.id.root_view_album_items == id) {
-            showAlbumItems(false);
         } else if (R.id.iv_back == id) {
             setResult(RESULT_CANCELED);
             finish();
         } else if (R.id.tv_done == id) {
             done();
-        } else if (R.id.tv_clear == id) {
-            if (Result.isEmpty()) {
-                processSecondMenu();
-                return;
-            }
-            Result.removeAll();
-            photosAdapter.change();
-            shouldShowMenuDone();
-            processSecondMenu();
         } else if (R.id.tv_original == id) {
             if (!Setting.originalMenuUsable) {
                 Toast.makeText(this, Setting.originalMenuUnusableHint, Toast.LENGTH_SHORT).show();
@@ -669,9 +657,7 @@ public class EasyPhotosActivity extends AppCompatActivity implements AlbumItemsA
             Setting.selectedOriginal = !Setting.selectedOriginal;
             processOriginalMenu();
             processSecondMenu();
-        } else if (R.id.tv_preview == id) {
-           // PreviewActivity.start(EasyPhotosActivity.this, -1, 0);
-        } else if (R.id.fab_camera == id) {
+        }if (R.id.fab_camera == id) {
            // launchCamera(Code.REQUEST_CAMERA);
         } else if (R.id.iv_second_menu == id) {
             processSecondMenu();
@@ -852,7 +838,6 @@ public class EasyPhotosActivity extends AppCompatActivity implements AlbumItemsA
                 tvDone.startAnimation(scaleShow);
             }
             tvDone.setVisibility(View.VISIBLE);
-            tvPreview.setVisibility(View.VISIBLE);
         }
         if (Setting.distinguishCount && Setting.selectMutualExclusion && Result.photos.size() > 0) {
             final String photoType = Result.photos.get(0).type;
