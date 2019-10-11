@@ -4,6 +4,8 @@
 package com.goertek.aitutu.camera;
 
 import android.Manifest;
+import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Environment;
@@ -11,9 +13,12 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.CompoundButton;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.goertek.aitutu.R;
@@ -86,11 +91,17 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         checkPermission();
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         mHandler = new Handler(Looper.getMainLooper());
         mCameraGLSurfaceView.getCameraRenderer().setCaptureCallback(mCaptureCallback);
+        int[] ratio = CameraParam.getInstance().ratio;
+        int[] dispaly = getScreen(ratio[0], ratio[1]);
+        mCameraGLSurfaceView.setLayoutParams(new RelativeLayout.LayoutParams(
+                dispaly[0], dispaly[1]));
+        mCameraGLSurfaceView.getHolder().setFixedSize(dispaly[0], dispaly[1]);
     }
 
     @OnCheckedChanged(value = {R.id.beauty, R.id.bigEye, R.id.stick})
@@ -122,6 +133,22 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             default:
                 break;
         }
+    }
+
+    private int[] getScreenParams() {
+        int[] display = new int[2];
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        ((WindowManager) (getSystemService(Context.WINDOW_SERVICE))).getDefaultDisplay().getMetrics(displayMetrics);
+        display[0] = displayMetrics.widthPixels;
+        display[1] = displayMetrics.heightPixels;
+        return display;
+    }
+
+    private int[] getScreen(int rh, int rw) {
+        int[] display = new int[2];
+        display[0] = getScreenParams()[0];;
+        display[1] = (int) ((float) rh / rw * display[0]);
+        return display;
     }
 
 

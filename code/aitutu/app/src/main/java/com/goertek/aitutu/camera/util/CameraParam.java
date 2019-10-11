@@ -15,6 +15,27 @@ public final class CameraParam {
     public boolean isTakePicture;
     //当前实例
     private static final CameraParam mInstance = new CameraParam();
+    // 实际预览宽度
+    public int previewWidth;
+    // 实际预览高度
+    public int previewHeight;
+    // 期望预览宽度
+    public int expectWidth = DEFAULT_16_9_WIDTH;
+    // 期望预览高度
+    public int expectHeight = DEFAULT_16_9_HEIGHT;
+    // 当前长宽比
+    public float currentRatio;
+    //默认比例
+    public int[] ratio = {16, 9};
+    // 16:9的默认宽高(理想值)
+    public static final int DEFAULT_16_9_WIDTH = 1280;
+    public static final int DEFAULT_16_9_HEIGHT = 720;
+    // 4:3的默认宽高(理想值)
+    public static final int DEFAULT_4_3_WIDTH = 640;
+    public static final int DEFAULT_4_3_HEIGHT = 480;
+    // 1:1的默认宽高(理想值)
+    public static final int DEFAULT_1_1_WIDTH = 640;
+    public static final int DEFAULT_1_1_HEIGHT = 640;
     /**
      * 获取相机配置参数
      * @return
