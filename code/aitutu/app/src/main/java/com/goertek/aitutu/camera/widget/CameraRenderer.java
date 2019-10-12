@@ -244,17 +244,14 @@ public class CameraRenderer implements GLSurfaceView.Renderer,
     public void enableBeauty(final boolean isChecked) {
         //向GL线程发布一个任务
         //任务会放入一个任务队列， 并在gl线程中去执行
-        mView.queueEvent(new Runnable() {
-            @Override
-            public void run() {
-                //Opengl线程
-                if (isChecked) {
-                    mBeautyFilter = new BeautyFilter(mView.getContext());
-                    mBeautyFilter.onReady(mWidth, mHeigh);
-                } else {
-                    mBeautyFilter.release();
-                    mBeautyFilter = null;
-                }
+        mView.queueEvent(() -> {
+            //Opengl线程
+            if (isChecked) {
+                mBeautyFilter = new BeautyFilter(mView.getContext());
+                mBeautyFilter.onReady(mWidth, mHeigh);
+            } else {
+                mBeautyFilter.release();
+                mBeautyFilter = null;
             }
         });
     }
@@ -265,17 +262,14 @@ public class CameraRenderer implements GLSurfaceView.Renderer,
     public void enableBigEye(final boolean isChecked) {
         //向GL线程发布一个任务
         //任务会放入一个任务队列， 并在gl线程中去执行
-        mView.queueEvent(new Runnable() {
-            @Override
-            public void run() {
-                //Opengl线程
-                if (isChecked) {
-                    mBigEyeFilter = new BigEyeFilter(mView.getContext());
-                    mBigEyeFilter.onReady(mWidth, mHeigh);
-                } else {
-                    mBigEyeFilter.release();
-                    mBigEyeFilter = null;
-                }
+        mView.queueEvent(() -> {
+            //Opengl线程
+            if (isChecked) {
+                mBigEyeFilter = new BigEyeFilter(mView.getContext());
+                mBigEyeFilter.onReady(mWidth, mHeigh);
+            } else {
+                mBigEyeFilter.release();
+                mBigEyeFilter = null;
             }
         });
     }
@@ -286,17 +280,14 @@ public class CameraRenderer implements GLSurfaceView.Renderer,
     public void enableStick(final boolean isChecked) {
         //向GL线程发布一个任务
         //任务会放入一个任务队列， 并在gl线程中去执行
-        mView.queueEvent(new Runnable() {
-            @Override
-            public void run() {
-                //Opengl线程
-                if (isChecked) {
-                    mStickFilter = new StickFilter(mView.getContext());
-                    mStickFilter.onReady(mWidth, mHeigh);
-                } else {
-                    mStickFilter.release();
-                    mStickFilter = null;
-                }
+        mView.queueEvent(() -> {
+            //Opengl线程
+            if (isChecked) {
+                mStickFilter = new StickFilter(mView.getContext());
+                mStickFilter.onReady(mWidth, mHeigh);
+            } else {
+                mStickFilter.release();
+                mStickFilter = null;
             }
         });
     }
