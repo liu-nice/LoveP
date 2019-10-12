@@ -34,7 +34,6 @@
         <activity android:name=".mvp.ui.activity.PuzzleActivity"/>
         <activity android:name="com.goertek.aitutu.camera.MainActivity" />
         <activity android:name=".mvp.ui.activity.FilterActivity"/>
-        <activity android:name=".mvp.ui.activity.ImageEditActivity" />
         <activity android:name=".mvp.ui.activity.RevolveActivity" />
         <activity android:name=".mvp.ui.activity.DoodleViewActivity" />
         <activity android:name=".mvp.ui.activity.StickerActivity" />

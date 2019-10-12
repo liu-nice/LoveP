@@ -4,7 +4,9 @@
 
 package com.goertek.aitutu.mvp.ui.activity;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -42,6 +44,8 @@ import butterknife.OnClick;
 public class StickerActivity extends BaseActivity {
 
     public static final String FILE_PATH = "file_path";
+
+    public static final int REQUEST_REVOLVE_CODE = 0x0011;
 
     @BindView(R.id.activity_sticker_toolbar)
     Toolbar mToolbar;
@@ -206,7 +210,7 @@ public class StickerActivity extends BaseActivity {
     public void stickerEvent(View view) {
         switch (view.getId()) {
             case R.id.activity_sticker_revolve:
-
+                startActivityForResult(new Intent(this,RevolveActivity.class).putExtra(RevolveActivity.FILE_PATH,filePath),REQUEST_REVOLVE_CODE);
                 break;
             case R.id.activity_sticker_sticker:
                 //显示贴纸布局
@@ -218,6 +222,16 @@ public class StickerActivity extends BaseActivity {
                 mStickerParentView.setVisibility(View.GONE);
                 mStickerHsw.setVisibility(View.VISIBLE);
                 break;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode,int resultCode,@Nullable Intent data) {
+        super.onActivityResult(requestCode,resultCode,data);
+        if (requestCode == REQUEST_REVOLVE_CODE && data != null) {
+            byte[] bis = data.getByteArrayExtra("imgbitmap");
+            mMainBitmap = BitmapFactory.decodeByteArray(bis,0,bis.length);
+            mImageView.setImageBitmap(mMainBitmap);
         }
     }
 }

@@ -12,7 +12,6 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -143,7 +142,6 @@ public class RevolveActivity extends BaseActivity {
         public boolean onMenuItemClick(MenuItem menuItem) {
             switch (menuItem.getItemId()) {
                 case R.id.menu_image_edit_save:
-                    Log.e("weip","保存图片啦啦啦");
                     Intent intent = getIntent();
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     newBitmap.compress(Bitmap.CompressFormat.JPEG,100,baos);
