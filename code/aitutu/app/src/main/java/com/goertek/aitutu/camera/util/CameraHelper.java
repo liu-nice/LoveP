@@ -21,8 +21,8 @@ import java.util.List;
  */
 public class CameraHelper implements Camera.PreviewCallback {
     private static final String TAG = "CameraHelper";
-    public static int WIDTH = 640;
-    public static int HEIGHT = 480;
+    public static int WIDTH = 480;
+    public static int HEIGHT = 640;
     private int mCameraId;
     private Camera mCamera;
     private byte[] buffer;
