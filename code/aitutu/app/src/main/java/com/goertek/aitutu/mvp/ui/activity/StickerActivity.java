@@ -5,28 +5,39 @@
 package com.goertek.aitutu.mvp.ui.activity;
 
 import android.graphics.Bitmap;
-import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.text.Layout;
 import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
 import com.goertek.aitutu.R;
 import com.goertek.aitutu.mvp.ui.adapter.StickersAdapter;
+import com.goertek.aitutu.mvp.ui.custom.sticker.DrawableSticker;
+import com.goertek.aitutu.mvp.ui.custom.sticker.Sticker;
 import com.goertek.aitutu.mvp.ui.custom.sticker.StickerView;
-import com.goertek.aitutu.mvp.ui.custom.sticker.TextSticker;
 import com.goertek.aitutu.util.BitmapUtils;
+import com.goertek.aitutu.util.FileUtils;
+import com.goertek.aitutu.util.StringUtils;
 import com.goertek.arm.base.BaseActivity;
 import com.goertek.arm.di.component.AppComponent;
 
+import java.io.File;
+
 import butterknife.BindView;
+import butterknife.OnClick;
 
 public class StickerActivity extends BaseActivity {
 
@@ -43,6 +54,24 @@ public class StickerActivity extends BaseActivity {
 
     @BindView(R.id.activity_sticker_recycleview)
     RecyclerView mRecycleview;
+
+    @BindView(R.id.activity_sticker_horizontalscollview)
+    HorizontalScrollView mStickerHsw;
+
+    @BindView(R.id.activity_sticker_revolve)
+    TextView mStickerRevolve;
+
+    @BindView(R.id.activity_sticker_sticker)
+    TextView mStickerSticker;
+
+    @BindView(R.id.activity_sticker_parentview)
+    LinearLayout mStickerParentView;
+
+    @BindView(R.id.activity_sticker_seekbar)
+    SeekBar mSeekBar;
+
+    @BindView(R.id.activity_sticker_recycleview_leftback)
+    TextView mBottomLeftBack;
 
     // 展示图片控件宽、高
     private int imageWidth, imageHeight;
@@ -69,6 +98,7 @@ public class StickerActivity extends BaseActivity {
         initToobar();
         getBitmapFormFile();
         initRecycleView();
+        initSeekBarEvent();
     }
 
     private void getBitmapFormFile() {
@@ -91,12 +121,34 @@ public class StickerActivity extends BaseActivity {
             @Override
             public void onItemClick(int imageSource) {
                 //添加贴纸
-                TextSticker sticker = new TextSticker(StickerActivity.this);
-                sticker.setText("Hello, world!");
-                sticker.setTextColor(Color.RED);
-                sticker.setTextAlign(Layout.Alignment.ALIGN_CENTER);
-                sticker.resizeText();
-                mStickerView.addSticker(sticker);
+                DrawableSticker drawableSticker = new DrawableSticker(ContextCompat.getDrawable(StickerActivity.this,imageSource));
+                mStickerView.addSticker(drawableSticker);
+            }
+        });
+    }
+
+    private void initSeekBarEvent() {
+        //设置贴纸透明度(0~255)
+        mSeekBar.setMax(255);
+        mSeekBar.setProgress(255);
+        mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar,int progress,boolean fromUser) {
+                Sticker currentSticker = mStickerView.getCurrentSticker();
+                if (currentSticker != null) {
+                    currentSticker.setAlpha(progress);
+                    mStickerView.invalidate();
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
             }
         });
     }
@@ -119,9 +171,53 @@ public class StickerActivity extends BaseActivity {
         public boolean onMenuItemClick(MenuItem menuItem) {
             switch (menuItem.getItemId()) {
                 case R.id.menu_image_edit_save:
+                    new SavePicToFileTask().execute();
                     break;
             }
             return true;
         }
     };
+
+    /**
+     * 保存处理后的图片
+     */
+    private class SavePicToFileTask extends AsyncTask<Void, Void, String> {
+
+        @Override
+        protected String doInBackground(Void... voids) {
+            File file = FileUtils.getNewFile(StickerActivity.this,"Sticker");
+            if (file != null) {
+                mStickerView.save(file);
+            }
+            return "success";
+        }
+
+        @Override
+        protected void onPostExecute(String fileName) {
+            super.onPostExecute(fileName);
+            if (StringUtils.isEmpty(fileName)) {
+                return;
+            }
+            finish();
+        }
+    }
+
+    @OnClick({R.id.activity_sticker_revolve,R.id.activity_sticker_sticker,R.id.activity_sticker_recycleview_leftback})
+    public void stickerEvent(View view) {
+        switch (view.getId()) {
+            case R.id.activity_sticker_revolve:
+
+                break;
+            case R.id.activity_sticker_sticker:
+                //显示贴纸布局
+                mStickerHsw.setVisibility(View.GONE);
+                mStickerParentView.setVisibility(View.VISIBLE);
+                break;
+            case R.id.activity_sticker_recycleview_leftback:
+                //隐藏贴纸布局
+                mStickerParentView.setVisibility(View.GONE);
+                mStickerHsw.setVisibility(View.VISIBLE);
+                break;
+        }
+    }
 }

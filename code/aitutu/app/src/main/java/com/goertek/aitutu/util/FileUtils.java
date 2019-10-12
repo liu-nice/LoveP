@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
+import android.text.TextUtils;
 import android.util.Log;
 
 import org.apache.http.HttpResponse;
@@ -29,54 +30,45 @@ import java.util.Locale;
  */
 public class FileUtils {
 
-    private static String BASE_PATH;
-    private static String STICKER_BASE_PATH;
-    private static FileUtils mInstance;
+    public static String getFolderName(String name) {
+        File mediaStorageDir =
+                new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
+                        name);
 
-    public static FileUtils getInstance() {
-        if (mInstance == null) {
-            synchronized (FileUtils.class) {
-                if (mInstance == null) {
-                    mInstance = new FileUtils();
-                }
+        if (!mediaStorageDir.exists()) {
+            if (!mediaStorageDir.mkdirs()) {
+                return "";
             }
         }
-        return mInstance;
+        return mediaStorageDir.getAbsolutePath();
     }
 
-    private FileUtils() {
-        String sdcardState = Environment.getExternalStorageState();
-        //如果没SD卡则放缓存[getCacheDir().getAbsolutePath();]
-        if (Environment.MEDIA_MOUNTED.equals(sdcardState)) {
-            BASE_PATH = Environment.getExternalStorageDirectory().getAbsolutePath()
-                    + "/stickercamera/";
+    /**
+     * 判断sd卡是否可以用
+     */
+    private static boolean isSDAvailable() {
+        return Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
+    }
+
+    public static File getNewFile(Context context,String folderName) {
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss",Locale.CHINA);
+
+        String timeStamp = simpleDateFormat.format(new Date());
+
+        String path;
+        if (isSDAvailable()) {
+            path = getFolderName(folderName) + File.separator + timeStamp + ".jpg";
+        } else {
+            path = context.getFilesDir().getPath() + File.separator + timeStamp + ".jpg";
         }
-        STICKER_BASE_PATH = BASE_PATH + "/stickers/";
-    }
 
-    public File getExternalFile(String path) {
-        return new File(BASE_PATH + path);
-    }
-
-    public String getPhotoSavedPath() {
-        return BASE_PATH + "stickercamera";
-    }
-
-    public String getPhotoTempPath() {
-        return BASE_PATH + "stickercamera";
-    }
-
-    public String getSystemPhotoPath() {
-        return Environment.getExternalStorageDirectory().getAbsolutePath() + "/DCIM/Camera";
-    }
-
-    public boolean mkdir(File file) {
-        while (!file.getParentFile().exists()) {
-            mkdir(file.getParentFile());
+        if (TextUtils.isEmpty(path)) {
+            return null;
         }
-        return file.mkdir();
-    }
 
+        return new File(path);
+    }
     /*******************************************/
     public static File createTmpFile(Context context) {
 

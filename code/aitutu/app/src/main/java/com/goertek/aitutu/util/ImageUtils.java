@@ -31,9 +31,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -555,30 +553,5 @@ public class ImageUtils {
         }
         return null;
     }
-
-    //保存图片文件
-    public static String saveToFile(String fileFolderStr,boolean isDir,Bitmap bitmap) throws FileNotFoundException, IOException {
-        File jpgFile;
-        if (isDir) {
-            File fileFolder = new File(fileFolderStr);
-            Date date = new Date();
-            SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss"); // 格式化时间
-            String filename = format.format(date) + ".jpg";
-            if (!fileFolder.exists()) { // 如果目录不存在，则创建一个名为"finger"的目录
-                FileUtils.getInstance().mkdir(fileFolder);
-            }
-            jpgFile = new File(fileFolder,filename);
-        } else {
-            jpgFile = new File(fileFolderStr);
-            if (!jpgFile.getParentFile().exists()) { // 如果目录不存在，则创建一个名为"finger"的目录
-                FileUtils.getInstance().mkdir(jpgFile.getParentFile());
-            }
-        }
-        FileOutputStream outputStream = new FileOutputStream(jpgFile); // 文件输出流
-        bitmap.compress(Bitmap.CompressFormat.JPEG,80,outputStream);
-        IOUtil.closeStream(outputStream);
-        return jpgFile.getPath();
-    }
-
 
 }

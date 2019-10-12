@@ -18,12 +18,10 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.goertek.aitutu.R;
-import com.goertek.aitutu.camera.util.FileUtil;
 import com.goertek.aitutu.mvp.ui.custom.CustomViewPager;
 import com.goertek.aitutu.mvp.ui.custom.StickerView;
 import com.goertek.aitutu.mvp.ui.custom.imagezoom.ImageViewTouch;
@@ -31,13 +29,9 @@ import com.goertek.aitutu.mvp.ui.custom.imagezoom.ImageViewTouchBase;
 import com.goertek.aitutu.mvp.ui.fragment.MainMenuFragment;
 import com.goertek.aitutu.mvp.ui.fragment.StickerFragment;
 import com.goertek.aitutu.util.BitmapUtils;
-import com.goertek.aitutu.util.FileUtils;
-import com.goertek.aitutu.util.ImageUtils;
 import com.goertek.aitutu.util.StringUtils;
 import com.goertek.arm.base.BaseActivity;
 import com.goertek.arm.di.component.AppComponent;
-
-import java.io.IOException;
 
 import butterknife.BindView;
 
@@ -157,14 +151,14 @@ public class ImageEditActivity extends BaseActivity {
         @Override
         protected String doInBackground(Bitmap... params) {
             String fileName = null;
-            try {
-                bitmap = params[0];
-                String picName = FileUtil.getCurrentPicName();
-                fileName = ImageUtils.saveToFile(FileUtils.getInstance().getPhotoSavedPath() + "/" + picName,false,bitmap);
-            } catch (IOException e) {
-                e.printStackTrace();
-                Log.e("weip","图片处理错误，请退出相机并重试");
-            }
+//            try {
+//                bitmap = params[0];
+//                String picName = FileUtil.getCurrentPicName();
+////                fileName = ImageUtils.saveToFile(FileUtils.getInstance().getPhotoSavedPath() + "/" + picName,false,bitmap);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//                Log.e("weip","图片处理错误，请退出相机并重试");
+//            }
             return fileName;
         }
 
