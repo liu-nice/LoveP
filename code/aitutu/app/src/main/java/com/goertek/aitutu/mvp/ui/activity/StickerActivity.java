@@ -47,45 +47,100 @@ public class StickerActivity extends BaseActivity {
 
     public static final int REQUEST_REVOLVE_CODE = 0x0011;
 
+    public static final int NUMBER_255 = 255;
+
+    /**
+     * toolbar
+     */
     @BindView(R.id.activity_sticker_toolbar)
     Toolbar mToolbar;
 
+    /**
+     * stickerview
+     */
     @BindView(R.id.activity_sticker_stickerview)
     StickerView mStickerView;
 
+    /**
+     * view
+     */
     @BindView(R.id.activity_sticker_imageview)
     ImageView mImageView;
 
+    /**
+     * 贴纸资源view
+     */
     @BindView(R.id.activity_sticker_recycleview)
     RecyclerView mRecycleview;
 
+    /**
+     * module
+     */
     @BindView(R.id.activity_sticker_horizontalscollview)
     HorizontalScrollView mStickerHsw;
 
+    /**
+     * 旋转
+     */
     @BindView(R.id.activity_sticker_revolve)
     TextView mStickerRevolve;
 
+    /**
+     * 贴纸view
+     */
     @BindView(R.id.activity_sticker_sticker)
     TextView mStickerSticker;
 
+    /**
+     * 贴纸功能主布局
+     */
     @BindView(R.id.activity_sticker_parentview)
     LinearLayout mStickerParentView;
 
+    /**
+     * seekbar
+     */
     @BindView(R.id.activity_sticker_seekbar)
     SeekBar mSeekBar;
 
+    /**
+     * 底部返回键
+     */
     @BindView(R.id.activity_sticker_recycleview_leftback)
     TextView mBottomLeftBack;
 
-    // 展示图片控件宽、高
+    /**
+     * 展示图片控件宽、高
+     */
     private int imageWidth, imageHeight;
 
-    //需要编辑图片路径
-    public String filePath;
-
+    /**
+     * 需要编辑图片路径
+     */
+    private String filePath;
+    /**
+     * 主图
+     */
     private Bitmap mMainBitmap;
-
+    /**
+     * 贴纸adapter
+     */
     private StickersAdapter stickersAdapter;
+
+    private Toolbar.OnMenuItemClickListener onMenuItemClick = new Toolbar.OnMenuItemClickListener() {
+        @Override
+        public boolean onMenuItemClick(MenuItem menuItem) {
+            switch (menuItem.getItemId()) {
+                case R.id.menu_image_edit_save:
+                    new SavePicToFileTask().execute();
+                    break;
+                default:
+                    break;
+            }
+            return true;
+        }
+    };
+
 
     @Override
     public void setupActivityComponent(@NonNull AppComponent appComponent) {
@@ -133,8 +188,8 @@ public class StickerActivity extends BaseActivity {
 
     private void initSeekBarEvent() {
         //设置贴纸透明度(0~255)
-        mSeekBar.setMax(255);
-        mSeekBar.setProgress(255);
+        mSeekBar.setMax(NUMBER_255);
+        mSeekBar.setProgress(NUMBER_255);
         mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar,int progress,boolean fromUser) {
@@ -170,18 +225,6 @@ public class StickerActivity extends BaseActivity {
         return true;
     }
 
-    private Toolbar.OnMenuItemClickListener onMenuItemClick = new Toolbar.OnMenuItemClickListener() {
-        @Override
-        public boolean onMenuItemClick(MenuItem menuItem) {
-            switch (menuItem.getItemId()) {
-                case R.id.menu_image_edit_save:
-                    new SavePicToFileTask().execute();
-                    break;
-            }
-            return true;
-        }
-    };
-
     /**
      * 保存处理后的图片
      */
@@ -210,7 +253,8 @@ public class StickerActivity extends BaseActivity {
     public void stickerEvent(View view) {
         switch (view.getId()) {
             case R.id.activity_sticker_revolve:
-                startActivityForResult(new Intent(this,RevolveActivity.class).putExtra(RevolveActivity.FILE_PATH,filePath),REQUEST_REVOLVE_CODE);
+                startActivityForResult(new Intent(this,RevolveActivity.class).
+                        putExtra(RevolveActivity.FILE_PATH,filePath),REQUEST_REVOLVE_CODE);
                 break;
             case R.id.activity_sticker_sticker:
                 //显示贴纸布局
@@ -221,6 +265,8 @@ public class StickerActivity extends BaseActivity {
                 //隐藏贴纸布局
                 mStickerParentView.setVisibility(View.GONE);
                 mStickerHsw.setVisibility(View.VISIBLE);
+                break;
+            default:
                 break;
         }
     }
