@@ -85,16 +85,6 @@ public class StickerView extends View {
         invalidate();// 重绘视图
     }
 
-//    public void addText(TextPro textPro) {
-//        TextStickerItem item = new TextStickerItem(getContext());
-//        item.init(textPro,this);
-//        if (currentItem != null) {
-//            currentItem.isDrawHelpTool = false;
-//        }
-//        bank.put(++imageCount,item);
-//        invalidate();// 重绘视图
-//    }
-
     /**
      * 绘制客户页面
      */
