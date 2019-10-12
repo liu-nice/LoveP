@@ -17,7 +17,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.RecyclerView;
@@ -238,7 +237,7 @@ public class MainPhotoPickActivity extends BaseActivity<PhotoPickPresenter>
         mPhotoPickAdapter.setOnitemClickLintener(new PhotoPickAdapter.onItemClick() {
             @Override
             public void onItemClick(List<ImageInfo> images,int position) {
-                startActivity(new Intent(MainPhotoPickActivity.this,ImageEditActivity.class).putExtra(ImageEditActivity.FILE_PATH,images.get(position).path));
+                startActivity(new Intent(MainPhotoPickActivity.this,StickerActivity.class).putExtra(StickerActivity.FILE_PATH,images.get(position).path));
             }
         });
     }

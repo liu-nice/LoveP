@@ -12,6 +12,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.RectF;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -112,6 +114,7 @@ public class StickerView extends View {
      * @param alpha
      */
     public void updateStickerAlpha(int alpha) {
+        Log.e("weip","=============size:" + imageCount);
         if (imageCount == 0) {
             return;
         }
@@ -119,11 +122,14 @@ public class StickerView extends View {
             currentItem.mAlpha = alpha;
         } else {
             StickerItem stickerItem = bank.get(imageCount);
-            stickerItem.mAlpha = alpha;
+            if (stickerItem != null) {
+                stickerItem.mAlpha = alpha;
+            }
         }
         invalidate();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         boolean ret = super.onTouchEvent(event);// 是否向下传递事件标志 true为消耗
@@ -182,7 +188,7 @@ public class StickerView extends View {
                     invalidate();
                 }
                 if (deleteId > 0 && currentStatus == STATUS_DELETE) {// 删除选定贴图
-                    bank.remove(deleteId);
+                    bank.remove(deleteId,bank.get(deleteId));
                     currentStatus = STATUS_IDLE;// 返回空闲状态
                     invalidate();
                 }// end if
