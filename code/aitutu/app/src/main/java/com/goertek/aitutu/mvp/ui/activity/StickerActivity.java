@@ -170,6 +170,9 @@ public class StickerActivity extends BaseActivity {
         mImageView.setImageBitmap(mMainBitmap);
     }
 
+    /**
+     * 初始化recycleview
+     */
     private void initRecycleView() {
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
         mLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
@@ -186,6 +189,9 @@ public class StickerActivity extends BaseActivity {
         });
     }
 
+    /**
+     * 初始化seekbar
+     */
     private void initSeekBarEvent() {
         //设置贴纸透明度(0~255)
         mSeekBar.setMax(NUMBER_255);
@@ -212,6 +218,9 @@ public class StickerActivity extends BaseActivity {
         });
     }
 
+    /**
+     * 初始化toolbar
+     */
     private void initToobar() {
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
