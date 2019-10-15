@@ -162,7 +162,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     }
 
     private void showResolutionView() {
-        BottomDialogView dialogView = new BottomDialogView(this, R.layout.resolution_view);
+        BottomDialogView dialogView = new BottomDialogView(this, R.layout.resolution_view,
+                CameraParam.getInstance().ratio);
         dialogView.setOnRadioCheckedChangedListener((ratio, width, height) -> {
             CameraParam.getInstance().ratio = ratio;
             CameraParam.getInstance().expectWidth = width;

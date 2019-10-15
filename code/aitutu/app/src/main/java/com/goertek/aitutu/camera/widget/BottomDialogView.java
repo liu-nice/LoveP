@@ -50,17 +50,36 @@ public class BottomDialogView extends Dialog {
     //比例点击回调
     private IBottomView mListener;
 
+    private int[] mRatio;
+
     //butterknife实例
     private Unbinder unbinder;
 
     //这里的view其实可以替换直接传layout过来的 因为各种原因没传(lan)
-    public BottomDialogView(Context context, int resId) {
+    public BottomDialogView(Context context, int resId, int[] ratio) {
         super(context, R.style.BottomDialog);
         this.context = context;
+        this.mRatio = ratio;
         View view = LayoutInflater.from(context).inflate(resId, null);
         this.view = view;
         unbinder = ButterKnife.bind(this, view);
 
+        ECHOView(ratio);
+    }
+
+    /**
+     * 回显当前选中的界面
+     * @param ratio 当前比例
+     */
+    private void ECHOView(int[] ratio) {
+        float curRatio = (1.0F * ratio[1]) / ratio[0];
+        if(curRatio == 0.75) {
+            rbResolution_4_3.setChecked(true);
+        }else if(curRatio == 0.5625){
+            rbResolution_16_9.setChecked(true);
+        }else {
+            rbResolution_1_1.setChecked(true);
+        }
     }
 
     @Override
@@ -71,6 +90,7 @@ public class BottomDialogView extends Dialog {
         setCanceledOnTouchOutside(false);
         Window window = this.getWindow();
         window.setGravity(Gravity.BOTTOM);
+        window.setDimAmount(0f);
         WindowManager.LayoutParams params = window.getAttributes();
         params.width = WindowManager.LayoutParams.MATCH_PARENT;
         params.height = WindowManager.LayoutParams.WRAP_CONTENT;
