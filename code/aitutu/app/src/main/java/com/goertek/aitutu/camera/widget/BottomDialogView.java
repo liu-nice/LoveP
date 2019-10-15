@@ -50,8 +50,6 @@ public class BottomDialogView extends Dialog {
     //比例点击回调
     private IBottomView mListener;
 
-    private int[] mRatio;
-
     //butterknife实例
     private Unbinder unbinder;
 
@@ -59,11 +57,8 @@ public class BottomDialogView extends Dialog {
     public BottomDialogView(Context context, int resId, int[] ratio) {
         super(context, R.style.BottomDialog);
         this.context = context;
-        this.mRatio = ratio;
-        View view = LayoutInflater.from(context).inflate(resId, null);
-        this.view = view;
+        this.view = LayoutInflater.from(context).inflate(resId, null);
         unbinder = ButterKnife.bind(this, view);
-
         ECHOView(ratio);
     }
 
@@ -72,10 +67,10 @@ public class BottomDialogView extends Dialog {
      * @param ratio 当前比例
      */
     private void ECHOView(int[] ratio) {
-        float curRatio = (1.0F * ratio[1]) / ratio[0];
-        if(curRatio == 0.75) {
+        float mRatio = (1.0F * ratio[1]) / ratio[0];
+        if(mRatio == 0.75) {
             rbResolution_4_3.setChecked(true);
-        }else if(curRatio == 0.5625){
+        }else if(mRatio == 0.5625){
             rbResolution_16_9.setChecked(true);
         }else {
             rbResolution_1_1.setChecked(true);
