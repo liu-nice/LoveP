@@ -22,6 +22,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.View;
 
 import com.goertek.aitutu.R;
@@ -264,13 +265,19 @@ public class CropImageActivity extends BaseActivity {
 
     @Override
     public void initData(@Nullable Bundle savedInstanceState) {
+        String filePath = getIntent().getStringExtra(StickerActivity.FILE_PATH);
+        Log.e("CropImageActivity", "Filepath =" + filePath);
+
+
         if (savedInstanceState != null) {
             // restore data
             mFrameRect = savedInstanceState.getParcelable(KEY_FRAME_RECT);
             mSourceUri = savedInstanceState.getParcelable(KEY_SOURCE_URI);
         }
         // load image
-        mSourceUri = getUriFromDrawableResId(this, R.drawable.sample);
+        mSourceUri = Uri.fromFile(new File(filePath));
+        //  mSourceUri = getUriFromDrawableResId(this, R.drawable.sample);
+        Log.e("CropImageActivity", "mSourceUri =" + mSourceUri);
         mCropImageView.load(mSourceUri)
                 .initialFrameRect(mFrameRect)
                 .useThumbnail(true)

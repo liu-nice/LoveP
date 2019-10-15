@@ -166,7 +166,7 @@ public class StickerActivity extends BaseActivity {
         imageHeight = metrics.heightPixels / 2;
         //拍照或者选择某一张相册图片,目前先写死
         filePath = getIntent().getStringExtra(FILE_PATH);
-        mMainBitmap = BitmapUtils.getSampledBitmap(filePath,imageWidth,imageHeight);
+        mMainBitmap = BitmapUtils.getSampledBitmap(filePath, imageWidth, imageHeight);
         mImageView.setImageBitmap(mMainBitmap);
     }
 
@@ -183,7 +183,7 @@ public class StickerActivity extends BaseActivity {
             @Override
             public void onItemClick(int imageSource) {
                 //添加贴纸
-                DrawableSticker drawableSticker = new DrawableSticker(ContextCompat.getDrawable(StickerActivity.this,imageSource));
+                DrawableSticker drawableSticker = new DrawableSticker(ContextCompat.getDrawable(StickerActivity.this, imageSource));
                 mStickerView.addSticker(drawableSticker);
             }
         });
@@ -198,7 +198,7 @@ public class StickerActivity extends BaseActivity {
         mSeekBar.setProgress(NUMBER_255);
         mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
-            public void onProgressChanged(SeekBar seekBar,int progress,boolean fromUser) {
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 Sticker currentSticker = mStickerView.getCurrentSticker();
                 if (currentSticker != null) {
                     currentSticker.setAlpha(progress);
@@ -230,7 +230,7 @@ public class StickerActivity extends BaseActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_image_edit,menu);
+        getMenuInflater().inflate(R.menu.menu_image_edit, menu);
         return true;
     }
 
@@ -241,7 +241,7 @@ public class StickerActivity extends BaseActivity {
 
         @Override
         protected String doInBackground(Void... voids) {
-            File file = FileUtils.getNewFile(StickerActivity.this,"Sticker");
+            File file = FileUtils.getNewFile(StickerActivity.this, "Sticker");
             if (file != null) {
                 mStickerView.save(file);
             }
@@ -258,34 +258,41 @@ public class StickerActivity extends BaseActivity {
         }
     }
 
-    @OnClick({R.id.activity_sticker_revolve,R.id.activity_sticker_sticker,R.id.activity_sticker_recycleview_leftback})
+    @OnClick({R.id.activity_sticker_revolve, R.id.activity_sticker_sticker, R.id.activity_sticker_recycleview_leftback, R.id.activity_sticker_crop})
     public void stickerEvent(View view) {
         switch (view.getId()) {
             case R.id.activity_sticker_revolve:
-                startActivityForResult(new Intent(this,RevolveActivity.class).
-                        putExtra(RevolveActivity.FILE_PATH,filePath),REQUEST_REVOLVE_CODE);
+                startActivityForResult(new Intent(this, RevolveActivity.class).
+                        putExtra(RevolveActivity.FILE_PATH, filePath), REQUEST_REVOLVE_CODE);
                 break;
             case R.id.activity_sticker_sticker:
                 //显示贴纸布局
                 mStickerHsw.setVisibility(View.GONE);
                 mStickerParentView.setVisibility(View.VISIBLE);
                 break;
+            case R.id.activity_sticker_crop:
+                Intent mIntent = new Intent(this, CropImageActivity.class);
+                mIntent.putExtra(FILE_PATH, filePath);
+                startActivity(mIntent);
+
+
             case R.id.activity_sticker_recycleview_leftback:
                 //隐藏贴纸布局
                 mStickerParentView.setVisibility(View.GONE);
                 mStickerHsw.setVisibility(View.VISIBLE);
                 break;
+
             default:
                 break;
         }
     }
 
     @Override
-    protected void onActivityResult(int requestCode,int resultCode,@Nullable Intent data) {
-        super.onActivityResult(requestCode,resultCode,data);
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_REVOLVE_CODE && data != null) {
             byte[] bis = data.getByteArrayExtra("imgbitmap");
-            mMainBitmap = BitmapFactory.decodeByteArray(bis,0,bis.length);
+            mMainBitmap = BitmapFactory.decodeByteArray(bis, 0, bis.length);
             mImageView.setImageBitmap(mMainBitmap);
         }
     }

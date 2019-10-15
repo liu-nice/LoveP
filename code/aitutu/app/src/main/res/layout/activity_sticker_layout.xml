@@ -70,6 +70,16 @@
                 android:textColor="@color/black"
                 android:drawableTop="@drawable/icon_sticker"
                 android:textSize="16dp" />
+
+            <TextView
+                android:id="@+id/activity_sticker_crop"
+                android:layout_width="80dp"
+                android:layout_height="match_parent"
+                android:text="裁剪"
+                android:gravity="center"
+                android:textColor="@color/black"
+                android:drawableTop="@drawable/crop"
+                android:textSize="16dp" />
         </LinearLayout>
 
     </HorizontalScrollView>
