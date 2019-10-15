@@ -16,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.CompoundButton;
 import android.widget.RelativeLayout;
@@ -25,6 +26,7 @@ import com.goertek.aitutu.R;
 import com.goertek.aitutu.camera.util.BitmapUtils;
 import com.goertek.aitutu.camera.util.CameraParam;
 import com.goertek.aitutu.camera.util.FileUtil;
+import com.goertek.aitutu.camera.widget.BottomDialogView;
 import com.goertek.aitutu.camera.widget.CameraGLSurfaceView;
 import com.goertek.aitutu.camera.widget.CameraRenderer;
 
@@ -66,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     //照片名字
     private String picName;
 
+
     /**
      * 截屏回调
      */
@@ -97,11 +100,15 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         ButterKnife.bind(this);
         mHandler = new Handler(Looper.getMainLooper());
         mCameraGLSurfaceView.getCameraRenderer().setCaptureCallback(mCaptureCallback);
+        changeResolution();
+    }
+
+    private void changeResolution() {
         int[] ratio = CameraParam.getInstance().ratio;
         int[] dispaly = getScreen(ratio[0], ratio[1]);
+        Toast.makeText(MainActivity.this, "width=" + dispaly[0] + "height=" + dispaly[1], Toast.LENGTH_SHORT).show();
         mCameraGLSurfaceView.setLayoutParams(new RelativeLayout.LayoutParams(
                 dispaly[0], dispaly[1]));
-        mCameraGLSurfaceView.getHolder().setFixedSize(dispaly[0], dispaly[1]);
     }
 
     @OnCheckedChanged(value = {R.id.beauty, R.id.bigEye, R.id.stick})
@@ -121,7 +128,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         }
     }
 
-    @OnClick(value = R.id.btn_takepic)
+    @OnClick(value = {R.id.btn_takepic, R.id.btn_resolution})
     void onBindClick(View view) {
         switch (view.getId()) {
             case R.id.btn_takepic:
@@ -129,6 +136,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 Toast.makeText(MainActivity.this, "takepicture", Toast.LENGTH_SHORT).show();
                 Timber.i("takepicture");
                 mCameraGLSurfaceView.requestRender();
+                break;
+            case R.id.btn_resolution:
+                showResolutionView();
                 break;
             default:
                 break;
@@ -146,9 +156,22 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
     private int[] getScreen(int rh, int rw) {
         int[] display = new int[2];
-        display[0] = getScreenParams()[0];;
+        display[0] = getScreenParams()[0];
         display[1] = (int) ((float) rh / rw * display[0]);
         return display;
+    }
+
+    private void showResolutionView() {
+        BottomDialogView dialogView = new BottomDialogView(this, R.layout.resolution_view);
+        dialogView.setOnRadioCheckedChangedListener((ratio, width, height) -> {
+            CameraParam.getInstance().ratio = ratio;
+            CameraParam.getInstance().expectWidth = width;
+            CameraParam.getInstance().expectHeight = height;
+            changeResolution();
+            mCameraGLSurfaceView.getCameraRenderer().changePreview();
+            Toast.makeText(MainActivity.this, ratio[0] + "," + ratio[1] + "ewidth=" + width + "eheight=" + height, Toast.LENGTH_SHORT).show();
+        });
+        dialogView.show();
     }
 
 
@@ -165,7 +188,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
      */
     private void checkPermission() {
         String[] perms = {Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE};
+                Manifest.permission.WRITE_EXTERNAL_STORAGE};
         if (!EasyPermissions.hasPermissions(this, perms)) {
             EasyPermissions.requestPermissions(this, "申请相机权限和读写SD卡权限", PERMISSION_CAMERA, perms);
         }
@@ -227,4 +250,5 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             mCameraGLSurfaceView.onResume();
         }
     }
+
 }

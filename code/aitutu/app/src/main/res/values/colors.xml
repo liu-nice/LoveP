@@ -12,6 +12,7 @@
     <color name="light_grey">#ffbebebe</color>
     <color name="windowBackground">#1C1C1C</color>
     <color name="colorButtonNormal">#FFFFFB</color>
+    <color name="white_5">#7EFFFFFF</color>
     <color name="textColorPrimary">#FFFFFB</color>
     <color name="textColorPrimaryInverse">#1C1C1C</color>
     <color name="overlay">#AA1C1C1C</color>

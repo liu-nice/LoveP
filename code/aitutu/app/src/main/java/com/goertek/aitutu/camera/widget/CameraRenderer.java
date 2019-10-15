@@ -29,6 +29,8 @@ import java.nio.ByteOrder;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import jp.co.cyberagent.android.gpuimage.GLTextureView;
+
 /**
  * describition : 渲染器render
  *
@@ -299,4 +301,7 @@ public class CameraRenderer implements GLSurfaceView.Renderer,
         mCameraHelper.switchCamera();
     }
 
+    public void changePreview(){
+        mCameraHelper.changePreview();
+    }
 }

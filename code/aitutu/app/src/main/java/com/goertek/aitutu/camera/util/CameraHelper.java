@@ -39,6 +39,10 @@ public class CameraHelper implements Camera.PreviewCallback {
         } else {
             mCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
         }
+        changePreview();
+    }
+
+    public void changePreview() {
         stopPreview();
         startPreview(mSurfaceTexture);
     }
