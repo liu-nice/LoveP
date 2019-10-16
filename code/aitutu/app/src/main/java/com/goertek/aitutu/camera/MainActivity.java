@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 dispaly[0], dispaly[1]));
     }
 
-    @OnCheckedChanged(value = {R.id.beauty, R.id.bigEye, R.id.stick})
+    @OnCheckedChanged(value = {R.id.beauty, R.id.bigEye, R.id.stick, R.id.grayScale})
     void onBindCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         switch (buttonView.getId()) {
             case R.id.beauty:
@@ -122,6 +122,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 break;
             case R.id.stick:
                 mCameraGLSurfaceView.enableStick(isChecked);
+                break;
+            case R.id.grayScale:
+                mCameraGLSurfaceView.enableGrayScale(isChecked);
                 break;
             default:
                 break;

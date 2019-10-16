@@ -67,4 +67,10 @@
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/bigEye"
         android:text="贴纸" />
+    <CheckBox
+        android:id="@+id/grayScale"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/stick"
+        android:text="灰度" />
 </RelativeLayout>

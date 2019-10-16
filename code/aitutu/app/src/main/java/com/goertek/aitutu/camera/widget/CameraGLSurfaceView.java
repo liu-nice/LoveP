@@ -94,4 +94,11 @@ public class CameraGLSurfaceView extends GLSurfaceView {
         cameraRenderer.enableStick(isChecked);
     }
 
+    /**
+     * 灰度
+     * @param isChecked 选中状态
+     */
+    public void enableGrayScale(boolean isChecked) {
+        cameraRenderer.enableGrayScale(isChecked);
+    }
 }

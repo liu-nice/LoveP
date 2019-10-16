@@ -17,6 +17,7 @@ import com.goertek.aitutu.camera.face.FaceTrack;
 import com.goertek.aitutu.camera.filter.BeautyFilter;
 import com.goertek.aitutu.camera.filter.BigEyeFilter;
 import com.goertek.aitutu.camera.filter.CameraFilter;
+import com.goertek.aitutu.camera.filter.GrayScaleFilter;
 import com.goertek.aitutu.camera.filter.ScreenFilter;
 import com.goertek.aitutu.camera.filter.StickFilter;
 import com.goertek.aitutu.camera.util.CameraHelper;
@@ -58,6 +59,7 @@ public class CameraRenderer implements GLSurfaceView.Renderer,
     //纹理数组
     private int[] mTextures;
 
+    private GrayScaleFilter mGrayScaleFilter;
     //相机滤镜
     private CameraFilter mCameraFilter;
     //人脸识别
@@ -113,7 +115,6 @@ public class CameraRenderer implements GLSurfaceView.Renderer,
         //注意：必须在gl线程操作opengl
         mCameraFilter = new CameraFilter(mView.getContext());
         mScreenFilter = new ScreenFilter(mView.getContext());
-
 
         //渲染线程的EGL上下文
         EGLContext eglContext = EGL14.eglGetCurrentContext();
@@ -172,6 +173,12 @@ public class CameraRenderer implements GLSurfaceView.Renderer,
         if (null != mBigEyeFilter) {
             mBigEyeFilter.setFace(face);
             id = mBigEyeFilter.onDrawFrame(id);
+        }
+
+
+        // 灰度
+        if (null != mGrayScaleFilter) {
+            id = mGrayScaleFilter.onDrawFrame(id);
         }
         // 贴纸
         if (null != mStickFilter) {
@@ -240,6 +247,23 @@ public class CameraRenderer implements GLSurfaceView.Renderer,
         }
     }
 
+    /**
+     * @see CameraGLSurfaceView#enableGrayScale(boolean)
+     */
+    public void enableGrayScale(final boolean isChecked) {
+        //向GL线程发布一个任务
+        //任务会放入一个任务队列， 并在gl线程中去执行
+        mView.queueEvent(() -> {
+            //Opengl线程
+            if (isChecked) {
+                mGrayScaleFilter = new GrayScaleFilter(mView.getContext());
+                mGrayScaleFilter.onReady(mWidth, mHeigh);
+            } else {
+                mGrayScaleFilter.release();
+                mGrayScaleFilter = null;
+            }
+        });
+    }
     /**
      * @see CameraGLSurfaceView#enableBeauty(boolean)
      */
