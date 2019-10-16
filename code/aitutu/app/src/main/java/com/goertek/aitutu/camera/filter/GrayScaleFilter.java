@@ -18,7 +18,7 @@ import com.goertek.aitutu.R;
 public class GrayScaleFilter extends AbstractFrameFilter{
 
     public GrayScaleFilter(Context context) {
-        super(context, R.raw.grayscale_vertex, R.raw.grayscale_frag);
+        super(context, R.raw.base_vertex, R.raw.grayscale_frag);
     }
 
     @Override
