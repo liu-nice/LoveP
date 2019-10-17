@@ -29,6 +29,8 @@ import com.goertek.aitutu.camera.util.FileUtil;
 import com.goertek.aitutu.camera.widget.BottomDialogView;
 import com.goertek.aitutu.camera.widget.CameraGLSurfaceView;
 import com.goertek.aitutu.camera.widget.CameraRenderer;
+import com.goertek.aitutu.camera.widget.GrayScaleBottomDialog;
+import com.goertek.aitutu.camera.widget.ResolutionBottomDialog;
 
 import java.io.File;
 import java.nio.ByteBuffer;
@@ -131,7 +133,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         }
     }
 
-    @OnClick(value = {R.id.btn_takepic, R.id.btn_resolution})
+    @OnClick(value = {R.id.btn_takepic, R.id.btn_resolution, R.id.btn_grayscale})
     void onBindClick(View view) {
         switch (view.getId()) {
             case R.id.btn_takepic:
@@ -142,6 +144,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 break;
             case R.id.btn_resolution:
                 showResolutionView();
+                break;
+            case R.id.btn_grayscale:
+                showGrayScaleView();
                 break;
             default:
                 break;
@@ -165,9 +170,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     }
 
     private void showResolutionView() {
-        BottomDialogView dialogView = new BottomDialogView(this, R.layout.resolution_view,
+        BottomDialogView dialogView = new ResolutionBottomDialog(this, R.layout.resolution_view,
                 CameraParam.getInstance().ratio);
-        dialogView.setOnRadioCheckedChangedListener((ratio, width, height) -> {
+        ((ResolutionBottomDialog) dialogView).setOnRadioCheckedChangedListener((ratio, width, height) -> {
             CameraParam.getInstance().ratio = ratio;
             CameraParam.getInstance().expectWidth = width;
             CameraParam.getInstance().expectHeight = height;
@@ -175,6 +180,13 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             mCameraGLSurfaceView.getCameraRenderer().changePreview();
             Toast.makeText(MainActivity.this, ratio[0] + "," + ratio[1] + "ewidth=" + width + "eheight=" + height, Toast.LENGTH_SHORT).show();
         });
+        dialogView.show();
+    }
+
+    private void showGrayScaleView() {
+        BottomDialogView dialogView = new GrayScaleBottomDialog(this, R.layout.grayscale_view,
+                CameraParam.getInstance().ratio);
+        Toast.makeText(MainActivity.this, "scale", Toast.LENGTH_SHORT).show();
         dialogView.show();
     }
 

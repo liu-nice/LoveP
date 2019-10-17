@@ -54,7 +54,6 @@ public abstract class AbstractFilter {
      */
     protected int vTexture;
 
-
     protected int mOutputWidth;
     protected int mOutputHeight;
 

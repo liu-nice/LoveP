@@ -16,9 +16,13 @@ import com.goertek.aitutu.R;
  * @since : 2019/10/9 14:51
  */
 public class GrayScaleFilter extends AbstractFrameFilter{
+    private int mGrayscale;
+    private float mScale;
 
     public GrayScaleFilter(Context context) {
         super(context, R.raw.base_vertex, R.raw.grayscale_frag);
+        mGrayscale = GLES20.glGetUniformLocation(mGLProgramId,
+                "grayscale");
     }
 
     @Override
@@ -29,7 +33,7 @@ public class GrayScaleFilter extends AbstractFrameFilter{
         //不调用的话就是默认的操作glsurfaceview中的纹理了。显示到屏幕上了
         //这里我们还只是把它画到fbo中(缓存)
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, mFrameBuffers[0]);
-
+        GLES20.glUniform1f(mGrayscale, mScale);
         //使用着色器
         GLES20.glUseProgram(mGLProgramId);
         //传递坐标
@@ -52,5 +56,11 @@ public class GrayScaleFilter extends AbstractFrameFilter{
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
         return mFrameBufferTextures[0];
     }
-
+    /**
+     * 灰度程度
+     * @param level 0 ~ 1.0f 对应0-255
+     */
+    public void setComplexionLevel(float level) {
+        mScale = level;
+    }
 }
