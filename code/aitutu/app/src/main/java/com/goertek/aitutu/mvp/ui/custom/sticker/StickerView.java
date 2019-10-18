@@ -12,7 +12,6 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PointF;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.SystemClock;
 import android.support.annotation.IntDef;
@@ -41,9 +40,10 @@ import java.util.List;
 
 /**
  * 自定义StickerView
+ *
+ * @author Davin
  * @version 1.0
  * @since 2019-10-15
- * @author Davin
  */
 public class StickerView extends FrameLayout {
     /**
@@ -100,7 +100,6 @@ public class StickerView extends FrameLayout {
     @Retention(RetentionPolicy.SOURCE)
     protected @interface Flip {
     }
-
 
 
     private final List<Sticker> stickers = new ArrayList<>();
@@ -247,7 +246,9 @@ public class StickerView extends FrameLayout {
     public int cavansMode;
 
     public void openEraserMode() {
-        cavansMode = 1;
+        if (handlingSticker != null) {
+            cavansMode = 1;
+        }
     }
 
     protected void drawStickers(Canvas canvas) {
@@ -282,18 +283,14 @@ public class StickerView extends FrameLayout {
                     BitmapStickerIcon icon = icons.get(i);
                     switch (icon.getPosition()) {
                         case BitmapStickerIcon.LEFT_TOP:
-
                             configIconMatrix(icon,x1,y1,rotation);
                             break;
-
                         case BitmapStickerIcon.RIGHT_TOP:
                             configIconMatrix(icon,x2,y2,rotation);
                             break;
-
                         case BitmapStickerIcon.LEFT_BOTTOM:
                             configIconMatrix(icon,x3,y3,rotation);
                             break;
-
                         case BitmapStickerIcon.RIGHT_BOTOM:
                             configIconMatrix(icon,x4,y4,rotation);
                             break;
@@ -303,8 +300,10 @@ public class StickerView extends FrameLayout {
             }
         }
         //橡皮檫绘制
-        if (cavansMode == 1 && curAction != null) {
-            curAction.draw(canvas);
+        if (cavansMode == 1 && handlingSticker != null) {
+            DrawableSticker drawableSticker = (DrawableSticker) handlingSticker;
+            DoodleEraser doodleEraser = drawableSticker.getDoodleEraser();
+            doodleEraser.draw(canvas);
         }
     }
 
@@ -323,12 +322,10 @@ public class StickerView extends FrameLayout {
         if (locked) {
             return super.onInterceptTouchEvent(ev);
         }
-
         switch (ev.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 downX = ev.getX();
                 downY = ev.getY();
-
                 return findCurrentIconTouched() != null || findHandlingSticker() != null;
         }
 
@@ -340,9 +337,7 @@ public class StickerView extends FrameLayout {
         if (locked) {
             return super.onTouchEvent(event);
         }
-
         int action = MotionEventCompat.getActionMasked(event);
-
         switch (action) {
             case MotionEvent.ACTION_DOWN:
                 if (!onTouchDown(event)) {
@@ -352,29 +347,26 @@ public class StickerView extends FrameLayout {
             case MotionEvent.ACTION_POINTER_DOWN:
                 oldDistance = calculateDistance(event);
                 oldRotation = calculateRotation(event);
-
                 midPoint = calculateMidPoint(event);
-
                 if (handlingSticker != null && isInStickerArea(handlingSticker,event.getX(1),
                         event.getY(1)) && findCurrentIconTouched() == null) {
                     currentMode = ActionMode.ZOOM_WITH_TWO_FINGER;
                 }
                 break;
-
             case MotionEvent.ACTION_MOVE:
                 if (cavansMode == 1) {
                     // 绘制透明色
-                    Log.e("weip","MotionEvent.ACTION_MOVE====================111111111111111111");
-                    curAction.move(event.getX(),event.getY());
+                    Log.e("weip","MotionEvent.ACTION_MOVE");
+//                    float[] moveXY = getMoveXY(handlingSticker);
+                    PointF pointF = handlingSticker.getCenterPoint();
+                    ((DrawableSticker) handlingSticker).move(event.getX(),event.getY());
                 } else {
                     handleCurrentMode(event);
                 }
                 invalidate();
                 break;
-
             case MotionEvent.ACTION_UP:
-                Log.e("weip","MotionEvent.ACTION_UP==========111111111111");
-                curAction = null;
+                Log.e("weip","MotionEvent.ACTION_UP");
                 onTouchUp(event);
                 break;
             case MotionEvent.ACTION_POINTER_UP:
@@ -395,19 +387,13 @@ public class StickerView extends FrameLayout {
      * @return true if has touch something
      */
     protected boolean onTouchDown(@NonNull MotionEvent event) {
+        downX = event.getX();
+        downY = event.getY();
         if (cavansMode == 1) {
-            //橡皮檫模式
-            Log.e("weip","MotionEvent.ACTION_DOWN==========111111111111");
-            curAction = new DoodleEraser(downX,downY,2,Color.BLUE);
-            Rect newRect = ((DrawableSticker) handlingSticker).getStickerRect();
-            RectF rectF = new RectF();
-            rectF.set(newRect);
-            Log.e("weip","bounds left:" + newRect.left + ",right:" + newRect.right + ",top:" + newRect.top + ",,,bounds:" + newRect.bottom);
-            ((DoodleEraser) curAction).updateRect(rectF);
+            ((DrawableSticker) handlingSticker).up();
+            ((DrawableSticker) handlingSticker).initDoodleEraser(downX,downY);
         } else {
             currentMode = ActionMode.DRAG;
-            downX = event.getX();
-            downY = event.getY();
             midPoint = calculateMidPoint();
             oldDistance = calculateDistance(midPoint.x,midPoint.y,downX,downY);
             oldRotation = calculateRotation(midPoint.x,midPoint.y,downX,downY);
@@ -431,8 +417,8 @@ public class StickerView extends FrameLayout {
             if (currentIcon == null && handlingSticker == null) {
                 return false;
             }
+            invalidate();
         }
-        invalidate();
         return true;
     }
 
@@ -456,13 +442,11 @@ public class StickerView extends FrameLayout {
                 }
             }
         }
-
         if (currentMode == ActionMode.DRAG && handlingSticker != null) {
             if (onStickerOperationListener != null) {
                 onStickerOperationListener.onStickerDragFinished(handlingSticker);
             }
         }
-
         currentMode = ActionMode.NONE;
         lastClickTime = currentTime;
     }
@@ -522,29 +506,32 @@ public class StickerView extends FrameLayout {
         }
     }
 
-    protected void constrainSticker(@NonNull Sticker sticker) {
-        float moveX = 0;
-        float moveY = 0;
+    protected float[] getMoveXY(Sticker sticker) {
+        float[] moveXY = new float[2];
         int width = getWidth();
         int height = getHeight();
         sticker.getMappedCenterPoint(currentCenterPoint,point,tmp);
         if (currentCenterPoint.x < 0) {
-            moveX = -currentCenterPoint.x;
+            moveXY[0] = -currentCenterPoint.x;
         }
 
         if (currentCenterPoint.x > width) {
-            moveX = width - currentCenterPoint.x;
+            moveXY[0] = width - currentCenterPoint.x;
         }
 
         if (currentCenterPoint.y < 0) {
-            moveY = -currentCenterPoint.y;
+            moveXY[1] = -currentCenterPoint.y;
         }
 
         if (currentCenterPoint.y > height) {
-            moveY = height - currentCenterPoint.y;
+            moveXY[1] = height - currentCenterPoint.y;
         }
+        return moveXY;
+    }
 
-        sticker.getMatrix().postTranslate(moveX,moveY);
+    protected void constrainSticker(@NonNull Sticker sticker) {
+        float[] moveXY = getMoveXY(sticker);
+        sticker.getMatrix().postTranslate(moveXY[0],moveXY[1]);
     }
 
     @Nullable
@@ -763,7 +750,6 @@ public class StickerView extends FrameLayout {
             return true;
         } else {
             Log.d(TAG,"remove: the sticker is not in this StickerView");
-
             return false;
         }
     }
@@ -953,6 +939,7 @@ public class StickerView extends FrameLayout {
 
     /**
      * 获取icons
+     *
      * @return
      */
     @NonNull
@@ -962,6 +949,7 @@ public class StickerView extends FrameLayout {
 
     /**
      * setIcons 拓展
+     *
      * @param icons
      */
     public void setIcons(@NonNull List<BitmapStickerIcon> icons) {
@@ -976,48 +964,56 @@ public class StickerView extends FrameLayout {
     public interface OnStickerOperationListener {
         /**
          * 贴纸被添加
+         *
          * @param sticker
          */
         void onStickerAdded(@NonNull Sticker sticker);
 
         /**
          * 贴纸被点击
+         *
          * @param sticker
          */
         void onStickerClicked(@NonNull Sticker sticker);
 
         /**
          * 贴纸被删除
+         *
          * @param sticker
          */
         void onStickerDeleted(@NonNull Sticker sticker);
 
         /**
          * 贴纸拖拽完成
+         *
          * @param sticker
          */
         void onStickerDragFinished(@NonNull Sticker sticker);
 
         /**
          * 贴纸被按下
+         *
          * @param sticker
          */
         void onStickerTouchedDown(@NonNull Sticker sticker);
 
         /**
          * 贴纸被缩放完成
+         *
          * @param sticker
          */
         void onStickerZoomFinished(@NonNull Sticker sticker);
 
         /**
          * 贴纸被拖动
+         *
          * @param sticker
          */
         void onStickerFlipped(@NonNull Sticker sticker);
 
         /**
          * 贴纸被DoubleTapped
+         *
          * @param sticker
          */
         void onStickerDoubleTapped(@NonNull Sticker sticker);

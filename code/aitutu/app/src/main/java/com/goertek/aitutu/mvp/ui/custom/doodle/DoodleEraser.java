@@ -1,11 +1,12 @@
 package com.goertek.aitutu.mvp.ui.custom.doodle;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
-import android.graphics.RectF;
+import android.util.Log;
 
 /**
  * 涂鸦橡皮擦
@@ -17,7 +18,6 @@ import android.graphics.RectF;
 public class DoodleEraser extends BaseAction {
     private Path path;
     private int size;
-    private RectF paintRectf;
 
     DoodleEraser() {
         path = new Path();
@@ -41,16 +41,10 @@ public class DoodleEraser extends BaseAction {
 //        path.close();
     }
 
-    public void updateRect(RectF rect) {
-        paintRectf = rect;
-        paintRectf.left = 200;
-        paintRectf.right = 200;
-        paintRectf.top = 200;
-        paintRectf.bottom = 200;
-    }
 
     @Override
     public void draw(Canvas canvas) {
+        Log.e("weip","橡皮檫开始绘制啦");
         Paint mEraserPaint = new Paint();
         mEraserPaint.setAlpha(0);
         //这个属性是设置paint为橡皮擦重中之重
@@ -60,18 +54,18 @@ public class DoodleEraser extends BaseAction {
         //上面这句代码是橡皮擦设置的重点（重要的事是不是一定要说三遍）
         mEraserPaint.setAntiAlias(true);
         mEraserPaint.setDither(true);
-        mEraserPaint.setColor(color);
-//        mEraserPaint.setStyle(Paint.Style.STROKE);
-        mEraserPaint.setStyle(Paint.Style.FILL);
+        mEraserPaint.setColor(Color.TRANSPARENT);
+        mEraserPaint.setStyle(Paint.Style.STROKE);
+//        mEraserPaint.setStyle(Paint.Style.FILL);
         mEraserPaint.setStrokeJoin(Paint.Join.ROUND);
-        mEraserPaint.setStrokeWidth(30);
+        mEraserPaint.setStrokeWidth(1);
         //绘制区域
-        canvas.drawRect(paintRectf,mEraserPaint);
         canvas.drawPath(path,mEraserPaint);
     }
 
     @Override
     public void move(float mx,float my) {
+        Log.e("weip","mx:" + mx + ",my:" + my);
         path.lineTo(mx,my);
 //        path.close();
     }
