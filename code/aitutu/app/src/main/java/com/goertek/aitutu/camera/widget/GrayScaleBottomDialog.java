@@ -9,7 +9,6 @@ import android.widget.Button;
 import android.widget.SeekBar;
 
 import com.goertek.aitutu.R;
-import com.goertek.aitutu.camera.util.CameraParam;
 
 import butterknife.BindView;
 import butterknife.OnClick;

@@ -14,7 +14,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.AppCompatTextView;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
@@ -33,7 +32,6 @@ import com.goertek.aitutu.camera.widget.CameraGLSurfaceView;
 import com.goertek.aitutu.camera.widget.CameraRenderer;
 import com.goertek.aitutu.camera.widget.GrayScaleBottomDialog;
 import com.goertek.aitutu.camera.widget.ResolutionBottomDialog;
-import com.goertek.aitutu.mvp.ui.activity.MainPhotoPickActivity;
 import com.goertek.aitutu.mvp.ui.activity.StickerActivity;
 
 import java.io.File;
