@@ -5,6 +5,7 @@ package com.goertek.aitutu.camera;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -13,11 +14,12 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatTextView;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -31,6 +33,8 @@ import com.goertek.aitutu.camera.widget.CameraGLSurfaceView;
 import com.goertek.aitutu.camera.widget.CameraRenderer;
 import com.goertek.aitutu.camera.widget.GrayScaleBottomDialog;
 import com.goertek.aitutu.camera.widget.ResolutionBottomDialog;
+import com.goertek.aitutu.mvp.ui.activity.MainPhotoPickActivity;
+import com.goertek.aitutu.mvp.ui.activity.StickerActivity;
 
 import java.io.File;
 import java.nio.ByteBuffer;
@@ -58,6 +62,10 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     @BindView(value = R.id.camera_glsurfaceview)
     public CameraGLSurfaceView mCameraGLSurfaceView;
 
+    //灰度checkbox
+    @BindView(R.id.grayScale)
+    CheckBox btnGrayscale;
+
     //消息发送类
     private Handler mHandler;
 
@@ -70,7 +78,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     //照片名字
     private String picName;
 
-
     /**
      * 截屏回调
      */
@@ -78,7 +85,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         @Override
         public void onCapture(final ByteBuffer buffer, final int width, final int height) {
             mHandler.post(() -> {
-                Toast.makeText(MainActivity.this, "save picture", Toast.LENGTH_SHORT).show();
                 path = Environment.getExternalStorageDirectory() + File.separator + Environment.DIRECTORY_DCIM
                         + File.separator + "IMG" + File.separator;
                 File dir = new File(path);
@@ -89,6 +95,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 picName = FileUtil.getCurrentPicName();
                 String filePath = path + picName;
                 BitmapUtils.saveBitmap(MainActivity.this, filePath, buffer, width, height);
+                Toast.makeText(MainActivity.this, "原图片" + picName + "已保存到" + path, Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(MainActivity.this, StickerActivity.class).putExtra(StickerActivity.FILE_PATH, filePath));
             });
         }
     };
@@ -105,10 +113,13 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         changeResolution();
     }
 
+    /**
+     * 改变当前屏幕分辨率比率
+     */
     private void changeResolution() {
         int[] ratio = CameraParam.getInstance().ratio;
         int[] dispaly = getScreen(ratio[0], ratio[1]);
-        Toast.makeText(MainActivity.this, "width=" + dispaly[0] + "height=" + dispaly[1], Toast.LENGTH_SHORT).show();
+        //Toast.makeText(MainActivity.this, "width=" + dispaly[0] + "height=" + dispaly[1], Toast.LENGTH_SHORT).show();
         mCameraGLSurfaceView.setLayoutParams(new RelativeLayout.LayoutParams(
                 dispaly[0], dispaly[1]));
     }
@@ -127,6 +138,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 break;
             case R.id.grayScale:
                 mCameraGLSurfaceView.enableGrayScale(isChecked);
+                if (!isChecked) {
+                    CameraParam.getInstance().mScale = 0;
+                }
                 break;
             default:
                 break;
@@ -138,7 +152,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         switch (view.getId()) {
             case R.id.btn_takepic:
                 CameraParam.getInstance().isTakePicture = true;
-                Toast.makeText(MainActivity.this, "takepicture", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(MainActivity.this, "takepicture", Toast.LENGTH_SHORT).show();
                 Timber.i("takepicture");
                 mCameraGLSurfaceView.requestRender();
                 break;
@@ -169,6 +183,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         return display;
     }
 
+    /**
+     * 显示分辨率设置弹框
+     */
     private void showResolutionView() {
         BottomDialogView dialogView = new ResolutionBottomDialog(this, R.layout.resolution_view,
                 CameraParam.getInstance().ratio);
@@ -178,15 +195,24 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             CameraParam.getInstance().expectHeight = height;
             changeResolution();
             mCameraGLSurfaceView.getCameraRenderer().changePreview();
-            Toast.makeText(MainActivity.this, ratio[0] + "," + ratio[1] + "ewidth=" + width + "eheight=" + height, Toast.LENGTH_SHORT).show();
+            //Toast.makeText(MainActivity.this, ratio[0] + "," + ratio[1] + "ewidth=" + width + "eheight=" + height, Toast.LENGTH_SHORT).show();
         });
         dialogView.show();
     }
 
+    /**
+     * 显示灰度设置弹框
+     */
     private void showGrayScaleView() {
+        btnGrayscale.setChecked(true);
         BottomDialogView dialogView = new GrayScaleBottomDialog(this, R.layout.grayscale_view,
-                CameraParam.getInstance().ratio);
-        Toast.makeText(MainActivity.this, "scale", Toast.LENGTH_SHORT).show();
+                CameraParam.getInstance().mScale);
+        ((GrayScaleBottomDialog) dialogView).setOnProgressChangedListener(scale -> {
+            //Toast.makeText(MainActivity.this, "mScale="+scale, Toast.LENGTH_SHORT).show();
+            CameraParam.getInstance().mScale = scale;
+            mCameraGLSurfaceView.getCameraRenderer().setGrayScaleLevel();
+        });
+
         dialogView.show();
     }
 

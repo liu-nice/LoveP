@@ -16,7 +16,9 @@ import com.goertek.aitutu.R;
  * @since : 2019/10/9 14:51
  */
 public class GrayScaleFilter extends AbstractFrameFilter{
+    //glsl灰度比例变量
     private int mGrayscale;
+    //界面传过来的灰度比例
     private float mScale;
 
     public GrayScaleFilter(Context context) {
@@ -33,7 +35,6 @@ public class GrayScaleFilter extends AbstractFrameFilter{
         //不调用的话就是默认的操作glsurfaceview中的纹理了。显示到屏幕上了
         //这里我们还只是把它画到fbo中(缓存)
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, mFrameBuffers[0]);
-        GLES20.glUniform1f(mGrayscale, mScale);
         //使用着色器
         GLES20.glUseProgram(mGLProgramId);
         //传递坐标
@@ -49,6 +50,7 @@ public class GrayScaleFilter extends AbstractFrameFilter{
         //因为这一层是摄像头后的第一层，所以需要使用扩展的  GL_TEXTURE_EXTERNAL_OES
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId);
         GLES20.glUniform1i(vTexture, 0);
+        GLES20.glUniform1f(mGrayscale, mScale);
 
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
 
@@ -58,9 +60,9 @@ public class GrayScaleFilter extends AbstractFrameFilter{
     }
     /**
      * 灰度程度
-     * @param level 0 ~ 1.0f 对应0-255
+     * @param scale 0 ~ 1.0f 对应0-255
      */
-    public void setComplexionLevel(float level) {
-        mScale = level;
+    public void setGrayScaleLevel(float scale) {
+        mScale = scale;
     }
 }

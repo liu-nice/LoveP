@@ -1,13 +1,11 @@
 /*
  * Copyright  2016 - Goertek- All rights reserved.
  */
-
 package com.goertek.aitutu.camera.widget;
 
 import android.content.Context;
 import android.view.View;
 import android.widget.Button;
-import android.widget.RadioButton;
 import android.widget.SeekBar;
 
 import com.goertek.aitutu.R;
@@ -37,10 +35,10 @@ public class GrayScaleBottomDialog extends BottomDialogView implements SeekBar.O
     SeekBar grayscaleProgress;
 
     //比例点击回调
-    private IBottomView mListener;
+    private IGrayScale mListener;
 
     //这里的view其实可以替换直接传layout过来的 因为各种原因没传(lan)
-    public GrayScaleBottomDialog(Context context, int resId, int[] scale) {
+    public GrayScaleBottomDialog(Context context, int resId, float scale) {
         super(context, resId);
         grayscaleProgress.setOnSeekBarChangeListener(this);
         ECHOView(scale);
@@ -48,9 +46,11 @@ public class GrayScaleBottomDialog extends BottomDialogView implements SeekBar.O
 
     /**
      * 回显当前选中的界面
+     *
      * @param scale 当前比例
      */
-    private void ECHOView(int[] scale) {
+    private void ECHOView(float scale) {
+        grayscaleProgress.setProgress((int) (scale * 255));
     }
 
     @OnClick(value = {R.id.grayScale_cancel, R.id.grayScale_ok})
@@ -66,13 +66,15 @@ public class GrayScaleBottomDialog extends BottomDialogView implements SeekBar.O
         }
     }
 
-    public void setOnRadioCheckedChangedListener(IBottomView listener) {
+    public void setOnProgressChangedListener(IGrayScale listener) {
         this.mListener = listener;
     }
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-
+        if (mListener != null) {
+            mListener.OnProgressChanged(progress / 255.0f);
+        }
     }
 
     @Override
@@ -85,7 +87,7 @@ public class GrayScaleBottomDialog extends BottomDialogView implements SeekBar.O
 
     }
 
-    public interface IBottomView {
-        void OnRadioCheckedChanged(int[] ratio, int width, int height);
+    public interface IGrayScale {
+        void OnProgressChanged(float scale);
     }
 }

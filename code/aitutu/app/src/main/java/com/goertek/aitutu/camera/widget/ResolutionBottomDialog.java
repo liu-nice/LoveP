@@ -5,9 +5,7 @@ package com.goertek.aitutu.camera.widget;
 
 import android.content.Context;
 import android.view.View;
-import android.widget.Button;
 import android.widget.RadioButton;
-import android.widget.SeekBar;
 
 import com.goertek.aitutu.R;
 import com.goertek.aitutu.camera.util.CameraParam;
@@ -36,7 +34,7 @@ public class ResolutionBottomDialog extends BottomDialogView {
     RadioButton rbResolution_1_1;
 
     //比例点击回调
-    private IBottomView mListener;
+    private IResolutionView mListener;
 
     //这里的view其实可以替换直接传layout过来的 因为各种原因没传(lan)
     public ResolutionBottomDialog(Context context, int resId, int[] ratio) {
@@ -92,11 +90,11 @@ public class ResolutionBottomDialog extends BottomDialogView {
         }
     }
 
-    public void setOnRadioCheckedChangedListener(IBottomView listener) {
+    public void setOnRadioCheckedChangedListener(IResolutionView listener) {
         this.mListener = listener;
     }
 
-    public interface IBottomView {
+    public interface IResolutionView {
         void OnRadioCheckedChanged(int[] ratio, int width, int height);
     }
 }

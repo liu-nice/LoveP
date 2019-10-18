@@ -30,8 +30,6 @@ import java.nio.ByteOrder;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import jp.co.cyberagent.android.gpuimage.GLTextureView;
-
 /**
  * describition : 渲染器render
  *
@@ -177,7 +175,7 @@ public class CameraRenderer implements GLSurfaceView.Renderer,
 
 
         // 灰度
-        if (null != mGrayScaleFilter) {
+        if (null != mGrayScaleFilter && CameraParam.getInstance().mScale != 0) {
             id = mGrayScaleFilter.onDrawFrame(id);
         }
         // 贴纸
@@ -263,6 +261,13 @@ public class CameraRenderer implements GLSurfaceView.Renderer,
                 mGrayScaleFilter = null;
             }
         });
+    }
+
+    /**
+     * 设置灰度比例
+     */
+    public void setGrayScaleLevel(){
+        mGrayScaleFilter.setGrayScaleLevel(CameraParam.getInstance().mScale);
     }
     /**
      * @see CameraGLSurfaceView#enableBeauty(boolean)

@@ -122,7 +122,7 @@ extern CL_RUNTIME_EXPORT clAmdFftStatus (*clAmdFftEnqueueTransform)(clAmdFftPlan
 //extern CL_RUNTIME_EXPORT clAmdFftStatus (*clAmdFftGetPlanLength)(const clAmdFftPlanHandle plHandle, const clAmdFftDim dim, size_t* clLengths);
 //extern CL_RUNTIME_EXPORT clAmdFftStatus (*clAmdFftGetPlanOutStride)(const clAmdFftPlanHandle plHandle, const clAmdFftDim dim, size_t* clStrides);
 //extern CL_RUNTIME_EXPORT clAmdFftStatus (*clAmdFftGetPlanPrecision)(const clAmdFftPlanHandle plHandle, clAmdFftPrecision* precision);
-//extern CL_RUNTIME_EXPORT clAmdFftStatus (*clAmdFftGetPlanScale)(const clAmdFftPlanHandle plHandle, clAmdFftDirection dir, cl_float* scale);
+//extern CL_RUNTIME_EXPORT clAmdFftStatus (*clAmdFftGetPlanScale)(const clAmdFftPlanHandle plHandle, clAmdFftDirection dir, cl_float* mScale);
 //extern CL_RUNTIME_EXPORT clAmdFftStatus (*clAmdFftGetPlanTransposeResult)(const clAmdFftPlanHandle plHandle, clAmdFftResultTransposed* transposed);
 //extern CL_RUNTIME_EXPORT clAmdFftStatus (*clAmdFftGetResultLocation)(const clAmdFftPlanHandle plHandle, clAmdFftResultLocation* placeness);
 extern CL_RUNTIME_EXPORT clAmdFftStatus (*clAmdFftGetTmpBufSize)(const clAmdFftPlanHandle plHandle, size_t* buffersize);

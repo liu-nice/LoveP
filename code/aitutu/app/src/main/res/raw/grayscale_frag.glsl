@@ -13,6 +13,10 @@ void main(){
     //变量 接收像素值
     // texture2D：采样器 采集 aCoord的像素 rgba
     //赋值给 gl_FragColor 就可以了
-    vec4 rgba = texture2D(vTexture,aCoord);
-    gl_FragColor = vec4((rgba.r*0.3+rgba.g *0.3+rgba.b*0.3), (rgba.r*0.3+rgba.g *0.3+rgba.b*0.3),(rgba.r*0.3+rgba.g *0.3+rgba.b*0.3),rgba.a);
+    vec4 rgba = texture2D(vTexture, aCoord);
+    //一般通用灰度算法
+    //gl_FragColor = vec4((rgba.r*0.3+rgba.g *0.59+rgba.b*0.11), (rgba.r*0.3+rgba.g *0.59+rgba.b*0.11),(rgba.r*0.3+rgba.g *0.59+rgba.b*0.11),rgba.a);
+    gl_FragColor = vec4((rgba.r * grayscale,rgba.g * grayscale,rgba.b * grayscale), (rgba.r * grayscale,rgba.g * grayscale,rgba.b * grayscale), (rgba.r * grayscale,rgba.g * grayscale,rgba.b * grayscale), rgba.a);
+    //只取R通道
+//    gl_FragColor = vec4(rgba.g * grayscale, rgba.g * grayscale, rgba.g * grayscale, rgba.a);
 }

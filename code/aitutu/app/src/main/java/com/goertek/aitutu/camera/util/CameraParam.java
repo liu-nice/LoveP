@@ -26,7 +26,9 @@ public final class CameraParam {
     // 当前长宽比
     public float currentRatio;
     //默认比例
-    public int[] ratio = {16, 9};
+    public int[] ratio;
+    //灰度比例
+    public float mScale;
     // 16:9的默认宽高(理想值)
     public static final int DEFAULT_16_9_WIDTH = 1280;
     public static final int DEFAULT_16_9_HEIGHT = 720;
@@ -36,6 +38,11 @@ public final class CameraParam {
     // 1:1的默认宽高(理想值)
     public static final int DEFAULT_1_1_WIDTH = 640;
     public static final int DEFAULT_1_1_HEIGHT = 640;
+
+    public CameraParam() {
+        ratio = new int[]{16, 9};
+    }
+
     /**
      * 获取相机配置参数
      * @return
