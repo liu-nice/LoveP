@@ -7,13 +7,28 @@
     xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     tools:context=".mvp.ui.activity.CropImageActivity">
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/activity_sticker_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimary"
+        android:theme="@style/BaseToolbarTheme"
+        custom:navigationIcon="@drawable/icon_back">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="编辑图片(裁剪)"
+            android:textColor="@color/white"
+            android:textSize="16dp" />
+    </android.support.v7.widget.Toolbar>
     <com.isseiaoki.simplecropview.CropImageView
         android:id="@+id/crop_imageView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:padding="@dimen/spacing_xlarge"
-        custom:scv_background_color="@color/windowBackground"
         custom:scv_crop_mode="fit_image"
         custom:scv_frame_color="@color/colorAccent"
         custom:scv_frame_stroke_weight="1dp"

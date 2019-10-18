@@ -192,7 +192,7 @@ public class CropImageActivity extends BaseActivity {
      */
     @OnClick({R.id.fit_image, R.id.crop_ratio1_1, R.id.crop_ratio3_4, R.id.crop_ratio4_3
             , R.id.crop_ratio16_9, R.id.crop_ratio9_16, R.id.free, R.id.save, R.id.pick_image,
-            R.id.rotate_left, R.id.rotate_right, R.id.circle, R.id.show_circle_but_cropassquare})
+            R.id.rotate_left, R.id.rotate_right, R.id.circle, R.id.show_circle_but_cropassquare, R.id.activity_sticker_toolbar})
     public void editCrop(View view) {
         switch (view.getId()) {
             case R.id.fit_image:
@@ -248,6 +248,8 @@ public class CropImageActivity extends BaseActivity {
             case R.id.save:
                 saveImage();
                 break;
+            case R.id.activity_sticker_toolbar:
+                finish();
             default:
                 break;
         }

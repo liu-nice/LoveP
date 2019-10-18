@@ -80,6 +80,16 @@
                 android:textColor="@color/black"
                 android:drawableTop="@drawable/crop"
                 android:textSize="16dp" />
+
+            <TextView
+                android:id="@+id/activity_sticker_filter"
+                android:layout_width="80dp"
+                android:layout_height="match_parent"
+                android:text="滤镜"
+                android:gravity="center"
+                android:textColor="@color/black"
+                android:drawableTop="@drawable/filtermirror"
+                android:textSize="16dp" />
         </LinearLayout>
 
     </HorizontalScrollView>

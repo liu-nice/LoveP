@@ -271,7 +271,8 @@ public class StickerActivity extends BaseActivity {
         }
     }
 
-    @OnClick({R.id.activity_sticker_revolve,R.id.activity_sticker_sticker,R.id.activity_sticker_eraser,R.id.activity_sticker_recycleview_leftback})
+    @OnClick({R.id.activity_sticker_revolve, R.id.activity_sticker_sticker, R.id.activity_sticker_recycleview_leftback,
+            R.id.activity_sticker_crop,R.id.activity_sticker_filter})
     public void stickerEvent(View view) {
         switch (view.getId()) {
             case R.id.activity_sticker_revolve:
@@ -283,6 +284,16 @@ public class StickerActivity extends BaseActivity {
                 mStickerHsw.setVisibility(View.GONE);
                 mStickerParentView.setVisibility(View.VISIBLE);
                 break;
+            case R.id.activity_sticker_crop:
+                Intent mIntent = new Intent(this, CropImageActivity.class);
+                mIntent.putExtra(FILE_PATH, filePath);
+                startActivity(mIntent);
+                break;
+            case R.id.activity_sticker_filter:
+                Intent intent = new Intent(this, FilterActivity.class);
+                intent.putExtra(FILE_PATH, filePath);
+                startActivity(intent);
+
             case R.id.activity_sticker_recycleview_leftback:
                 //隐藏贴纸布局
                 mStickerParentView.setVisibility(View.GONE);
