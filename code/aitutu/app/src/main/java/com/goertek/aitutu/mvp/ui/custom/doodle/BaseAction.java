@@ -7,7 +7,7 @@ import android.graphics.Color;
  * 动作的基础类
  */
 
-abstract class BaseAction {
+public abstract class BaseAction {
 
     public int color;
 

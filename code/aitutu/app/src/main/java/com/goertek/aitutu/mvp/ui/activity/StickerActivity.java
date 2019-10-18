@@ -41,6 +41,13 @@ import java.io.File;
 import butterknife.BindView;
 import butterknife.OnClick;
 
+/**
+ * desciption 贴纸
+ *
+ * @author Davin
+ * @version 1.0
+ * @since 2019-10-15
+ */
 public class StickerActivity extends BaseActivity {
 
     public static final String FILE_PATH = "file_path";
@@ -102,6 +109,12 @@ public class StickerActivity extends BaseActivity {
      */
     @BindView(R.id.activity_sticker_seekbar)
     SeekBar mSeekBar;
+
+    /**
+     * 橡皮檫
+     */
+    @BindView(R.id.activity_sticker_eraser)
+    TextView mEraserView;
 
     /**
      * 底部返回键
@@ -166,7 +179,7 @@ public class StickerActivity extends BaseActivity {
         imageHeight = metrics.heightPixels / 2;
         //拍照或者选择某一张相册图片,目前先写死
         filePath = getIntent().getStringExtra(FILE_PATH);
-        mMainBitmap = BitmapUtils.getSampledBitmap(filePath, imageWidth, imageHeight);
+        mMainBitmap = BitmapUtils.getSampledBitmap(filePath,imageWidth,imageHeight);
         mImageView.setImageBitmap(mMainBitmap);
     }
 
@@ -258,41 +271,39 @@ public class StickerActivity extends BaseActivity {
         }
     }
 
-    @OnClick({R.id.activity_sticker_revolve, R.id.activity_sticker_sticker, R.id.activity_sticker_recycleview_leftback, R.id.activity_sticker_crop})
+    @OnClick({R.id.activity_sticker_revolve,R.id.activity_sticker_sticker,R.id.activity_sticker_eraser,R.id.activity_sticker_recycleview_leftback})
     public void stickerEvent(View view) {
         switch (view.getId()) {
             case R.id.activity_sticker_revolve:
-                startActivityForResult(new Intent(this, RevolveActivity.class).
-                        putExtra(RevolveActivity.FILE_PATH, filePath), REQUEST_REVOLVE_CODE);
+                startActivityForResult(new Intent(this,RevolveActivity.class).
+                        putExtra(RevolveActivity.FILE_PATH,filePath),REQUEST_REVOLVE_CODE);
                 break;
             case R.id.activity_sticker_sticker:
                 //显示贴纸布局
                 mStickerHsw.setVisibility(View.GONE);
                 mStickerParentView.setVisibility(View.VISIBLE);
                 break;
-            case R.id.activity_sticker_crop:
-                Intent mIntent = new Intent(this, CropImageActivity.class);
-                mIntent.putExtra(FILE_PATH, filePath);
-                startActivity(mIntent);
-
-
             case R.id.activity_sticker_recycleview_leftback:
                 //隐藏贴纸布局
                 mStickerParentView.setVisibility(View.GONE);
                 mStickerHsw.setVisibility(View.VISIBLE);
                 break;
-
+            case R.id.activity_sticker_eraser:
+                //开启橡皮檫
+                //第一步:去掉边框,仅仅保留bitmap  第二步:使用画笔画(橡皮檫模式)
+                mStickerView.openEraserMode();
+                break;
             default:
                 break;
         }
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+    protected void onActivityResult(int requestCode,int resultCode,@Nullable Intent data) {
+        super.onActivityResult(requestCode,resultCode,data);
         if (requestCode == REQUEST_REVOLVE_CODE && data != null) {
             byte[] bis = data.getByteArrayExtra("imgbitmap");
-            mMainBitmap = BitmapFactory.decodeByteArray(bis, 0, bis.length);
+            mMainBitmap = BitmapFactory.decodeByteArray(bis,0,bis.length);
             mImageView.setImageBitmap(mMainBitmap);
         }
     }

@@ -18,6 +18,10 @@ public class DrawableSticker extends Sticker {
     private Drawable drawable;
     private Rect realBounds;
 
+    public Rect getStickerRect() {
+        return realBounds;
+    }
+
     public DrawableSticker(Drawable drawable) {
         this.drawable = drawable;
         realBounds = new Rect(0,0,getWidth(),getHeight());
