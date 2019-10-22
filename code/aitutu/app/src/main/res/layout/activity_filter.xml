@@ -9,14 +9,15 @@
     tools:context=".mvp.ui.activity.FilterActivity">
 
     <ImageView
-        android:id="@+id/image_view"
+        android:id="@+id/pre_image_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:padding="5dp" />
 
+
     <HorizontalScrollView
-        android:id="@+id/tab_bar"
+        android:id="@+id/hor_scrollview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
@@ -25,10 +26,11 @@
         android:scrollbars="none">
 
         <LinearLayout
-            android:id="@+id/llayout_contioner"
+            android:id="@+id/lLayout_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
+
 
         </LinearLayout>
     </HorizontalScrollView>
@@ -49,7 +51,7 @@
             android:layout_marginRight="@dimen/spacing"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="@dimen/spacing"
-            app:srcCompat="@drawable/ic_photo_library_black_24dp" />
+            app:srcCompat="@drawable/ic_close_black_24dp" />
 
         <ImageButton
             android:id="@+id/save_picture"

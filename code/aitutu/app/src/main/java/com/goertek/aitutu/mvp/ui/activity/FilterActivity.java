@@ -8,15 +8,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.AppCompatTextView;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,16 +22,17 @@ import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.goertek.aitutu.R;
+import com.goertek.aitutu.camera.util.FileUtil;
 import com.goertek.arm.base.BaseActivity;
 import com.goertek.arm.di.component.AppComponent;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -51,7 +50,6 @@ import jp.co.cyberagent.android.gpuimage.filter.GPUImageSoftLightBlendFilter;
 import jp.co.cyberagent.android.gpuimage.filter.GPUImageSphereRefractionFilter;
 import jp.co.cyberagent.android.gpuimage.filter.GPUImageToonFilter;
 
-import static com.goertek.aitutu.camera.util.FileUtil.getCurrentPicName;
 
 /**
  * description:FilterActivity  is saveImage
@@ -63,42 +61,26 @@ import static com.goertek.aitutu.camera.util.FileUtil.getCurrentPicName;
 public class FilterActivity extends BaseActivity {
 
 
-    @BindView(R.id.image_view)
+    @BindView(R.id.pre_image_view)
     ImageView imageView;
-    @BindView(R.id.llayout_contioner)
-    LinearLayout llayoutContioner;
-    @BindView(R.id.tab_bar)
+    @BindView(R.id.hor_scrollview)
     HorizontalScrollView tabBar;
     @BindView(R.id.pick_images)
     ImageButton pickImage;
     @BindView(R.id.save_picture)
     ImageButton savePicture;
-
-    /**
-     * 图片路径"image/*"
-     */
-    private static final String IMAGE_PATH_ALL = "image/*";
-
-    /**
-     * 选择图片常量 requestCode
-     */
-    private static final int REQUEST_PICK_IMAGE = 10011;
-
-    /**
-     * 保存图片常量 requestCode
-     */
-    private static final int REQUEST_SAF_PICK_IMAGE = 10012;
-
+    @BindView(R.id.lLayout_view)
+    LinearLayout lLayoutView;
 
     private Bitmap bitmap = null;
 
-    private GPUImageFilter[] arr = {new GPUImageGaussianBlurFilter(), new GPUImageSharpenFilter(),
+    private GPUImageFilter[] filters = {new GPUImageGaussianBlurFilter(), new GPUImageSharpenFilter(),
             new GPUImageSketchFilter(), new GPUImageDissolveBlendFilter(), new GPUImageSoftLightBlendFilter(),
             new GPUImage3x3ConvolutionFilter(), new GPUImageSphereRefractionFilter(), new GPUImageToonFilter(),
             new GPUImageAlphaBlendFilter(), new GPUImageKuwaharaFilter()};
     private GPUImage gpuImage;
 
-    private String[] texts = {"模糊", "锐化", "素描", "溶解", "柔光", "卷积", "折射", "卡通", "透明", "绿波"};
+    private String[] imageTexts = {"模糊", "锐化", "素描", "溶解", "柔光", "卷积", "折射", "卡通", "透明", "绿波"};
 
     @OnClick({R.id.save_picture, R.id.pick_images})
     public void editFilter(View view) {
@@ -106,10 +88,10 @@ public class FilterActivity extends BaseActivity {
             case R.id.save_picture:
                 // 保存图片
                 saveBitmap(bitmap);
+                Toast.makeText(this, "图片保存成功", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.pick_images:
-                //打开图库
-                pickImage();
+                finish();
                 break;
             default:
                 break;
@@ -118,7 +100,7 @@ public class FilterActivity extends BaseActivity {
 
     private void saveBitmap(Bitmap bitmap) {
 
-        String picName = getCurrentPicName();
+        String picName = FileUtil.getCurrentPicName();
         String path = Environment.getExternalStorageDirectory() + File.separator + Environment.DIRECTORY_DCIM + File.separator + "111/";
         File filepath = new File(path);
         if (!filepath.exists()) {
@@ -132,7 +114,8 @@ public class FilterActivity extends BaseActivity {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos);//将图片压缩到流中
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos);
+        //将图片压缩到流中
         notifyUpdateAlbum(FilterActivity.this, path + picName, bitmap);
 
     }
@@ -146,20 +129,6 @@ public class FilterActivity extends BaseActivity {
         context.sendBroadcast(intent);
     }
 
-    /**
-     * 选择进入图库
-     */
-    public void pickImage() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-            startActivityForResult(new Intent(Intent.ACTION_GET_CONTENT).setType(IMAGE_PATH_ALL),
-                    REQUEST_PICK_IMAGE);
-        } else {
-            final Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-            intent.addCategory(Intent.CATEGORY_OPENABLE);
-            intent.setType(IMAGE_PATH_ALL);
-            startActivityForResult(intent, REQUEST_SAF_PICK_IMAGE);
-        }
-    }
 
     @Override
     public void setupActivityComponent(@NonNull AppComponent appComponent) {
@@ -175,37 +144,45 @@ public class FilterActivity extends BaseActivity {
     public void initData(@Nullable Bundle savedInstanceState) {
         String filePath = getIntent().getStringExtra(StickerActivity.FILE_PATH);
         openNativeImage(filePath);
-        List<AppCompatTextView> mList = new ArrayList();
-        for (int i = 0; i < 10; i++) {
 
-            AppCompatTextView mTextView = new AppCompatTextView(this);
-            mTextView.setId(i);
-            mTextView.setBackgroundResource(R.drawable.cicrcle);
-            mTextView.setOnClickListener(new MyListener(i));
-            mTextView.setText(texts[i]);
-            mTextView.setGravity(Gravity.CENTER);
+        for (int i = 0; i < 10; i++) {
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(new ViewGroup.LayoutParams(
                     ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-            //为小圆点左右添加间距
-            params.leftMargin = 20;
-            params.rightMargin = 20;
-            llayoutContioner.addView(mTextView, params);
-            mList.add(mTextView);
+            LinearLayout linearLayout = new LinearLayout(this);
+            params.leftMargin = 10;
+            params.rightMargin = 10;
+            linearLayout.setLayoutParams(params);
+            linearLayout.setOrientation(LinearLayout.VERTICAL);
+            ImageView mImageView = new ImageView(this);
+            gpuImage.setFilter(filters[i]);
+            bitmap = gpuImage.getBitmapWithFilterApplied();
+            Bitmap bitmap1 = ThumbnailUtils.extractThumbnail(this.bitmap, 200, 200);
+            mImageView.setImageBitmap(bitmap1);
+            linearLayout.setOnClickListener(new MyListener(i));
+
+            TextView mTextView = new TextView(this);
+            mTextView.setText(imageTexts[i]);
+            mTextView.setGravity(Gravity.CENTER);
+            //mTextView.setLayoutParams(params);
+            linearLayout.addView(mImageView);
+            linearLayout.addView(mTextView);
+            lLayoutView.addView(linearLayout, params);
+
         }
+
 
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // TODO: add setContentView(...) invocation
         ButterKnife.bind(this);
     }
 
     private class MyListener implements View.OnClickListener {
 
 
-        private final int position;
+        int position;
 
         public MyListener(int i) {
             this.position = i;
@@ -213,8 +190,7 @@ public class FilterActivity extends BaseActivity {
 
         @Override
         public void onClick(View v) {
-            int id = v.getId();
-            gpuImage.setFilter(arr[id]);
+            gpuImage.setFilter(filters[position]);
             bitmap = gpuImage.getBitmapWithFilterApplied();
             //显示处理后的图片
             imageView.setImageBitmap(bitmap);
@@ -228,7 +204,7 @@ public class FilterActivity extends BaseActivity {
         imageView.setImageBitmap(bitmap);
         gpuImage = new GPUImage(FilterActivity.this);
         gpuImage.setImage(bitmap);
-        Log.e("FilterActivity", "3" + (bitmap == null));
+
 
     }
 }
